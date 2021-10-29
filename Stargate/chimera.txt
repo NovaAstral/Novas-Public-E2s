@@ -39,7 +39,16 @@ if(clk("activate")){
     holoPlayerColor(1,PlyCol)
     holoAnim(1,2) #idle anim
     #holoScale(1,) #not sure how to do this
-    holoVisible(1,owner(),0)
+    #holoVisible(1,owner(),0)
+    
+    holoCreate(2)
+    holoAlpha(2,0)
+    holoModel(2,owner():model())
+    holoPlayerColor(2,PlyCol)
+    holoAnim(2,2) #idle anim
+    holoParent(2,holoEntity(1))
+    #holoScale(2,) #not sure how to do this
+    #holoVisible(2,owner(),0)
 
     if(TargetPos == vec(0,0,0)){
         lightCreate(1,owner():aimPos())
@@ -64,7 +73,7 @@ if(clk("activate")){
     timer("update",10)
 
     lightColor(1,vec(255,255,255))
-    lightBrightness(1,2)
+    lightBrightness(1,10)
 
     timer("fadein",400)
 }
@@ -72,6 +81,7 @@ if(clk("activate")){
 if(clk("fadein")){
     holoEntity(1):soundPlay(1,100,"tech/asgard_holo.wav")
     holoRenderFX(1,8) #solid fast fx
+    holoRenderFX(2,8)
 
     timer("holofx",600)
 }
@@ -85,10 +95,11 @@ if(clk("deactivate")){
     soundStop(1)
     holoEntity(1):soundPlay(2,100,"tech/chair2_exit.wav")
     holoRenderFX(1,5) #fade slow fx
-
+    holoRenderFX(2,5)
+    
     lightCreate(1,holoEntity(1):pos())
     lightColor(1,vec(255,255,255))
-    lightBrightness(1,2)
+    lightBrightness(1,10)
     timer("fadeout",2000)
     
     CamCont["Activated",number] = 0
@@ -98,6 +109,7 @@ if(clk("deactivate")){
 
 if(clk("fadeout")){
     holoDelete(1)
+    holoDelete(2)
 
     lightRemove(1)
     
@@ -119,35 +131,65 @@ if(clk("update")){
 if(changed(holoEntity(1):isUnderWater())){
     if(holoEntity(1):isUnderWater() == 1){
         holoAnim(1,8) #water idle anim
+        holoAnim(2,8)
     }
     else{
         holoAnim(1,2)
+        holoAnim(2,2)
     }
 }
 
 if(changed(owner():keyDuck())){
     if(owner():keyDuck() == 1){
         holoAnim(1,7) #crouch anim
+        holoAnim(2,7)
     }
     else{
         holoAnim(1,2)
+        holoAnim(2,2)
     }
 }
 
 if(changed(owner():keyForward())){
     if(owner():keyForward() == 1 & owner():keyWalk()){
         holoAnim(1,10) #walk anim
+        holoAnim(2,10)
     }
     else{
         holoAnim(1,2)
+        holoAnim(2,2)
     }
 }
 
 if(changed(owner():keyReload())){
     if(owner():keyReload() == 1){
         holoAnim(1,9) #sit anim
+        holoAnim(2,9)
     }
     else{
         holoAnim(1,2)
+        holoAnim(2,2)
     }
+}
+
+#[
+#This doesn't work because Wire Extra's decided not to catch the error that happens from-
+#-trying to do something to a light that doesn't exist
+
+if(changed(owner():keyUse())){
+    if(owner():keyUse() == 1){
+        lightCreate(2,CamCont["HitPos",vector])
+        lightBrightness(2,10)
+        timer("lightupdate",10)
+    }
+    else{
+        stoptimer("lightupdate")
+        lightRemove(2)
+        
+    }
+}
+
+if(clk("lightupdate")){
+    timer("lightupdate",10)
+    lightPos(2,CamCont["HitPos",vector])
 }
