@@ -1,0 +1,57 @@
+@name Pickup
+@inputs In Launch
+@outputs TFlop EntL:entity EntLP:vector
+@persist TFlop
+
+if(first()){
+    TFlop = 0
+}
+
+if(changed(In) & In == 1){
+    TFlop = !TFlop
+    timer("flopcheck",1)
+}
+
+if(clk("flopcheck")){
+    if(TFlop == 1){
+        if(owner():aimEntity():isValid()){
+            timer("pickup",1)
+            EntL = owner():aimEntity()
+            EntL:propFreeze(1)
+            noCollide(EntL,owner())
+    }
+}
+    if(TFlop == 0){
+        stoptimer("pickup")
+        timer("drop",1)
+        EntL:propFreeze(0)
+    }
+}
+
+if(clk("pickup")){
+    EntL:setPos(owner():pos() + owner():eye() * 100 + vec(0,0,50))
+    EntLP = EntL:pos()
+    EntL:setAng(owner():eyeAngles())
+    timer("pickup",1)
+    #[
+    if(owner():isCrouch()){
+        EntL:setPos(owner():pos() + owner():eye() * 100 + vec(-20,0,50))
+    }
+    else{
+        EntL:setPos(owner():pos() + owner():eye() * 100 + vec(0,0,50))
+    } ]#
+}
+
+if(clk("drop")){ #I forgot how I did this and I lost the code for it because i was stupid :c
+    EntL:applyForce(owner():vel())
+}
+
+if(changed(Launch) & Launch == 1){
+    TFlop = 0
+    timer("flopcheck",1)
+    timer("launch",2)
+}
+
+if(clk("launch")){
+    EntL:applyForce(owner():eye() * 100000)
+}

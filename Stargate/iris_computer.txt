@@ -1,0 +1,58 @@
+@name Iris Computer
+@inputs [IC, Gate]:wirelink
+@outputs Code
+@persist IrisCodes:table
+
+interval(200)
+
+#Made by Nova Astral
+#Discord: Nova Astral#2079
+#Steam: http://steamcommunity.com/profiles/76561198068127098
+
+if(first() | duped()){
+    IC["Disable Menu Mode",number] = 1
+
+    IrisCodes = table( #Put iris codes here
+    "1234" = 1,
+    "3675" = 1
+)}
+
+
+if(changed(IC["Received Code",number]) & IC["Received Code",number] > 0){
+    if(IrisCodes:exists(IC["Received Code",number]:toString())){
+        print("Code Valid. Received: "+ IC["Received Code",number])
+        timer("gdovalid",10)
+        timer("irischeck",10)
+        }
+    else{
+        print("Code Invalid. Received: "+ IC["Received Code",number])
+        timer("gdoinvalid",10)
+        timer("reset",5000)
+}}
+
+if(clk("irischeck")){
+    if(Gate:stargateIrisActive() == 1){
+        Gate:stargateIrisToggle()
+        timer("reset",5000)
+}
+
+elseif(Gate:stargateIrisActive() == 0){
+    print("Iris already opened.")
+    timer("reset",5000)
+}}
+
+#doesn't work because you have to set the text before the gdo sends its code because c(r)ap
+if(clk("gdovalid")){ 
+    IC["GDO Text",string] = ":)"
+}
+
+if(clk("gdoinvalid")){
+    IC["GDO Text",string] = ">:("
+}
+
+if(clk("reset")){
+    IC["GDO Text",string] = ""
+    stoptimer("irischeck")
+    stoptimer("reset")
+}
+

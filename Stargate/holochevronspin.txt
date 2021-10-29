@@ -1,0 +1,69 @@
+@name HoloChev
+@inputs Gate:entity Reset Active #Open #NEIN #Inbound #Rotate
+@outputs Ang:angle X
+@persist X
+Ang = holoEntity(1):angles()
+
+holoCreate(1,Gate:toWorld(vec(0,0,0)))
+holoModel(1,"models/the_sniper_9/universe/stargate/universechevrons.mdl")
+holoScale(1,vec(1,1,1))
+holoParent(1,Gate)
+holoMaterial(1,"engine/write")
+holoAng(1,Gate:angles())
+
+if(Active == 0){ ## & Ang == ang(0,0,0))
+    reset()
+}
+
+if(Reset == 1){
+    holoDeleteAll()
+    reset()
+}
+
+if(Active == 1){
+    timer("0",50)
+}
+
+#[if(Active == 1 & changed(Open == 1)){
+    timer("7",50)
+    stoptimer("6")
+}
+
+if(Active == 1 & NEIN == 1){
+    timer("9",50)
+    stoptimer("8")
+}
+
+####Manual rotate currently interferes with Gate activation rotation, can probably be fixed with
+changed() or something####
+#[
+if(Rotate == 1){
+    timer("1",50)
+}
+if(Rotate == 0){
+    reset()
+}
+]#
+####
+
+if(clk("0")){
+timer("0",100)
+X+=1
+if(X >=360){X=0}
+holoAng(1,Gate:toWorld(ang(X*0,X*0,X*10)))
+}
+#[
+if(clk("7")){
+timer("7",100)
+X+=1
+if(X >=360){X=0}
+holoAng(1,GateE:toWorld(ang(X*0,X*0,X*15)))
+}
+
+if(clk("9")){
+timer("9",100)
+X+=1
+if(X >=360){X=0}
+holoAng(1,GateE:toWorld(ang(X*0,X*0,X*20)))
+}
+]#

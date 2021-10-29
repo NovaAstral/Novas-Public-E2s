@@ -1,0 +1,86 @@
+@name Weapon Display EGP
+@inputs EGP:wirelink [Wep1, Wep2, Wep3, Wep4, Wep5, Wep6, Wep7, Wep8, Wep9, Wep10, Wep11, Wep12, Phys1, Phys2, Phys3, Phys4, Phys5, Phys6]:wirelink 
+@outputs CPos:vector2
+@persist
+
+#This is very WIP and probably wont be done any time soon
+
+interval(200)
+
+if(first()){
+    EGP:egpClear()
+    timer("update",100)
+    timer("create",200)
+    timer("wepdate",100)
+}
+
+if(clk("update")){
+    CPos = EGP:egpCursor(owner())
+    timer("update",100)
+}
+
+if(clk("wepdate")){
+    if(Wep1:entity():isValid() == 1){
+        if(Wep1["Type",string]:length() > 1){
+            EGP:egpSetText(17,Wep1["Type",string]+" Charge")
+}}
+
+}
+if(clk("create")){
+    
+    EGP:egpBox(1,vec2(125,35),vec2(200,15))
+    EGP:egpText(17,"",vec2(25,6))
+    #EGP:egpAlpha(1,0)
+    #EGP:egpAlpha(17,0)
+}#[
+    EGP:egpBox(2,vec2(125,75),vec2(200,15))
+    EGP:egpText(18,Wep2Type+" Charge",vec2(25,46))
+    
+    
+    EGP:egpBox(3,vec2(125,115),vec2(200,15))
+    EGP:egpText(19,Wep3Type+" Charge",vec2(25,86))
+    
+    
+    EGP:egpBox(4,vec2(125,155),vec2(200,15))
+    EGP:egpText(20,Wep4Type+" Charge",vec2(25,126))
+    
+    
+    EGP:egpBox(5,vec2(125,195),vec2(200,15))
+    EGP:egpText(21,Wep5Type+" Charge",vec2(25,166))
+    
+    
+    EGP:egpBox(6,vec2(125,235),vec2(200,15))
+    EGP:egpText(22,Wep6Type+" Charge",vec2(25,206))
+    
+    
+    EGP:egpBox(7,vec2(125,275),vec2(200,15))
+    EGP:egpText(23,Wep7Type+" Charge",vec2(25,246))
+    
+    
+    EGP:egpBox(8,vec2(125,315),vec2(200,15))
+    EGP:egpText(24,Wep8Type+" Charge",vec2(25,286))
+    
+    
+    EGP:egpBox(9,vec2(386,35),vec2(200,15))
+    
+    
+    EGP:egpBox(10,vec2(386,75),vec2(200,15))
+    
+    
+    EGP:egpBox(11,vec2(386,115),vec2(200,15))
+    
+    
+    EGP:egpBox(12,vec2(386,155),vec2(200,15))
+    
+    
+    EGP:egpBox(13,vec2(386,195),vec2(200,15))
+    
+    
+    EGP:egpBox(14,vec2(386,235),vec2(200,15))
+    
+    
+    EGP:egpBox(15,vec2(386,275),vec2(200,15))
+    
+    
+    EGP:egpBox(16,vec2(386,315),vec2(200,15))
+}
