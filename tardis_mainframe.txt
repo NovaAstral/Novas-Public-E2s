@@ -12,6 +12,8 @@ function angle angle:round(D:number) { return ang(round(This:pitch(), D), round(
 
 #vector and angle functions made by Consolio
 
+#I'll make a doc on all the commands in this if someone wants it
+
 runOnChat(1)
 OLS = owner():lastSaid():lower()
 if(first() | duped()){
@@ -100,7 +102,7 @@ if(chatClk(O)){
         timer("hoff",10)
         Shield:propNotSolid(0)
         Shield:propDraw(1)
-        T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg")
+        T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
         print("TARDIS Shield Activated")
 }
 
@@ -109,7 +111,7 @@ if(OLS == "/ts off"){
     timer("hoff",10)
     Shield:propNotSolid(1)
     Shield:propDraw(0)
-    T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg")
+    T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
     print("TARDIS Shield Deactivated")
 }
 }
@@ -394,7 +396,7 @@ if(chatClk(O)){
 #############################
 
 if(chatClk(O)){
-    if(OLS == "/tadv"){
+    if(OLS == "/tadv"){ #This only works on the Legacy TARDIS, and you must wire the buttons manually
         hideChat(1)
         timer("hoff",10)
         print("Activating Advanced Takeoff")
