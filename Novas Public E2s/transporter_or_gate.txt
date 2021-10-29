@@ -1,0 +1,39 @@
+@name Transporter Or Gate
+@inputs A B C D E F
+@outputs EnergisePad
+
+#Made by Nova Astral
+#Discord: Nova Astral#2079
+#Steam: http://steamcommunity.com/profiles/76561198068127098
+
+if(changed(A) & A != 0){
+    EnergisePad = A
+}
+
+if(changed(B) & B != 0){
+    EnergisePad = B
+}
+
+if(changed(C) & C != 0){
+    EnergisePad = C
+}
+
+if(changed(D) & D != 0){
+    EnergisePad = D
+}
+
+if(changed(E) & E != 0){
+    EnergisePad = E
+}
+
+if(changed(F) & F != 0){
+    EnergisePad = F
+}
+
+if(changed(A | B | C | D | E | F) & A | B | C | D | E | F != 0){
+    timer("reset",1500)
+}
+
+if(clk("reset")){
+    EnergisePad = 0
+}

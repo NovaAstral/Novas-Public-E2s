@@ -1,0 +1,82 @@
+@name chat dial
+@inputs Gate:wirelink Rings:wirelink
+
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+runOnChat(1)
+
+if(chatClk(O)){
+if(OLS[1,string] == "/closeg"){
+    hideChat(1)
+    Gate:stargateClose()
+    print("Closing Gate.")
+}
+
+if(OLS[1,string] == "/dial"){
+    hideChat(1)
+    if(OLS[3,string]:length() > 7 && Gate:stargateLocal() == 1){
+        print("Cannot dial outside of local group.")
+    }
+    else{
+    Gate["Dial Mode",number] = OLS[2,string]:toNumber()
+    Gate["Dial String",string] = OLS[3,string]
+    
+    if(OLS[2,string]:length() > 1){
+        print("Dial Mode cannot be a string")
+        timer("dialreset",100)
+    }
+    else{
+    print("Dialing the gate to: "+OLS[3,string])
+    timer("gdial",100)
+}}}}
+
+if(clk("gdial")){
+    Gate["Start String Dial",number] = 1
+    timer("dialreset",2000)
+}
+
+if(clk("dialreset")){
+    Gate["Dial Mode",number] = 0
+    Gate["Dial String",string] = ""
+    Gate["Start String Dial",number] = 0
+}
+
+###Rings
+if(chatClk(O)){
+if(OLS[1,string] == "/rdial"){
+    hideChat(1)
+    if(OLS[2,string]:length() == 0){
+        if(Rings["Usable",number] == 0){
+            print("Rings Disabled, Cannot dial.")
+        }
+        else{
+        Rings["Dial Closest",number] = 1
+        print("Dialing closest rings.")
+        timer("ringreset",100)
+}}
+
+if(OLS[2,string]:length() >= 1){
+    if(Rings["Usable",number] == 0){
+        print("Rings Disabled, Cannot dial.")
+    }
+    else{
+    Rings["Dial Address",string] = OLS[2,string]
+    print("Dialing Rings to: "+ OLS[2,string])
+    timer("ringreset",100)
+    
+    if(OLS[1,string] == "/roff"){
+    Rings["UnUsable",number] = 1
+    print("Rings Disabled")
+}
+
+if(OLS[1,string] == "/ron"){
+    hideChat(1)
+    Rings["UnUsable",number] = 0
+    print("Rings Enabled")
+}}}}}
+
+if(clk("ringreset")){
+    Rings["Dial Address",string] = ""
+    Rings["Dial Closest",number] = 0
+}
+

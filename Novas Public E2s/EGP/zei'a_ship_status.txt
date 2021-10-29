@@ -1,0 +1,365 @@
+@name Zei'a Ship Status
+@inputs EGP:wirelink Core:wirelink Shield:wirelink Sensor:wirelink LS:wirelink Cloak:wirelink
+@outputs Emergency HullDamaged PlatingDamaged
+@persist Eggmergency
+
+interval(200)
+
+if(first() | duped()){
+    EGP:egpClear()
+    timer("setup",10)
+    timer("fawnt",200)
+}
+
+if(clk("fawnt")){
+    EGP:egpFont(31,"poleepkwan") #You won't have this font.
+    EGP:egpFont(32,"poleepkwan")
+    EGP:egpFont(33,"poleepkwan")
+    EGP:egpFont(34,"poleepkwan")
+    EGP:egpFont(35,"poleepkwan")
+    EGP:egpFont(36,"poleepkwan")
+    EGP:egpFont(37,"poleepkwan")
+}
+
+if(changed(EGP)){
+    EGP:egpClear()
+    timer("setup",10)
+}
+
+if(changed(Core["Health",number])){
+    HP = round(Core["Health",number] / Core["Max Health",number] * 100)
+    
+    EGP:egpText(38,HP + "%",vec2(125,60))
+    EGP:egpSize(38,25)
+}
+
+if(changed(Core["Plating",number])){
+    
+    CP = round(Core["Plating",number])
+    
+    EGP:egpText(39,CP + "%",vec2(125,140))
+    EGP:egpSize(39,25)
+}
+
+if(changed(Shield["Current Energy",number])){
+    
+    SH = round(Shield["Current Energy",number] / Shield["Max Energy",number] * 100)
+    
+    EGP:egpText(40,SH + "%",vec2(125,225))
+    EGP:egpSize(40,25)
+}
+
+if(changed(Sensor["Subsystem Health",number])){
+    
+    SES = round(Sensor["Subsystem Health",number])
+    
+    EGP:egpText(41,SES + "%",vec2(360,92))
+    EGP:egpSize(41,25)
+}
+
+if(changed(Shield["Subsystem Health",number])){
+    
+    SHS = round(Shield["Subsystem Health",number])
+    
+    EGP:egpText(42,SHS + "%",vec2(360,162))
+    EGP:egpSize(42,25)
+}
+
+if(changed(LS["Subsystem Health",number])){
+    
+    LSS = round(LS["Subsystem Health",number])
+    
+    EGP:egpText(43,LSS + "%",vec2(360,232))
+    EGP:egpSize(43,25)
+}
+
+if(changed(Cloak["Subsystem Health",number])){
+    
+    CLS = round(Cloak["Subsystem Health",number])
+    
+    EGP:egpText(44,CLS + "%",vec2(360,302))
+    EGP:egpSize(44,25)
+}
+
+
+#[ #NONE OF THIS WORKS PROPERLY FOR SOME REASON AAAA
+if(changed(HP & HP <= 30)){
+    Emergency = 1
+    EGP:egpAlpha(52,255)
+    EGP:egpAlpha(53,255)
+    EGP:egpAlpha(54,255)
+    EGP:egpAlpha(55,255)
+}
+
+else{
+    Emergency = 0
+    EGP:egpAlpha(52,0)
+    EGP:egpAlpha(53,0)
+    EGP:egpAlpha(54,0)
+    EGP:egpAlpha(55,0)
+    stoptimer("eggmergency")
+    stoptimer("eggmergency2")
+}
+
+if(changed(Emergency & Emergency == 1)){
+    #print("KEK GEO: KO'PRAN N'EK 30%") #this doesn't work properly for some reason
+    #print("WARNING: HULL UNDER 30%")
+    timer("eggmergency",10)
+}
+
+if(clk("eggmergency")){
+    EGP:egpColor(54,vec(255,90,0))
+    EGP:egpColor(55,vec(255,90,0))
+    timer("eggmergency2",400)
+    stoptimer("eggmergency")
+}
+
+if(clk("eggmergency2")){
+    EGP:egpColor(54,vec(255,255,255))
+    EGP:egpColor(55,vec(255,255,255))
+    timer("eggmergency",400)
+    stoptimer("eggmergency2")
+}
+
+if(changed(HP)){
+    if(HP < 100 & HP > 10){ 
+        HullDamaged = 1 
+        #print("Warning: Hull Damaged")
+}
+else{ HullDamaged = 0 
+}}
+
+if(changed(CP)){
+    if(CP < 100 & CP > 10){
+        PlatingDamaged = 1
+        #print("Warning: Plating Damaged")
+}}
+]#
+
+if(changed(HP)){
+if(HP >= 90){ for(I = 1,30,1){ EGP:egpColor(I,vec(0,255,255))}}
+if(HP <= 80 & HP > 70){ for(I = 1,30,1){ EGP:egpColor(I,vec(0,220,255))}}
+if(HP <= 70 & HP > 60){ for(I = 1,30,1){ EGP:egpColor(I,vec(0,160,255))}}
+if(HP <= 60 & HP > 50){ for(I = 1,30,1){ EGP:egpColor(I,vec(0,90,255))}}
+if(HP <= 50 & HP > 40){ for(I = 1,30,1){ EGP:egpColor(I,vec(80,90,255))}}
+if(HP <= 40 & HP > 30){ for(I = 1,30,1){ EGP:egpColor(I,vec(100,90,200))}}
+if(HP <= 30 & HP > 20){ for(I = 1,30,1){ EGP:egpColor(I,vec(130,90,130))}}
+if(HP <= 20 & HP > 10){ for(I = 1,30,1){ EGP:egpColor(I,vec(200,90,30))}}
+if(HP <= 10 & HP > 0){ for(I = 1,30,1){ EGP:egpColor(I,vec(230,90,30))}}
+}
+
+
+if(clk("setup")){
+    stoptimer("setup")
+
+
+    EGP:egpText(38,HP + "%",vec2(125,60))
+    EGP:egpSize(38,25)
+    EGP:egpColor(38,vec(255,255,255))
+    
+    EGP:egpText(39,CP + "%",vec2(125,140))
+    EGP:egpSize(39,25)
+    EGP:egpColor(39,vec(255,255,255))
+    
+    EGP:egpText(40,SH + "%",vec2(125,225))
+    EGP:egpSize(40,25)
+    EGP:egpColor(40,vec(255,255,255))
+
+    EGP:egpText(41,SES + "%",vec2(360,92))
+    EGP:egpSize(41,25)
+    EGP:egpColor(41,vec(255,255,255))
+    
+    EGP:egpText(42,SHS + "%",vec2(360,162))
+    EGP:egpSize(42,25)    
+    EGP:egpColor(42,vec(255,255,255))
+    
+    EGP:egpText(43,LSS + "%",vec2(360,232))
+    EGP:egpSize(43,25)
+    EGP:egpColor(43,vec(255,255,255))
+    
+    EGP:egpText(44,CLS + "%",vec2(360,302))
+    EGP:egpSize(44,25)
+    EGP:egpColor(44,vec(255,255,255))
+
+
+    EGP:egpLine(1,vec2(40,0),vec2(40,409))
+    EGP:egpSize(1,4)
+    EGP:egpColor(1,vec(0,255,255))
+    
+    EGP:egpLine(2,vec2(40,407),vec2(146,513))
+    EGP:egpSize(2,4)
+    EGP:egpColor(2,vec(0,255,255))
+    
+    EGP:egpLine(3,vec2(75,0),vec2(75,396))
+    EGP:egpSize(3,4)
+    EGP:egpColor(3,vec(0,255,255))
+    
+    EGP:egpLine(4,vec2(75,395),vec2(164,484))
+    EGP:egpSize(4,4)
+    EGP:egpColor(4,vec(0,255,255))
+    
+    EGP:egpLine(5,vec2(163,483),vec2(224,483))
+    EGP:egpSize(5,4)
+    EGP:egpColor(5,vec(0,255,255))
+    
+    EGP:egpLine(6,vec2(222,483),vec2(310,395))
+    EGP:egpSize(6,4)
+    EGP:egpColor(6,vec(0,255,255))
+    
+    EGP:egpLine(7,vec2(310,396),vec2(310,0))
+    EGP:egpSize(7,4)
+    EGP:egpColor(7,vec(0,255,255))
+    
+    EGP:egpLine(8,vec2(76,20),vec2(114,58))
+    EGP:egpSize(8,4)
+    EGP:egpColor(8,vec(0,255,255))
+    
+    EGP:egpLine(9,vec2(114,58),vec2(203,58))
+    EGP:egpSize(9,4)
+    EGP:egpColor(9,vec(0,255,255))
+    
+    EGP:egpLine(10,vec2(76,100),vec2(114,138))
+    EGP:egpSize(10,4)
+    EGP:egpColor(10,vec(0,255,255))
+    
+    EGP:egpLine(11,vec2(114,138),vec2(203,138))
+    EGP:egpSize(11,4)
+    EGP:egpColor(11,vec(0,255,255))
+    
+    EGP:egpLine(12,vec2(76,185),vec2(114,223))
+    EGP:egpSize(12,4)
+    EGP:egpColor(12,vec(0,255,255))
+    
+    EGP:egpLine(13,vec2(113,222),vec2(201,223))
+    EGP:egpSize(13,4)
+    EGP:egpColor(13,vec(0,255,255))
+    
+    EGP:egpLine(14,vec2(484,512),vec2(484,38))
+    EGP:egpSize(14,4)
+    EGP:egpColor(14,vec(0,255,255))
+    
+    EGP:egpLine(15,vec2(485,39),vec2(445,-1))
+    EGP:egpSize(15,4)
+    EGP:egpColor(15,vec(0,255,255))
+    
+    EGP:egpLine(16,vec2(484,52),vec2(445,91))
+    EGP:egpSize(16,4)
+    EGP:egpColor(16,vec(0,255,255))
+    
+    EGP:egpLine(17,vec2(446,90),vec2(356,90))
+    EGP:egpSize(17,4)
+    EGP:egpColor(17,vec(0,255,255))
+    
+    EGP:egpLine(18,vec2(484,122),vec2(445,161))
+    EGP:egpSize(18,4)
+    EGP:egpColor(18,vec(0,255,255))
+    
+    EGP:egpLine(19,vec2(446,160),vec2(356,160))
+    EGP:egpSize(19,4)
+    EGP:egpColor(19,vec(0,255,255))
+    
+    EGP:egpLine(20,vec2(484,192),vec2(445,231))
+    EGP:egpSize(20,4)
+    EGP:egpColor(20,vec(0,255,255))
+    
+    EGP:egpLine(21,vec2(446,230),vec2(356,230))
+    EGP:egpSize(21,4)
+    EGP:egpColor(21,vec(0,255,255))
+    
+    EGP:egpLine(22,vec2(484,262),vec2(445,301))
+    EGP:egpSize(22,4)
+    EGP:egpColor(22,vec(0,255,255))
+    
+    EGP:egpLine(23,vec2(446,300),vec2(356,300))
+    EGP:egpSize(23,4)
+    EGP:egpColor(23,vec(0,255,255))
+    
+    EGP:egpCircle(24,vec2(75,50),vec2(15,15)) #this ALWAYS renders above the other one :v
+    EGP:egpColor(24,vec(0,255,255))
+    
+    EGP:egpCircle(25,vec2(75,130),vec2(15,15))
+    EGP:egpColor(25,vec(0,255,255))
+    
+    EGP:egpCircle(26,vec2(75,218),vec2(15,15))
+    EGP:egpColor(26,vec(0,255,255))
+    
+    EGP:egpCircle(27,vec2(484,83),vec2(15,15))
+    EGP:egpColor(27,vec(0,255,255))
+    
+    EGP:egpCircle(28,vec2(484,153),vec2(15,15))
+    EGP:egpColor(28,vec(0,255,255))
+    
+    EGP:egpCircle(29,vec2(484,223),vec2(15,15))
+    EGP:egpColor(29,vec(0,255,255))
+    
+    EGP:egpCircle(30,vec2(484,293),vec2(15,15))
+    EGP:egpColor(30,vec(0,255,255))
+    
+    EGP:egpText(31,"Ko'Pran",vec2(115,30)) #Means 'Body'
+    EGP:egpSize(31,25)
+    EGP:egpColor(31,vec(255,255,255))
+
+    EGP:egpText(32,"T'ile",vec2(123,105)) #Means 'Exoskeleton' Closest I could find
+    EGP:egpSize(32,30)
+    EGP:egpColor(32,vec(255,255,255))
+    
+    EGP:egpText(33,"Yp'yote",vec2(115,190)) #Just 'Shield'
+    EGP:egpSize(33,26)
+    EGP:egpColor(33,vec(255,255,255))
+    
+    EGP:egpText(34,"El'k A'skao'ih",vec2(358,70)) #Location finder
+    EGP:egpSize(34,16)
+    EGP:egpColor(34,vec(255,255,255))
+    
+    EGP:egpText(35,"Yp'yote Ei'n",vec2(358,138)) #Means 'Shield System'
+    EGP:egpSize(35,18)
+    EGP:egpColor(35,vec(255,255,255))
+    
+    EGP:egpText(36,"Sibo'ko'ma'ok",vec2(358,212)) #Means 'Life Support' (adding core was too long)
+    EGP:egpSize(36,15)
+    EGP:egpColor(36,vec(255,255,255))
+    
+    EGP:egpText(37,"Sul'avel",vec2(358,275)) #Means 'Unknown' or 'Hidden'
+    EGP:egpSize(37,25)
+    EGP:egpColor(37,vec(255,255,255))
+    
+    EGP:egpCircle(45,vec2(75,50),vec2(13,13))
+    EGP:egpColor(45,vec(200,255,255))
+    
+    EGP:egpCircle(46,vec2(75,130),vec2(13,13))
+    EGP:egpColor(46,vec(200,255,255))
+    
+    EGP:egpCircle(47,vec2(75,218),vec2(13,13))
+    EGP:egpColor(47,vec(200,255,255))
+    
+    EGP:egpCircle(48,vec2(484,83),vec2(13,13))
+    EGP:egpColor(48,vec(200,255,255))
+    
+    EGP:egpCircle(49,vec2(484,153),vec2(13,13))
+    EGP:egpColor(49,vec(200,255,255))
+    
+    EGP:egpCircle(50,vec2(484,223),vec2(13,13))
+    EGP:egpColor(50,vec(200,255,255))
+    
+    EGP:egpCircle(51,vec2(484,293),vec2(13,13))
+    EGP:egpColor(51,vec(200,255,255))
+    
+    ### Emergency Box
+    EGP:egpBox(52,vec2(192,325),vec2(200,110)) #Emergency box outside
+    EGP:egpColor(52,vec(255,90,0))
+    EGP:egpAlpha(52,0)
+    
+    EGP:egpBox(53,vec2(192,325),vec2(194,104)) #Emergency box inside
+    EGP:egpColor(53,vec(0,0,0))
+    EGP:egpAlpha(53,0)
+    
+    EGP:egpText(54,"KEK GEO",vec2(102,280))
+    EGP:egpSize(54,48)
+    EGP:egpColor(54,vec(255,90,0))
+    EGP:egpAlpha(54,0)
+    
+    EGP:egpText(55,"KO'PRAN N'EK 30%",vec2(97,335))
+    EGP:egpSize(55,23)
+    EGP:egpColor(55,vec(255,90,0))
+    EGP:egpAlpha(55,0)
+}

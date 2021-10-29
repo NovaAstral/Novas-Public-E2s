@@ -1,0 +1,31 @@
+@name Ring to Target
+@inputs Rings:wirelink Input Target:entity
+@persist PrevPos:vector
+
+RingsE = Rings:entity()
+
+if(Input == 1){
+    timer("a",100)
+    timer("jamcheck",1)
+}
+
+if(clk("jamcheck")){
+    if(isJammed(Target:pos())){
+    print("Destination Jammed. Transport Aborted.")
+    stopAllTimers()
+}}
+
+if(clk("a")){
+    PrevPos = RingsE:pos()
+    Rings["Dial Address",string] = "1234"
+    timer("b",1000)
+}
+
+if(clk("b")){
+    RingsE:setPos(Target:pos()+vec(0,200,0))
+    timer("c",4000)
+}
+
+if(clk("c")){
+    RingsE:setPos(PrevPos)
+}

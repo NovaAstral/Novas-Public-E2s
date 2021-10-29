@@ -1,0 +1,153 @@
+@name Chimera
+@inputs Activate Tele Platform:entity CamCont:wirelink TargetPos:vector TargetEnt:entity
+@outputs
+@persist TargetOrigin:vector
+
+#Made by Nova Astral
+#Discord: Nova Astral#2079
+#Steam: http://steamcommunity.com/profiles/76561198068127098
+
+if(first() | duped()){
+    timer("platformfind",10)
+}
+
+if(clk("platformfind")){
+    timer("platformfind",1000)
+    findIncludeEntity(owner())
+    findInSphere(Platform:pos(),20)
+
+    if(find():isValid() == 1 & Activate == 1){
+        timer("targetpos",1)
+        timer("activate",5)
+    }
+    elseif(find():isValid() == 0 & Activate == 1){
+        timer("deactivate",1)
+    }
+}
+
+if(changed(Activate) & Activate == 0 & !first()){
+    timer("deactivate",1)
+}
+
+if(clk("activate")){
+    stoptimer("platformfind")
+    PlyCol = owner():getPlayerColor() #owner stuff is temp until i get the e2 working
+
+    holoCreate(1)
+    holoAlpha(1,0)
+    holoModel(1,owner():model())
+    holoPlayerColor(1,PlyCol)
+    holoAnim(1,2) #idle anim
+    #holoScale(1,) #not sure how to do this
+    holoVisible(1,owner(),0)
+
+    if(TargetPos == vec(0,0,0)){
+        lightCreate(1,owner():aimPos())
+        holoPos(1,owner():aimPos())
+        TargetOrigin = owner():aimPos()
+    }
+    else{
+        if(TargetEnt:isPlayer()){
+            holoPos(1,TargetPos)
+            lightCreate(1,TargetPos)
+            TargetOrigin = TargetPos
+        }
+        else{
+            holoPos(1,TargetPos)
+            lightCreate(1,TargetPos)
+            TargetOrigin = TargetPos
+        }
+    }
+    
+    CamCont["Activated",number] = 1
+    CamCont["Distance",number] = 0
+    timer("update",10)
+
+    lightColor(1,vec(255,255,255))
+    lightBrightness(1,2)
+
+    timer("fadein",400)
+}
+
+if(clk("fadein")){
+    holoEntity(1):soundPlay(1,100,"tech/asgard_holo.wav")
+    holoRenderFX(1,8) #solid fast fx
+
+    timer("holofx",600)
+}
+
+if(clk("holofx")){
+    lightRemove(1)
+    holoRenderFX(1,15) #distort fx
+}
+
+if(clk("deactivate")){
+    soundStop(1)
+    holoEntity(1):soundPlay(2,100,"tech/chair2_exit.wav")
+    holoRenderFX(1,5) #fade slow fx
+
+    lightCreate(1,holoEntity(1):pos())
+    lightColor(1,vec(255,255,255))
+    lightBrightness(1,2)
+    timer("fadeout",2000)
+    
+    CamCont["Activated",number] = 0
+    stoptimer("update")
+}
+
+
+if(clk("fadeout")){
+    holoDelete(1)
+
+    lightRemove(1)
+    
+    timer("platformfind",10)
+}
+
+if(changed(Tele) & Tele == 1){
+    TargetOrigin = CamCont["HitPos",vector]
+}
+
+if(clk("update")){
+    timer("update",1)
+
+    CamCont["Position",vector] = holoEntity(1):pos() + vec(0,0,65)
+    holoAng(1,owner():angles())
+    holoPos(1,TargetOrigin+(owner():pos()-Platform:pos()))
+}
+
+if(changed(holoEntity(1):isUnderWater())){
+    if(holoEntity(1):isUnderWater() == 1){
+        holoAnim(1,8) #water idle anim
+    }
+    else{
+        holoAnim(1,2)
+    }
+}
+
+if(changed(owner():keyDuck())){
+    if(owner():keyDuck() == 1){
+        holoAnim(1,7) #crouch anim
+    }
+    else{
+        holoAnim(1,2)
+    }
+}
+
+if(changed(owner():keyForward())){
+    if(owner():keyForward() == 1 & owner():keyWalk()){
+        holoAnim(1,10) #walk anim
+    }
+    else{
+        holoAnim(1,2)
+    }
+}
+
+if(changed(owner():keyReload())){
+    if(owner():keyReload() == 1){
+        holoAnim(1,9) #sit anim
+    }
+    else{
+        holoAnim(1,2)
+    }
+}
