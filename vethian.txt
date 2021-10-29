@@ -11,6 +11,8 @@ runOnChat(1)
 #Discord: Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
+#I'll update this later with some doc's on command usage
+
 O = owner()
 OLS = owner():lastSaid():lower():explode(" ")
 Shipname = "NX-174203 Vethian"
