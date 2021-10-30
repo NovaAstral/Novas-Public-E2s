@@ -1,11 +1,14 @@
 @name Chimera
 @inputs Activate Tele Platform:entity CamCont:wirelink TargetPos:vector TargetEnt:entity
-@outputs
-@persist TargetOrigin:vector
+@persist TargetOrigin:vector CamOffset
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
+
+#This E2 only works for the owner because makaing it work for other people-
+#-would require a chair
+#I might make it possible later but I don't know
 
 if(first() | duped()){
     timer("platformfind",10)
@@ -31,7 +34,7 @@ if(changed(Activate) & Activate == 0 & !first()){
 
 if(clk("activate")){
     stoptimer("platformfind")
-    PlyCol = owner():getPlayerColor() #owner stuff is temp until i get the e2 working
+    PlyCol = owner():getPlayerColor()
 
     holoCreate(1)
     holoAlpha(1,0)
@@ -39,7 +42,7 @@ if(clk("activate")){
     holoPlayerColor(1,PlyCol)
     holoAnim(1,2) #idle anim
     #holoScale(1,) #not sure how to do this
-    #holoVisible(1,owner(),0)
+    holoVisible(1,owner(),0)
     
     holoCreate(2)
     holoAlpha(2,0)
@@ -48,7 +51,7 @@ if(clk("activate")){
     holoAnim(2,2) #idle anim
     holoParent(2,holoEntity(1))
     #holoScale(2,) #not sure how to do this
-    #holoVisible(2,owner(),0)
+    holoVisible(2,owner(),0)
 
     if(TargetPos == vec(0,0,0)){
         lightCreate(1,owner():aimPos())
@@ -123,7 +126,7 @@ if(changed(Tele) & Tele == 1){
 if(clk("update")){
     timer("update",1)
 
-    CamCont["Position",vector] = holoEntity(1):pos() + vec(0,0,65)
+    CamCont["Position",vector] = holoEntity(1):pos() + vec(0,0,CamOffset)
     holoAng(1,owner():angles())
     holoPos(1,TargetOrigin+(owner():pos()-Platform:pos()))
 }
@@ -143,10 +146,12 @@ if(changed(owner():keyDuck())){
     if(owner():keyDuck() == 1){
         holoAnim(1,7) #crouch anim
         holoAnim(2,7)
+        CamOffset = 35
     }
     else{
         holoAnim(1,2)
         holoAnim(2,2)
+        CamOffset = 65
     }
 }
 
@@ -165,10 +170,12 @@ if(changed(owner():keyReload())){
     if(owner():keyReload() == 1){
         holoAnim(1,9) #sit anim
         holoAnim(2,9)
+        CamOffset = 30
     }
     else{
         holoAnim(1,2)
         holoAnim(2,2)
+        CamOffset = 65
     }
 }
 
@@ -176,7 +183,7 @@ if(changed(owner():keyReload())){
 #This doesn't work because Wire Extra's decided not to catch the error that happens from-
 #-trying to do something to a light that doesn't exist
 
-if(changed(owner():keyUse())){
+if(changed(owner():keyUse())){ #flashlight
     if(owner():keyUse() == 1){
         lightCreate(2,CamCont["HitPos",vector])
         lightBrightness(2,10)
