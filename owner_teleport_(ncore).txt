@@ -51,7 +51,7 @@ if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
     }
 }}
 
-#If you're not on TSCM and running sb_galaxies, the following function will crash the e2
+#If you're not on TSCM this function will crash the e2
 if(clk("jamtest")){
     if(map() == "sb_galaxies_2018_v2"){
         if(isJammed(Tarvec)){
@@ -60,3 +60,7 @@ if(clk("jamtest")){
     }
 }
         
+
+
+
+
