@@ -2,7 +2,7 @@
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,S1,S2,S3,Gate,Rings]:wirelink
 @outputs Factor Active Tractor Lockdown #Alert
 @outputs GateFF BridgeFF TransFF EngFF ##Forcefields
-@outputs BridgeDoor HangarD HangarDoorLeft HangarDoorRight ##Doors
+@outputs BridgeDoor HangarDoor HangarDoorLeft HangarDoorRight ##Doors
 @persist Water:wirelink
 
 #Made by Nova Astral
