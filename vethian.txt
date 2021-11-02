@@ -1,17 +1,18 @@
 @name Vethian AI
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,S1,S2,S3,Gate,Rings]:wirelink
 @outputs Factor Active Tractor Lockdown #Alert
-@outputs HangarFF HangarFFL HangarFFR GateFF BridgeFF TransFF EngFF ##Forcefields
-@outputs BridgeD HangarD HangarDL HangarDR ##Doors
+@outputs GateFF BridgeFF TransFF EngFF ##Forcefields
+@outputs BridgeDoor HangarD HangarDoorLeft HangarDoorRight ##Doors
 @persist Water:wirelink
-
-runOnChat(1)
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
-#I'll update this later with some doc's on command usage
+#This is the docs on command usage
+#https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk/
+
+runOnChat(1)
 
 O = owner()
 OLS = owner():lastSaid():lower():explode(" ")
@@ -36,8 +37,8 @@ if(clk("aprint")){
 #################
 
 
-if(chatClk(O)){ #this doesn't matter, you can literally do '/asfdgophfgm power' and it'll work
-    if(OLS[1,string] == "/v"){ 
+if(chatClk(O)){
+    if(OLS[1,string] == "/v"){
         
         if(OLS[2,string] == "power"){
             if(Energy["Active",number] == 0){
@@ -116,13 +117,14 @@ if(chatClk(O)){ #this doesn't matter, you can literally do '/asfdgophfgm power' 
             else{
                 Water["Activate",number] = 0
                 print("Water Collector Offline.")
-}}
+            }
+}
 
 ####################
 ####Core Systems####
 ####################
 
-if(chatClk(O)){
+if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels better to me
     if(OLS[1,string] == "/v"){
         
         if(OLS[2,string] == "plating"){
@@ -165,7 +167,6 @@ if(chatClk(O)){
     print("Tractor Beam Disabled.")
 }}
 
-    
     if(OLS[2,string] == "sd"){
         Core["Self Destruct",number] = 1
         print("Self Destruct Activated.")
@@ -192,11 +193,10 @@ if(chatClk(O)){
 }}
 
     if(OLS[2,string] == "startup"){
-        print("Activating ship systems. Turning on Plating generation, Life Support, Power, and Refinery.")
+        print("Activating ship systems. Turning on Plating generation, Life Support, and Power.")
         Core["Enable Plating",number] = 1
         LS["Activate",number] = 1
         Energy["Activate",number] = 1
-        Refinery["Activate",number] = 1
 }
 }}
 
@@ -288,12 +288,12 @@ if(chatClk(O)){
     if(OLS[1,string] == "/v"){
         
         if(OLS[2,string] == "ob"){
-            BridgeD = 1
+            BridgeDoor = 1
             print("Bridge Door Open")
 }
 
     if(OLS[2,string] == "cb"){
-        BridgeD = 0
+        BridgeDoor = 0
         print("Bridge Door Closed")
 }
 
@@ -338,59 +338,35 @@ if(chatClk(O)){
 }
 
     if(OLS[2,string] == "ohl"){
-        HangarDL = 1
-        HangarFFL = 1
+        HangarDoorLeft = 1
         print("Left Hangar Opened.")
 }
 
-    if(OLS[2,string] == "chl"){ #Make these use the Opened output on doors (its 0.5 when opening/closing)
-        HangarDL = 0
-        timer("HFFL",5000)
-        print("Left Hangar Closing.")
+    if(OLS[2,string] == "chl"){
+        HangarDoorLeft = 0
+        print("Left Hangar Closed.")
 }
 
     if(OLS[2,string] == "ohr"){
-        HangarDR = 1
-        HangarFFR = 1
+        HangarDoorRight = 1
         print("Right Hangar Opened.")
 }
 
     if(OLS[2,string] == "chr"){
-        HangarDR = 0
-        timer("HFFR",5000)
-        print("Right Hangar Closing.")
+        HangarDoorRight = 0
+        print("Right Hangar Closed.")
 }
 
     if(OLS[2,string] == "oh"){
-        HangarD = 1
-        HangarFF = 1
+        HangarDoor = 1
         print("Hangar Opened")
 }
 
     if(OLS[2,string] == "ch"){
-        HangarD = 0
-        timer("HFF",5000)
-        print("Hangar Closing")
-}
-}}
-
-    if(clk("HFF")){
-        HangarFF = 0
-        stoptimer("HF")
+        HangarDoor = 0
         print("Hangar Closed")
 }
-
-    if(clk("HFFL")){
-        HangarFFL = 0
-        stoptimer("HFFL")
-        print("Left Hangar Closed")
-}
-
-    if(clk("HFFR")){
-        HangarFFR = 0
-        stoptimer("HFFR")
-        print("Right Hangar Closed")
-}
+}}
 
 ############
 ####Misc####
@@ -410,7 +386,12 @@ if(chatClk(O)){
 
     if(OLS[2,string] == "resetai"){
         reset()
-}
+    }
+
+    if(OLS[2,string] == "help"){
+        print("Vethian Help can be found at:")
+        print("https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk")
+    }
 }}
 
 ##################

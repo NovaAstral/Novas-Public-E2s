@@ -1,16 +1,13 @@
 @name Gate Functions
-@inputs Gate:wirelink Asgard:wirelink AsgardTSCM:wirelink TButton
+@inputs Gate:wirelink AsgardTP:wirelink TButton
 @outputs Address:string Name:string Owner:string GateTE:entity
+@persist Dest:vector
 
 interval(500)
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
-
-##SelfNote:
-###Make this use stargateAsgardTeleport() since the TSCM Asgard Transporter has support for it
-###Will let me remove the AsgardTSCM input
 
 GateE = Gate:entity()
 Gateg = stargate(GateE)
@@ -55,9 +52,7 @@ if(clk("update")){
     Name = Gateg:target():name()
     Owner = Gateg:target():entity():owner():name()
     GateTE = Gateg:target():entity()
-    Asgard["Dest",vector] = GateTE:pos()+GateTE:forward()*100
-    AsgardTSCM["Destination",vector] = GateTE:pos()+GateTE:forward()*100
-    AsgardTSCM["Target",entity] = owner()
+    Dest = GateTE:pos()+GateTE:forward()*100
     timer("world",5)
     stoptimer("update")
 }
@@ -78,10 +73,9 @@ if(TButton == 1){
         owner():soundPlay(2,2000,"st/shuttlecraft/computer_deny.wav")
 }
     else{
-        AsgardTSCM["Send",number] = 1
-        Asgard["Send",number] = 1
-        
-}}
+        AsgardTP:stargateAsgardTeleport(owner():pos(),Dest,0)
+    }
+}
 
 
 if(changed(Gate["Received",string]) & Gate["Received",string]:length() > 0){

@@ -4,16 +4,22 @@
 
 interval(100)
 
-if(changed(->GateE)) {
+if(changed(->GateE)){
     Gate = stargate(GateE)
     Iris = Gate:iris():entity():wirelink()
 }
 
-if(changed(Gate:open()) && Gate:open() && !Gate:inbound() && !Disable) {
-    Iris["Activate", number] = 1
-    timer("open", 1000)
+if(changed(Gate:open()) & Gate:open() & !Gate:inbound() & !Disable){
+    if(Iris:entity():model() == "models/zup/stargate/sga_shield.mdl" | Iris:entity():model() == "models/madman07/shields/goauld_iris.mdl"){
+        Iris["Activate",number] = 1
+        timer("open",1000)
+    }
+    else{
+        Iris["Activate",number] = 1
+        timer("open",3800)
+    }
 }
 
-if(clk("open")) {
-    Iris["Activate", number] = 0
+if(clk("open")){
+    Iris["Activate",number] = 0
 }

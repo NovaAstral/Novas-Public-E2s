@@ -2,6 +2,9 @@
 @inputs Vec:vector
 @outputs SafeVec:vector VecCheck:vector
 
+#This attempts to find a location around the targetted vector that is inside the world-
+#=If the targetted vector is outside the world
+
 if(first()){
     holoCreate(1)
 }

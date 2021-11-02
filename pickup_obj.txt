@@ -1,7 +1,7 @@
 @name Pickup
 @inputs In Launch
 @outputs TFlop EntL:entity EntLP:vector
-@persist TFlop
+@persist TFlop CVec
 
 if(first()){
     TFlop = 0
@@ -29,21 +29,21 @@ if(clk("flopcheck")){
 }
 
 if(clk("pickup")){
-    EntL:setPos(owner():pos() + owner():eye() * 100 + vec(0,0,50))
+    EntL:setPos(owner():pos() + owner():eye() * 100 + vec(0,0,CVec))
     EntLP = EntL:pos()
     EntL:setAng(owner():eyeAngles())
     timer("pickup",1)
-    #[
+
     if(owner():isCrouch()){
-        EntL:setPos(owner():pos() + owner():eye() * 100 + vec(-20,0,50))
+        CVec = 18
     }
     else{
-        EntL:setPos(owner():pos() + owner():eye() * 100 + vec(0,0,50))
-    } ]#
+        CVec = 50
+    }
 }
 
 if(clk("drop")){ #I forgot how I did this and I lost the code for it because i was stupid :c
-    EntL:applyForce(owner():vel())
+    EntL:applyAngForce(owner():angVel())
 }
 
 if(changed(Launch) & Launch == 1){

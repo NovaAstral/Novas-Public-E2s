@@ -2,6 +2,9 @@
 @inputs Pad:entity
 @outputs E:entity A
 
+#This attempts to emulate Transporter Code 14 from -
+#- Star Trek The Next Generation: Season 3 Episode 19 "Captains Holiday"
+
 PadW = Pad:wirelink()
 O = owner()
 OLS = owner():lastSaid():lower()
