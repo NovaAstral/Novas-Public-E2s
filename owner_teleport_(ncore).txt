@@ -1,18 +1,29 @@
 @name Owner Teleport (Ncore)
-@persist Tar:entity  Vec:vector
+@persist Tar:entity  Vec:vector Tarvec:vector
+
+#If you're not on TSCM, you need an addon called 'Nexus Core'
+#You can find Nexus Core at https://steamcommunity.com/sharedfiles/filedetails/?id=106681516
 
 runOnChat(1)
 OLS = owner():lastSaid():lower():explode(" ")
 
-
 if(chatClk(owner())){
-    if(OLS[1,string] == "/tpa"){
-        owner():teleport(owner():aimPos())
-        print("Teleported to aimpos")
-        hideChat(1)
+    if(OLS[1,string] == "/tphelp"){
+        print("Teleport Help")
+        print("/tpa - Teleports you to where you're looking")
+        print("/tpp <name> - Teleports you to a player by name")
+        print("/tpv <vec> - Teleports you to coordinates eg: /tpv -9800 -90 -4610")
+    }
+
+if(OLS[1,string] == "/tpa"){ #Teleport to where you're looking
+    hideChat(1)
+    timer("jamtest",1)
+    owner():teleport(owner():aimPos())
+    Tarvec = owner():aimPos()
+    print("Teleported to aimpos")
 }
 
-if(OLS[1,string] == "/tpp"){
+if(OLS[1,string] == "/tpp"){ #Teleport to a player by name
     hideChat(1)
     if(OLS[2,string]:length() < 1){
         print("Cannot teleport to nothing.")
@@ -20,14 +31,14 @@ if(OLS[1,string] == "/tpp"){
     else{
         Tar = findPlayerByName(OLS[2,string])
         owner():teleport(Tar:pos()+vec(0,50,0))
-        timer("teleport",10)
-        
+        #Teleports you to the player with a 50u offset so you're not inside them
+        print("Teleported to: "+ Tar:name())
     }
 }
 
-if(OLS[1,string] == "/tpv"){
+if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
     hideChat(1)
-    if(OLS[2,string]:length() < 5 & OLS[3,string]:length() < 5 & OLS[4,string]:length() < 5){
+    if(OLS[2,string]:length() < 1 & OLS[3,string]:length() < 1 & OLS[4,string]:length() < 1){
         print("Cannot teleport to nowhere.")
     }
     else{
@@ -40,8 +51,12 @@ if(OLS[1,string] == "/tpv"){
     }
 }}
 
-
-if(clk("teleport")){
-    print("Teleported to: "+ Tar:name())
-    
+#If you're not on TSCM and running sb_galaxies, the following function will crash the e2
+if(clk("jamtest")){
+    if(map() == "sb_galaxies_2018_v2"){
+        if(isJammed(Tarvec)){
+            print("Target Jammed, cannot teleport")
+        }
+    }
 }
+        

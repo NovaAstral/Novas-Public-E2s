@@ -1,0 +1,43 @@
+@name Auto Hangar Forcefield
+@inputs [Forcefield,Door]:wirelink
+@persist DoorOpen
+
+#This is meant to be used with doors from Spacebuild
+
+#Link the Forcefield and Door to their respective things and-
+#-the e2 will function automatically when the door opens and closes
+
+if(first()){
+    timer("statecheck",1)
+}
+
+if(changed(Door)){ #This checks the state of the door when you wire it or paste a dupe
+    if(Door["Opened_1",number] == 1){
+        DoorOpen = 1 #open
+    }
+    elseif(Door["Opened_1",number] == 0){
+        DoorOpen = 0 #closed
+    }
+}
+
+
+if(clk("statecheck")){
+    timer("statecheck",500)
+    
+    if(changed(Door["Opened_1",number]) & DoorOpen == 0){ #closed
+        Forcefield["Activate",number] = 1
+        DoorOpen = 1
+    }
+    elseif(changed(Door["Opened_1",number]) & DoorOpen == 1){
+        timer("close",1)
+    }
+}
+
+if(clk("close")){
+    timer("close",500)
+    if(Door["Opened_1",number] == 0){
+        stoptimer("close")
+        Forcefield["Activate",number] = 0
+        DoorOpen = 0
+    }
+}

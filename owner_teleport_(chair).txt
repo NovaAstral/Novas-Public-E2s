@@ -2,19 +2,21 @@
 @outputs Tar:entity
 @persist E:entity Tar:entity Vec:vector
 
+#This e2 will not work on TSCM, use the ncore version
+
 runOnChat(1)
 OLS = owner():lastSaid():lower():explode(" ")
 
 
 if(chatClk(owner())){
-    if(OLS[1,string] == "/tpa"){
+    if(OLS[1,string] == "/tpa"){ #Teleport to where you're aiming
         hideChat(1)
         E = seatSpawn("models/hunter/blocks/cube025x025x025.mdl",owner():aimPos(),ang(0),1)
         timer("seatenter",10)
         print("Teleported to aimpos: "+round(owner():aimPos()):toString())
 }
 
-if(OLS[1,string] == "/tpp"){
+if(OLS[1,string] == "/tpp"){ #Teleport to player by name
     hideChat(1)
     if(OLS[2,string]:length() < 1){
         print("Cannot teleport to nothing.")
@@ -25,7 +27,7 @@ if(OLS[1,string] == "/tpp"){
     }
 }
 
-if(OLS[1,string] == "/tpv"){
+if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
     hideChat(1)
     if(OLS[2,string]:length() < 5 & OLS[3,string]:length() < 5 & OLS[4,string]:length() < 5){
         print("Cannot teleport to nowhere.")
@@ -51,20 +53,17 @@ if(clk("seatspawnplayer")){
     timer("seatenter",10)
 }
 
-if(clk("seatenter")){
-    #print("enter")
-    E:use()
+if(clk("seatenter")){ 
+    E:use() #This works because this function uses as the owner and doesn't care about distance
     timer("kickmepls",10)
 }
 
 if(clk("kickmepls")){
-    #print("kick")
-    E:ejectPod()
+    E:ejectPod() #Kick the player out of the chair
     timer("hidetheevidence",10)
 }
 
 if(clk("hidetheevidence")){
-    #print("hide the evidence")
-    E:propDelete()
+    E:propDelete() #Delete the chair so its not left behind
     stopAllTimers()
 }

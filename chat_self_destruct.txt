@@ -1,0 +1,57 @@
+@name Self Destruct
+@inputs Core:wirelink
+@outputs TimeLeft Active Active30
+@persist Time
+runOnChat(1)
+
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+
+if(chatClk(O)){
+        if(OLS[1,string] == "/sd"){
+            if(OLS[2,string] == "stop"){
+                print("Aborting Self Destruct.")
+                stoptimer("time")
+                TimeLeft = 0
+            }
+            if(OLS[2,string]:length() <= 0){
+                print("No time specified. Activating Destruction.")
+                Core["Self Destruct",number] = 1
+                Active = 1
+            }
+            elseif(OLS[2,string] != "stop"){
+                if(OLS[2,string]:toNumber() == 0){
+                    print("Invalid time.")
+                }
+                else{
+                TimeLeft = OLS[2,string]:toNumber()
+                Active = 1
+                print("Self Destruct activated for <"+ TimeLeft + "> seconds.")
+                timer("time",10)
+            }
+        }
+    }
+}
+
+if(clk("time")){
+    timer("time",1000)
+    TimeLeft--
+    
+    if(TimeLeft == 0){
+        Core["Self Destruct",number] = 1
+        print("Ship Destruct")
+    }
+    
+    if(TimeLeft == 10){
+        print("Self Destruct in 10 seconds.")
+    }
+    
+    if(TimeLeft == 30){
+        print("Self Destruct in 30 seconds.")
+        Active30 = 1
+}
+
+    if(TimeLeft == 60){
+        print("Self Destruct in 60 seconds.")
+    }
+}
