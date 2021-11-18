@@ -1,19 +1,21 @@
 @name Zei'a Ship Status
 @inputs EGP:wirelink Core:wirelink Shield:wirelink Sensor:wirelink LS:wirelink Cloak:wirelink
 @outputs Emergency HullDamaged PlatingDamaged
-@persist Eggmergency
+@persist Eggmergency HP CP SH SES SHS LSS CLS Emergency
 
 interval(200)
 
 if(first() | duped()){
     EGP:egpClear()
     timer("setup",10)
-    timer("fawnt",200)
+    timer("first",1000)
+    #timer("fawnt",200)
 }
+
 
 if(clk("fawnt")){
     EGP:egpFont(31,"poleepkwan") #You won't have this font.
-    EGP:egpFont(32,"poleepkwan")
+    EGP:egpFont(32,"poleepkwan") #You also need to reset the e2 for this to work (might fix later)
     EGP:egpFont(33,"poleepkwan")
     EGP:egpFont(34,"poleepkwan")
     EGP:egpFont(35,"poleepkwan")
@@ -82,8 +84,7 @@ if(changed(Cloak["Subsystem Health",number])){
 }
 
 
-#[ #NONE OF THIS WORKS PROPERLY FOR SOME REASON AAAA
-if(changed(HP & HP <= 30)){
+if(changed(HP) & HP <= 30 & Emergency != 1){
     Emergency = 1
     EGP:egpAlpha(52,255)
     EGP:egpAlpha(53,255)
@@ -91,7 +92,7 @@ if(changed(HP & HP <= 30)){
     EGP:egpAlpha(55,255)
 }
 
-else{
+elseif(changed(HP) & HP >= 30){
     Emergency = 0
     EGP:egpAlpha(52,0)
     EGP:egpAlpha(53,0)
@@ -101,9 +102,9 @@ else{
     stoptimer("eggmergency2")
 }
 
-if(changed(Emergency & Emergency == 1)){
+if(changed(Emergency) & Emergency == 1){
     #print("KEK GEO: KO'PRAN N'EK 30%") #this doesn't work properly for some reason
-    #print("WARNING: HULL UNDER 30%")
+    print("WARNING: HULL UNDER 30%")
     timer("eggmergency",10)
 }
 
@@ -121,20 +122,27 @@ if(clk("eggmergency2")){
     stoptimer("eggmergency2")
 }
 
+#The prints here are commented because these actually trigger every hit, it won't affect the output though
 if(changed(HP)){
     if(HP < 100 & HP > 10){ 
         HullDamaged = 1 
         #print("Warning: Hull Damaged")
+    }
+    else{
+        HullDamaged = 0
+    }
 }
-else{ HullDamaged = 0 
-}}
 
 if(changed(CP)){
     if(CP < 100 & CP > 10){
         PlatingDamaged = 1
         #print("Warning: Plating Damaged")
-}}
-]#
+    }
+    else{
+        PlatingDamaged = 0
+    }
+}
+
 
 if(changed(HP)){
 if(HP >= 90){ for(I = 1,30,1){ EGP:egpColor(I,vec(0,255,255))}}

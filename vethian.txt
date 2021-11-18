@@ -1,6 +1,6 @@
 @name Vethian AI
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,S1,S2,S3,Gate,Rings]:wirelink
-@outputs Factor Active Tractor Lockdown #Alert
+@outputs Active Factor Tractor Lockdown #Alert
 @outputs GateFF BridgeFF TransFF EngFF ##Forcefields
 @outputs BridgeDoor HangarDoor HangarDoorLeft HangarDoorRight ##Doors
 @persist Water:wirelink
@@ -16,7 +16,7 @@ runOnChat(1)
 
 O = owner()
 OLS = owner():lastSaid():lower():explode(" ")
-Shipname = "NX-174203 Vethian"
+Shipname = "Shipname"
 LS["Name",string] = Shipname
 
 if(first() | duped()){
@@ -102,7 +102,6 @@ if(chatClk(O)){
 }
 
  if(OLS[2,string] == "water"){
-    print("clct")
     Water = WCore["Collector",entity]:wirelink()
     timer("collect",100)
 }
@@ -479,4 +478,6 @@ if(clk("ringreset")){
 ###Warp###
 ##########
 
+#This will be added later
+#todo:
 #change warp speed with chat command
