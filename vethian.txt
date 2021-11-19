@@ -1,6 +1,6 @@
 @name Vethian AI
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,S1,S2,S3,Gate,Rings]:wirelink
-@outputs Active Factor Tractor Lockdown #Alert
+@outputs Active WarpFactor Tractor Lockdown #Alert
 @outputs GateFF BridgeFF TransFF EngFF ##Forcefields
 @outputs BridgeDoor HangarDoor HangarDoorLeft HangarDoorRight ##Doors
 @persist Water:wirelink
@@ -21,7 +21,7 @@ LS["Name",string] = Shipname
 
 if(first() | duped()){
     Active = 1
-    Factor = 10
+    WarpFactor = 10
     S1["A",number] = 1
     S2["A",number] = 1
     S3["A",number] = 1
@@ -447,7 +447,8 @@ if(OLS[2,string] == "rdial"){
         Rings["Dial Closest",number] = 1
         print("Dialing closest rings.")
         timer("ringreset",100)
-}}
+    }
+}
 
 if(OLS[3,string]:length() >= 1){
     if(Rings["Usable",number] == 0){
@@ -478,6 +479,20 @@ if(clk("ringreset")){
 ###Warp###
 ##########
 
-#This will be added later
-#todo:
-#change warp speed with chat command
+if(chatClk(O)){
+    if(OLS[1,string] == "/v"){
+        if(OLS[2,string] == "wfactor"){
+            if(OLS[3,string]:toNumber() == 0){
+                print("Invalid number specified. Current Warp Factor is: "+WarpFactor)
+            }
+            elseif(OLS[3,string]:toNumber() >= 11){
+                print("Warp Factor cannot go above 9.975. Setting Warp Factor to max.")
+                WarpFactor = 10
+            }
+            else{
+                print("Warp Factor changed to: "+OLS[3,string]:toNumber())
+                WarpFactor = OLS[3,string]:toNumber()
+            }
+        }
+    }    
+}

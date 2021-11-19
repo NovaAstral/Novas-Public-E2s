@@ -22,7 +22,7 @@ if(changed(Door)){ #This checks the state of the door when you wire it or paste 
 
 
 if(clk("statecheck")){
-    timer("statecheck",500)
+    timer("statecheck",200)
     
     if(changed(Door["Opened_1",number]) & DoorOpen == 0){ #closed
         Forcefield["Activate",number] = 1

@@ -16,7 +16,7 @@ if(first() | duped()){
 if(clk("fawnt")){
     EGP:egpFont(31,"poleepkwan") #You won't have this font.
     EGP:egpFont(32,"poleepkwan") #You also need to reset the e2 for this to work (might fix later)
-    EGP:egpFont(33,"poleepkwan")
+    EGP:egpFont(33,"poleepkwan") #This font also displays badly
     EGP:egpFont(34,"poleepkwan")
     EGP:egpFont(35,"poleepkwan")
     EGP:egpFont(36,"poleepkwan")
@@ -303,11 +303,11 @@ if(clk("setup")){
     EGP:egpCircle(30,vec2(484,293),vec2(15,15))
     EGP:egpColor(30,vec(0,255,255))
     
-    EGP:egpText(31,"Ko'Pran",vec2(115,30)) #Means 'Body'
+    EGP:egpText(31,"Ko'pran",vec2(115,30)) #Means 'Body' (Hull)
     EGP:egpSize(31,25)
     EGP:egpColor(31,vec(255,255,255))
 
-    EGP:egpText(32,"T'ile",vec2(123,105)) #Means 'Exoskeleton' Closest I could find
+    EGP:egpText(32,"T'ile",vec2(123,105)) #Means 'Exoskeleton' (Plating)
     EGP:egpSize(32,30)
     EGP:egpColor(32,vec(255,255,255))
     
@@ -315,7 +315,7 @@ if(clk("setup")){
     EGP:egpSize(33,26)
     EGP:egpColor(33,vec(255,255,255))
     
-    EGP:egpText(34,"El'k A'skao'ih",vec2(358,70)) #Location finder
+    EGP:egpText(34,"El'k A'skao'ih",vec2(358,70)) #Location finder (Sensor Array)
     EGP:egpSize(34,16)
     EGP:egpColor(34,vec(255,255,255))
     
@@ -327,7 +327,7 @@ if(clk("setup")){
     EGP:egpSize(36,15)
     EGP:egpColor(36,vec(255,255,255))
     
-    EGP:egpText(37,"Sul'avel",vec2(358,275)) #Means 'Unknown' or 'Hidden'
+    EGP:egpText(37,"Sul'avel",vec2(358,275)) #Means 'Unknown' or 'Hidden' (Cloak)
     EGP:egpSize(37,25)
     EGP:egpColor(37,vec(255,255,255))
     
@@ -361,12 +361,12 @@ if(clk("setup")){
     EGP:egpColor(53,vec(0,0,0))
     EGP:egpAlpha(53,0)
     
-    EGP:egpText(54,"KEK GEO",vec2(102,280))
+    EGP:egpText(54,"KEK GEO",vec2(102,280)) #(ATTENTION CRITICAL)
     EGP:egpSize(54,48)
     EGP:egpColor(54,vec(255,90,0))
     EGP:egpAlpha(54,0)
     
-    EGP:egpText(55,"KO'PRAN N'EK 30%",vec2(97,335))
+    EGP:egpText(55,"KO'PRAN NEK 30%",vec2(97,335)) #(BODY LESS 30%)
     EGP:egpSize(55,23)
     EGP:egpColor(55,vec(255,90,0))
     EGP:egpAlpha(55,0)
