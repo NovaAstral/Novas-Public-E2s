@@ -1,0 +1,53 @@
+@name EGP multiscreen test
+@inputs EGP:wirelink User:entity
+@outputs CursorPos:vector2 Ops
+@persist Screen
+
+interval(1000)
+
+#CursorPos = EGP:egpCursor(owner())
+#Ops = ops()
+if(first() | duped()){
+    timer("maincreate",100)
+    EGP:egpClear()
+}
+
+
+
+if(clk("maincreate")){
+    stoptimer("maincreate")
+    Screen = 1
+    EGP:egpBox(1,vec2(255,255),vec2(100,100))
+    EGP:egpColor(1,vec(255,255,255))
+}
+
+if(clk("secondcreate")){
+    stoptimer("secondcreate")
+    Screen = 2
+    EGP:egpCircle(2,vec2(255,255),vec2(100,100))
+    EGP:egpColor(2,vec(255,0,255))
+}
+
+if(~User & User){
+    local Cursor = EGP:egpCursor(User)
+    if(!inrange(Cursor,vec2(205,205),vec2(305,305))){ #if outside the button
+        EGP:entity():soundPlay(1,500,"st/shuttlecraft/computer_error.mp3")
+        timer("soundstop",650)
+    }
+        
+    if(inrange(Cursor,vec2(205,205),vec2(305,305)) & Screen == 1){ #screen 1 button
+        EGP:entity():soundPlay(1,400,"st/shuttlecraft/computer_respond.mp3")
+        timer("soundstop",650)
+        timer("secondcreate",10)
+        EGP:egpClear()
+    }
+        elseif(inrange(Cursor,vec2(205,205),vec2(305,305)) & Screen == 2){ #screen2 button
+            EGP:entity():soundPlay(1,600,"st/shuttlecraft/computer_work.mp3")
+            timer("soundstop",650)
+            timer("maincreate",10)
+            EGP:egpClear()
+}}
+
+if(clk("soundstop")){
+    soundPurge()
+}

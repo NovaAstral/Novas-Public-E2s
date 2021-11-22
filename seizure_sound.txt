@@ -1,0 +1,21 @@
+@name Seizure Sound
+
+entity():soundPlay(1,1,"alarm/sgc_offworld-alarm.wav")
+entity():soundPlay(2,1,"alarm/sga_midway_alarm.wav")
+entity():soundPlay(3,1,"st/misc/bweeep.wav")
+entity():soundPlay(4,1,"st/misc/dsc_black_alert_short.wav")
+entity():soundPlay(5,1,"st/misc/tng_redalert.wav")
+
+timer("kek",100)
+timer("owo",1000)
+if(clk("kek")){
+    soundPitch(1,randint(0,255))
+    soundPitch(2,randint(0,255))
+    soundPitch(3,randint(0,255))
+    soundPitch(4,randint(0,255))
+    soundPitch(5,randint(0,255))
+}
+
+if(clk("owo")){
+    reset()
+}

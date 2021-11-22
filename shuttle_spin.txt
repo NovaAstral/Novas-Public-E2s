@@ -1,0 +1,24 @@
+@name Shuttle Spin
+@inputs In In2 E:entity 
+@outputs AVel:angle Vel:vector
+@persist 
+@trigger 
+interval(100)
+if(In == 1){ #Stop movement (usually for when someone bumps, doesn't stop spin)
+    E:setPos(E:pos())
+}
+
+#These will tell you if you're moving, Vel will let you know if you should use In to stop moving in a direction
+AVel = E:angVel()
+Vel = E:vel()
+
+if(changed(In2) && In2 == 1){ #This is a bit fucky, so don't keep spamming it or you will slow down
+    #timer("apply",100)
+    E:applyAngForce(ang(999999,0,0))
+    E:setMass(100)
+}
+#[
+if(clk("apply")){
+    timer("apply",1)
+    E:applyAngForce(ang(50000,0,0))
+}

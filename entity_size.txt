@@ -1,0 +1,3 @@
+#this literally just prints the size of whatever you put it on
+
+print(entity():isWeldedTo():boxSize())

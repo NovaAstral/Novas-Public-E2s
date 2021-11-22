@@ -1,0 +1,27 @@
+@name Jammer Chat Toggle
+@outputs Active
+
+runOnChat(1)
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+
+
+if(chatClk(O)){
+    if(OLS[1,string] == "/jammer"){
+    hideChat(1)
+    timer("hideoff",10)
+    if(OLS[2,string] == "toggle"){
+        if(Active == 0){
+            Active = 1
+            print("Jammer Online")
+        }
+        elseif(Active == 1){
+            Active = 0
+            print("Jammer Offline")
+        }
+    }
+}}
+
+if(clk("hideoff")){
+    hideChat(0)
+}

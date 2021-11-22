@@ -1,0 +1,25 @@
+@name How to make a button in EGP
+@inputs EGP:wirelink User:entity #This is User on the EGP screen entity
+@outputs A
+
+#This is a small tutorial on how to make buttons in EGP
+
+#You can also use the User input to lock it so only a certain person can use it like:
+# if(~User & User & User == owner())
+
+if(~User & User){
+    #This detects when someone presses E on the screen, and doesn't require interval() or a timer
+    
+    local Cursor = EGP:egpCursor(User)
+    #This is where the player is aiming when they press E
+    
+    if(inrange(Cursor,vec2(50,50),vec2(100,100))){
+        #This activates if the player is looking inside this square when they press E
+        
+        A = 1 #this is where you do stuff
+    }
+    
+    else{ #This sets A to 0 if they're not looking inside the square when they press E (optional)
+        A = 0
+    }
+}

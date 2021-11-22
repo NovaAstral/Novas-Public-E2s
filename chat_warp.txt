@@ -1,8 +1,7 @@
-@name Owner Teleport (Ncore)
+@name Chat Warp
 @persist Tar:entity  Vec:vector Tarvec:vector
-
-#If you're not on TSCM, you need an addon called 'Nexus Core'
-#You can find Nexus Core at https://steamcommunity.com/sharedfiles/filedetails/?id=106681516
+ 
+#This is a WIP and right now is exactly the same as 'Owner Teleport (NCore)'
 
 runOnChat(1)
 OLS = owner():lastSaid():lower():explode(" ")
@@ -51,7 +50,7 @@ if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
     }
 }}
 
-#If you're not on TSCM this function will crash the e2 because the isJammed function is normally called stargateIsJammed
+#If you're not on TSCM this function will crash the e2 
 if(clk("jamtest")){
     if(map() == "sb_galaxies_2018_v2"){
         if(isJammed(Tarvec)){
@@ -59,8 +58,3 @@ if(clk("jamtest")){
         }
     }
 }
-        
-
-
-
-

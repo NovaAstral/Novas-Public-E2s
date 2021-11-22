@@ -1,0 +1,44 @@
+@name Pew Barrel
+@inputs Single Boom Undo
+@outputs EntS:entity EntLP:vector
+@persist S B EntB:entity
+
+#Comment the 'Boom' function at the bottom if you don't have propSetVelocity()
+
+if(first()){
+    #propSpawnUndo(0)
+}
+
+if(changed(Undo) & Undo == 1){ #This no work :(
+    propSpawnUndo(1)
+}
+
+if(changed(Single) & Single == 1){
+    EntS = propSpawn("models/props_c17/oildrum001.mdl",owner():pos() + owner():eye() * 100 + vec(0,0,50),0)
+    EntS:setAng(owner():eyeAngles())
+    #EntS:setAlpha(0)
+    EntS:soundPlay(1,400,"pulse_weapon/dexgun_flyby1.mp3")
+    for(S = 1,3){
+        #spriteSpawn(I,"sprites/flare1.vmt")
+
+    }
+    timer("launch",10)
+    timer("remove",1000)
+}
+
+if(clk("launch")){
+    EntS:applyForce(owner():eye() * 9999999)
+    #spriteSetParent(I,EntS)
+}
+if(clk("remove")){
+    EntS:propDelete()
+    soundStop(1)
+}
+
+
+if(changed(Boom) & Boom == 1){ #This spawns barrels above the player and yeets them in random directions
+    for(B = 1,10){
+        EntB = propSpawn("models/props_c17/oildrum001.mdl",owner():pos() + vec(0,0,150), 0)
+        EntB:propSetVelocity(vec(randint(-1000,1000),randint(-1000,1000),randint(0,100))) 
+    }
+}

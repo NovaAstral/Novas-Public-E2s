@@ -1,0 +1,25 @@
+@name Barrel Spawn & Break
+@inputs A
+@outputs 
+@persist Prop:entity Prop2:entity
+
+runOnChat(1)
+
+if(changed(A) && A == 1){
+    Prop = propSpawn("models/props_c17/oildrum001_explosive.mdl",owner():pos(),0)
+    timer("break",1)
+}
+
+if(clk("break")){
+    Prop:propBreak()
+    Prop2:propBreak()
+    stopAllTimers()
+}
+
+if(chatClk(owner())){
+    if(owner():lastSaid():lower() == "allahu akbar"){
+        Prop = propSpawn("models/props_c17/oildrum001_explosive.mdl",owner():pos(),0)
+        Prop2 = propSpawn("models/props_c17/oildrum001_explosive.mdl",owner():pos(),0)
+        #2 prop because 1 isn't enough to kill a fully armored player
+        timer("break",1)
+}}

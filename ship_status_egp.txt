@@ -1,0 +1,57 @@
+@name Ship Status EGP
+@inputs EGP:wirelink 
+@outputs CPos:vector2
+
+#This is unfinished as fuck lol
+
+interval(200)
+
+if(first()){
+    EGP:egpClear()
+    timer("update",100)
+    timer("create",200)
+}
+
+if(clk("update")){
+    CPos = EGP:egpCursor(owner())
+    timer("update",1000)
+}
+
+if(clk("create")){
+    #Control chair base
+
+    EGP:egpPoly(1,vec2(201,351),vec2(146,256),vec2(200,160),vec2(311,160),vec2(366,256),vec2(311,351))
+    EGP:egpPoly(2,vec2(196,359),vec2(186,342),vec2(196,324),vec2(216,324),vec2(226,342),vec2(216,359))
+    EGP:egpPoly(3,vec2(146,272),vec2(136,255),vec2(146,237),vec2(166,237),vec2(176,255),vec2(166,272))
+    EGP:egpPoly(4,vec2(195,186),vec2(185,169),vec2(195,151),vec2(215,151),vec2(225,169),vec2(215,186))
+    EGP:egpPoly(5,vec2(295,186),vec2(285,169),vec2(295,151),vec2(315,151),vec2(325,169),vec2(315,186))
+    EGP:egpPoly(6,vec2(346,273),vec2(336,256),vec2(346,238),vec2(366,238),vec2(376,256),vec2(366,273))
+    EGP:egpPoly(7,vec2(296,359),vec2(286,342),vec2(296,324),vec2(316,324),vec2(326,342),vec2(316,359))
+    for(I=1,7){
+        EGP:egpColor(I,vec(79,40,25))
+    }
+
+    #Zpms
+    EGP:egpCircle(8,vec2(206,342),vec2(10,10))
+    EGP:egpCircle(9,vec2(156,256),vec2(10,10))
+    EGP:egpCircle(10,vec2(205,169),vec2(10,10))
+    EGP:egpCircle(11,vec2(306,169),vec2(10,10))
+    EGP:egpCircle(12,vec2(356,256),vec2(10,10))
+    EGP:egpCircle(13,vec2(306,342),vec2(10,10))
+    
+    for(I=8,13){
+        EGP:egpColor(I,vec(190,140,90)) #fucking colors
+    }
+    
+    #Zpm inside
+    EGP:egpCircle(14,vec2(206,342),vec2(5,5))
+    EGP:egpCircle(15,vec2(156,256),vec2(5,5))
+    EGP:egpCircle(16,vec2(205,169),vec2(5,5))
+    EGP:egpCircle(17,vec2(306,169),vec2(5,5))
+    EGP:egpCircle(18,vec2(356,256),vec2(5,5))
+    EGP:egpCircle(19,vec2(306,342),vec2(5,5))
+
+    for(I=14,19){
+        EGP:egpColor(I,vec(200,20,20))
+    }
+}

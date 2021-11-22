@@ -1,0 +1,38 @@
+@name 2-way dial
+@inputs Input Gate:wirelink
+@persist DHD:entity
+
+#This only works on Atlantis gates
+
+#Place this on a DHD near an atlantis gate,
+#then wire 'Gate' to an atlantis gate that isn't linked to the DHD
+#Then Activate the Input with a Toggle button
+
+Address = "MEOW02#" #Set this to the address of the gate the DHD is linked to
+
+Gate["Dial Mode",number] = 1
+Gate["Dial String",string] = Address
+DHD = entity():isWeldedTo()
+DHDW = DHD:wirelink()
+
+if(Input == 1){
+    Gate["Start String Dial",number] = 1
+    timer("FUCK",1)
+}
+
+if(clk("FUCK")){
+    
+    DHDW["Press Button",number] = 97
+    stoptimer("FUCK")
+}
+
+if(Input == 0){
+    Gate["Start String Dial",number] = 0 
+    Gate["Close",number] = 1
+    DHDW["Press Button",number] = 0
+    timer("FUCK1",100)
+}
+
+if(clk("FUCK1")){
+    Gate["Close",number] = 0
+}

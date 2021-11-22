@@ -1,0 +1,37 @@
+@name I can hear the clicking
+@persist Found
+
+#This was request by Obi
+#If any player is not near the E2, it will make noises
+#If any player gets near the E2, it will stop making noises
+
+if(first()){
+    entity():setAlpha(0)
+    timer("checkpos",1)
+    timer("sound",1)
+}
+
+if(clk("checkpos")){
+    timer("checkpos",200)
+    findInSphere(entity():pos(),200)
+    findClipToClass("player")
+    if(find():isValid()){
+        Found = 1
+    }
+    else{
+        Found = 0
+    }
+}
+
+if(changed(Found) && Found == 1){
+    soundStop(1)
+    stoptimer("sound")
+}
+if(changed(Found) && Found == 0){
+    timer("sound",1)
+}
+
+if(clk("sound")){
+    timer("sound",300)
+    entity():soundPlay(1,0,"button/button_hangar1.wav") # br/ambience/br_crikt_lp_01.wav
+}

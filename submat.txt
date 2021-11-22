@@ -1,0 +1,43 @@
+@name Submat
+@inputs [EnergyCore,AppleCore]:entity RedB BlueB GreenB Damaged
+@outputs Red Blue Green
+@persist 
+@trigger 
+O = owner()
+###Alerts###
+if(RedB == 1){
+    EnergyCore:setSubMaterial(13,"cmats/flash_red")
+    AppleCore:setSubMaterial(5,"cmats/flash_red")
+    #O:soundPlay("Red",10000,"st/voy_redalert.mp3")
+    Red = 1
+    Blue = 0
+    Green = 0
+}
+
+if(BlueB == 1){
+    EnergyCore:setSubMaterial(13,"glow/flash_blue")
+    AppleCore:setSubMaterial(5,"glow/flash_blue")
+    #O:soundPlay("Blue",10000,"st/misc/bluealert.wav")
+    Red = 0
+    Blue = 1
+    Green = 0
+}
+
+if(GreenB == 1){
+    EnergyCore:setSubMaterial(13,"glow/yellow_light")
+    AppleCore:setSubMaterial(5,"glow/yellow_light")
+    Red = 0
+    Blue = 0
+    Green = 1
+    soundPurge()
+}
+
+if(Damaged == 1){
+    O:soundPlay("Damaged",10000,"st/misc/damagealarm.wav")
+    timer("waitalert",1000)
+}
+if(clk("waitalert")){
+    Blue = 1
+    stoptimer("waitalert")
+    soundPurge()
+}

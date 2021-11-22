@@ -1,0 +1,30 @@
+@name Holo Aim
+@persist I
+
+#This will make a holo that follows where you're aiming if you hold right click
+#If you press E while holding rightclick, you will place a holo at the spot you're aiming
+#And the coordinates of that spot will print into chat
+
+if(first()){
+    holoCreate(1)
+    
+    timer("pos/use",1)
+    
+    I = 2
+}
+
+if(clk("pos/use")){
+    timer("pos/use",10)
+    
+    if(owner():keyAttack2()){
+        holoPos(1,owner():aimPos())
+    }
+    
+    if(changed(owner():keyUse()) && owner():keyAttack2()){
+        if(owner():keyUse() == 1){
+            I++
+            holoCreate(I,owner():aimPos())
+            print(round(owner():aimPos()))
+        }
+    }
+}

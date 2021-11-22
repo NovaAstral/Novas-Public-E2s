@@ -1,0 +1,47 @@
+@name Alliance chat cmd test
+@inputs 
+@outputs PSaid:entity
+@persist FAlly:array
+
+#every 10s getFactionAllies() if lastspoke is in getFactionAllies array, keep going
+
+#This e2 doesn't work for various reasons, I might try and make it work someday
+
+runOnChat(1)
+
+if(first() | duped()){
+    O = owner()
+    OLS = owner():lastSaid():lower():explode(" ")
+    ChatTag = "nova"
+    timer("getfacally",1000)
+}
+
+if(clk("getfacally")){
+    timer("getfacally",10000)
+    FAlly = getFactionAllies() #I think this needs to be turned into a table
+}
+
+if(chatClk()){
+    if(lastSpoke() == FAlly){ #this is erroring because FAlly is an array
+        PSaid = Fally:lastSaid():lower():explode(" ")
+}}
+
+if(chatClk()){
+    if(PSaid[1,string] == "/v"){
+        if(PSaid[2,string] == "test"){
+            botSayAlliance("AI","Vethian",vec(150,0,255),"Alliance Chat Test")
+}}}
+
+#[
+
+#I don't know how to make it so the owner doesn't need to use ChatTag...
+#...while making it so the alliance needs the ChatTag without having to do everything twice.
+
+#I also haven't implemented the requirement for ChatTag yet.
+#And the code below is the original chat code, from something that only the owner could use
+
+if(chatClk(O)){   
+    if(OLS[1,string] == "/v"){
+        if(OLS[2,string] == "test"){
+            botSayAlliance("AI","Vethian",vec(150,0,255),"Alliance Chat Test")
+}}}

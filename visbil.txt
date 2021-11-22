@@ -1,0 +1,11 @@
+@name 
+@inputs 
+@outputs 
+@persist 
+@trigger 
+
+#This makes the owner completely visible incase something makes them invisible
+owner():setColor(255,255,255)
+owner():setMaterial("")
+owner():setAlpha(255)
+

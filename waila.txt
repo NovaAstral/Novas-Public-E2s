@@ -1,0 +1,27 @@
+@name WAILA
+
+#This is made based on TSCM's server
+#The name WAILA means "What Am I Looking At" which is also a minecraft mod
+
+OLS = owner():lastSaid():lower()
+
+runOnChat(1)
+
+if(chatClk(owner())){
+    if(OLS == "server what is this"){
+        hideChat(1)
+        print("srcds_linux: That is a")
+        print(owner():aimEntity())
+    }
+    
+    if(OLS == "server what model is this"){
+        hideChat(1)
+        if(owner():aimEntity():model() == ""){
+            print("srcds_linux: What is what? I can't see anything.")
+        }
+        else{
+            print("srcds_linux: That has the model")
+            print(owner():aimEntity():model())
+        }
+    }
+}

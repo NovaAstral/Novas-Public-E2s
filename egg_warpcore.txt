@@ -1,0 +1,57 @@
+@name Egg Warpcore
+@inputs Button [Entbottom, Enttop]:entity #ECore:wirelink
+@outputs 
+
+#Made by Nova Astral
+#Discord: Nova Astral#2079
+#Steam: http://steamcommunity.com/profiles/76561198068127098
+
+#This was made for Eggleston's old BC-303 Warp Core
+
+if(first() | duped()){
+    lightCreate(1,Entbottom:pos()+Entbottom:up()*28)
+    lightCreate(2,Enttop:pos()+Enttop:up()*28)
+    lightColor(1,vec(70,70,70))
+    lightColor(2,vec(70,70,70))
+    lightBrightness(1,2)
+    lightBrightness(2,2)
+    lightParent(1,Entbottom)
+    lightParent(2,Entbottom)
+}
+
+if(changed(Button) && Button == 1){
+    Entbottom:soundPlay(1,0,"st/ambient/eng_pulse01.wav")
+    Entbottom:soundPlay(2,0,"st/borg/ambient_loop.wav")
+    lightColor(1,vec(33,255,0))
+    lightColor(2,vec(30,255,0))
+    lightBrightness(1,5)
+    lightBrightness(2,5)
+    #holoCreate(1,Entbottom:pos()+Entbottom:up()*25)
+}
+
+if(changed(Button) && Button == 0){
+    Entbottom:soundPlay(3,1700,"st/abilities/dampening_field.mp3")
+    soundStop(1)
+    soundStop(2)
+    lightColor(1,vec(70,70,70))
+    lightColor(2,vec(70,70,70))
+    lightBrightness(1,2)
+    lightBrightness(2,2)
+    timer("soundpurge",2000)
+}
+
+#[ Lights get a bit fucky when trying to do this
+if(changed(ECore["Active",number]) && ECore["Active",number] == 0){
+    lightColor(1,vec(0,0,0))
+    lightColor(2,vec(0,0,0))
+}
+
+if(changed(ECore["Active",number]) && ECore["Active",number] == 1){
+    lightColor(1,vec(70,70,70))
+    lightColor(2,vec(70,70,70))
+}
+]#
+
+if(clk("soundpurge")){
+    soundPurge()
+}

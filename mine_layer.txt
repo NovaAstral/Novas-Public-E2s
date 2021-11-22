@@ -1,0 +1,43 @@
+@name Mine Layer
+@inputs Minelayer:entity Vec:vector Active
+@outputs Mine
+
+#This was made for the Mine Layer entity in normal spacebuild
+#It will teleport to a random position within a large area and place a mine, and then keep doing that
+#Until Active is set to 0
+
+if(changed(Active) & Active == 1){
+    timer("rvec",10)
+    print("start")
+}
+
+if(changed(Active) & Active == 0){
+    stopAllTimers()
+    print("stop")
+}
+
+if(clk("rvec")){
+    Minelayer:setPos(Vec+vec(randint(-5000,5000),randint(-5000,5000),randint(-5000,5000)))
+    Mine = 1
+    timer("rvec",1000)
+    timer("unmine",900)
+    timer("pause",6000)
+    print("mine")
+}
+
+if(clk("unmine")){
+    Mine = 0
+}
+
+if(clk("pause")){
+    stoptimer("rvec")
+    timer("unpause",1000)
+    print("pause")
+    Mine = 0
+}
+
+if(clk("unpause")){
+    stoptimer("pause")
+    timer("rvec",10)
+    print("unpause")
+}

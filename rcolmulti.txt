@@ -1,0 +1,32 @@
+@name rcol
+@inputs In [En1, En2, En3, En4, En5, En6, En7, En8, En9, En10, En11, En12, En13, En14, En15, En16, En17, En18, En19, En20]:entity
+@outputs Col:vector Count 
+
+#This makes a smooth rainbow on many entities
+
+interval(10)
+if(In) {
+    Count += 0.5
+    Col = hsv2rgb(Count, 1, 1)
+    if(Count == 360) { Count = 0 }
+    En1:setColor(Col,255)
+    En2:setColor(Col,255)
+    En3:setColor(Col,255)
+    En4:setColor(Col,255)
+    En5:setColor(Col,255)
+    En6:setColor(Col,255)
+    En7:setColor(Col,255)
+    En8:setColor(Col,255)
+    En9:setColor(Col,255)
+    En10:setColor(Col,255)
+    En11:setColor(Col,255)
+    En12:setColor(Col,255)
+    En13:setColor(Col,255)
+    En14:setColor(Col,255)
+    En15:setColor(Col,255)
+    En16:setColor(Col,255)
+    En17:setColor(Col,255)
+    En18:setColor(Col,255)
+    En19:setColor(Col,255)
+    En20:setColor(Col,255)
+}

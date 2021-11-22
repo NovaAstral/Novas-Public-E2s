@@ -1,0 +1,22 @@
+@name Tauri Symbol EGP
+@inputs [EGP,EGP2,EGP3,EGP4]:wirelink
+
+#This could be used for Tauri ships, but SF can make them bigger
+
+if(first()){
+    EGP:egpClear()
+    timer("create",200)
+}
+
+if(clk("create")){
+    EGP:egpText(1,"#",vec2(256,128))
+    EGP:egpFont(1,"Stargate Address Glyphs Concept")
+    EGP:egpSize(1,255)
+    EGP:egpAlign(1,1)
+    EGP:egpSaveFrame("repeat")
+    EGP2:egpLoadFrame("repeat")
+    EGP3:egpLoadFrame("repeat")
+    EGP4:egpLoadFrame("repeat")
+
+}
+

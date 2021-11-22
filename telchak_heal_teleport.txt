@@ -1,0 +1,21 @@
+
+#This will take every telchak you've spawned and constantly move them above your head within healing range
+
+if(first()){
+    findIncludePlayerProps(owner())
+}
+
+interval(1)
+
+    findByClass("telchak")
+    
+    Heals = findToArray()
+    if(Heals:count() > 0){
+        #print("<" +Heals:count()+ "> Healing Devices Found")
+        for(I=1,Heals:count()){
+            Heal = Heals[I,entity]
+            Heal:propFreeze(1)
+            Heal:setPos(owner():pos()+vec(0,0,80))
+            Heal:setAng(ang(0,0,0))
+        }
+    }

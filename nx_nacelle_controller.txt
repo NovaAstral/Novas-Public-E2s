@@ -1,0 +1,231 @@
+@name NX Nacelle Controller
+@inputs [Nacelle1,Nacelle2,N1,N2,N3,N4,N5,N6,N7,N8]:entity #Alert
+@outputs Rain
+@persist RainC:vector
+O = owner()
+OLS = owner():lastSaid():lower()
+runOnChat(1)
+
+#This is an E2 version of the nacelle color controller for Xylithith's NX
+#This is also meant for my version of it which significantly lowers the prop count of the nacelles
+
+if(chatClk(O)){
+    if(OLS == "/noff"){
+    Nacelle1:setColor(0,0,0)
+    Nacelle2:setColor(0,0,0)
+    N1:setColor(0,0,0)
+    N2:setColor(0,0,0)
+    N3:setColor(0,0,0)
+    N4:setColor(0,0,0)
+    N5:setColor(0,0,0)
+    N6:setColor(0,0,0)
+    N7:setColor(0,0,0)
+    N8:setColor(0,0,0)
+    print("Nacelles Offline")
+}
+
+if(OLS == "/nlist"){
+    print("noff, non, nblue, nred, ngreen, norange, npurple, npink")
+}
+
+if(OLS == "/non" | OLS == "/nblue"){
+    Nacelle1:setColor(255,0,0)
+    Nacelle2:setColor(255,0,0)
+    N1:setColor(0,190,255)
+    N2:setColor(0,190,255)
+    N3:setColor(0,190,255)
+    N4:setColor(0,190,255)
+    N5:setColor(0,190,255)
+    N6:setColor(0,190,255)
+    N7:setColor(0,190,255)
+    N8:setColor(0,190,255)
+    print("Nacelles Online/Blue")
+}
+
+if(OLS == "/nred"){
+    N1:setColor(255,0,0)
+    N2:setColor(255,0,0)
+    N3:setColor(255,0,0)
+    N4:setColor(255,0,0)
+    N5:setColor(255,0,0)
+    N6:setColor(255,0,0)
+    N7:setColor(255,0,0)
+    N8:setColor(255,0,0)
+    print("Nacelles Red")
+}
+
+if(OLS == "/ngreen"){
+    N1:setColor(50,255,50)
+    N2:setColor(50,255,50)
+    N3:setColor(50,255,50)
+    N4:setColor(50,255,50)
+    N5:setColor(50,255,50)
+    N6:setColor(50,255,50)
+    N7:setColor(50,255,50)
+    N8:setColor(50,255,50)
+    print("Nacelles Green")
+}
+
+if(OLS == "/norange"){
+    N1:setColor(255,120,0)
+    N2:setColor(255,120,0)
+    N3:setColor(255,120,0)
+    N4:setColor(255,120,0)
+    N5:setColor(255,120,0)
+    N6:setColor(255,120,0)
+    N7:setColor(255,120,0)
+    N8:setColor(255,120,0)
+    print("Nacelles Orange")
+}
+
+if(OLS == "/npurple"){
+    N1:setColor(130,0,200)
+    N2:setColor(130,0,200)
+    N3:setColor(130,0,200)
+    N4:setColor(130,0,200)
+    N5:setColor(130,0,200)
+    N6:setColor(130,0,200)
+    N7:setColor(130,0,200)
+    N8:setColor(130,0,200)
+    print("Nacelles Purple")
+}
+
+if(OLS == "/npink"){
+    N1:setColor(255,95,215)
+    N2:setColor(255,95,215)
+    N3:setColor(255,95,215)
+    N4:setColor(255,95,215)
+    N5:setColor(255,95,215)
+    N6:setColor(255,95,215)
+    N7:setColor(255,95,215)
+    N8:setColor(255,95,215)
+    print("Nacelles Pink")
+}
+
+if(OLS == "/nrain on"){ #This links to the 'rcolnacelle' e2
+    Rain = 1
+}
+
+if(OLS == "/nrain off"){
+    Rain = 0
+}}
+
+#[
+if(Alert == 1){ #I don't remember why these are commented, but they probably work
+    N1:setColor(0,190,255)
+    N2:setColor(0,190,255)
+    N3:setColor(0,190,255)
+    N4:setColor(0,190,255)
+    N5:setColor(0,190,255)
+    N6:setColor(0,190,255)
+    N7:setColor(0,190,255)
+    N8:setColor(0,190,255)
+    
+    N1:setMaterial("cmats/light")
+    N2:setMaterial("cmats/light")
+    N3:setMaterial("cmats/light")
+    N4:setMaterial("cmats/light")
+    N5:setMaterial("cmats/light")
+    N6:setMaterial("cmats/light")
+    N7:setMaterial("cmats/light")
+    N8:setMaterial("cmats/light")
+    
+}
+
+if(Alert == 2){
+    N1:setMaterial("glow/flash_blue")
+    N2:setMaterial("glow/flash_blue")
+    N3:setMaterial("glow/flash_blue")
+    N4:setMaterial("glow/flash_blue")
+    N5:setMaterial("glow/flash_blue")
+    N6:setMaterial("glow/flash_blue")
+    N7:setMaterial("glow/flash_blue")
+    N8:setMaterial("glow/flash_blue")
+    timer("W",100)
+}
+
+if(Alert == 3){
+    N1:setMaterial("cmats/flash_red")
+    N2:setMaterial("cmats/flash_red")
+    N3:setMaterial("cmats/flash_red")
+    N4:setMaterial("cmats/flash_red")
+    N5:setMaterial("cmats/flash_red")
+    N6:setMaterial("cmats/flash_red")
+    N7:setMaterial("cmats/flash_red")
+    N8:setMaterial("cmats/flash_red")
+    timer("W",100)
+}
+
+if(Alert == 4){
+    N1:setMaterial("glow/flash_white")
+    N2:setMaterial("glow/flash_white")
+    N3:setMaterial("glow/flash_white")
+    N4:setMaterial("glow/flash_white")
+    N5:setMaterial("glow/flash_white")
+    N6:setMaterial("glow/flash_white")
+    N7:setMaterial("glow/flash_white")
+    N8:setMaterial("glow/flash_white")
+    timer("W",100)
+}
+
+if(clk("W")){
+    stoptimer("W")
+    N1:setColor(255,255,255)
+    N2:setColor(255,255,255)
+    N3:setColor(255,255,255)
+    N4:setColor(255,255,255)
+    N5:setColor(255,255,255)
+    N6:setColor(255,255,255)
+    N7:setColor(255,255,255)
+    N8:setColor(255,255,255)
+}
+]#
+
+
+#[
+
+    Colors:
+    
+    blue (0,190,255)
+    red (255,0,0)
+    green (50,255,50)
+    orange (255,120,0)
+    purple (130,0,200)
+    black (0,0,0)
+    white (255,255,255)
+    rainbow (RainC)
+    
+    Alert Materials:
+    
+    Alert1 ("cmats/light")
+    Alert2 ("glow/flash_blue")
+    Alert3 ("cmats/flash_red")
+    Alert4 ("glow/flash_white")
+    
+    
+    Everything past this is for easy adding of your own colors/alerts
+
+if(OLS == "/"){ 
+    Nacelle1:setColor()
+    Nacelle2:setColor()
+    N1:setColor()
+    N2:setColor()
+    N3:setColor()
+    N4:setColor()
+    N5:setColor()
+    N6:setColor()
+    N7:setColor()
+    N8:setColor()
+    print("")
+}
+
+if(Alert == 1){
+    N1:setMaterial("")
+    N2:setMaterial("")
+    N3:setMaterial("")
+    N4:setMaterial("")
+    N5:setMaterial("")
+    N6:setMaterial("")
+    N7:setMaterial("")
+    N8:setMaterial("")
+}

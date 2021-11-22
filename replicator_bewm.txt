@@ -1,0 +1,50 @@
+@name Replicator buckets
+@inputs PadE:entity Rep:entity 
+@outputs Ent:entity S Text:string
+@persist 
+O = owner()
+OLS = owner():lastSaid():lower()
+runOnChat(1)
+Pad = PadE:wirelink()
+
+#This links the same as my replicator
+
+
+if(clk("Rep1")){
+    Pad["Target1",entity] = Ent
+    S = 1
+    timer("Rep2",100)
+    #print("Rep1")
+    stoptimer("Rep1")
+}
+if(clk("Rep2")){
+    Pad["Beam to vector",number] = 1
+    stoptimer("Rep1")
+    #print("Rep2")
+    timer("Rep3",100)
+}
+if(clk("Rep3")){
+    Pad["Beam to vector",number] = 0
+    #print("Rep3")
+    #stopAllTimers()
+}
+if(clk("OHGODBUCKETS")){
+    print("NOBUCKETSPLS")
+    stopAllTimers()
+}
+
+if(chatClk(O)){
+if(OLS == "/bucket"){
+    timer("onobuckets",100)
+}}
+
+if(clk("onobuckets")){
+    Ent = propSpawn("models/props_junk/MetalBucket01a.mdl",vec(0,1000,0),0)
+    Pad["TargetLocation",vector] = Rep:pos() + vec(0,0,-30)
+    print("Replicating: bucket")
+    timer("Rep1",100)
+    timer("OHGODBUCKETS",2000)
+    timer("onobuckets",100)
+    Text = "Replicating: b u c k e t s"
+}
+

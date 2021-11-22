@@ -1,0 +1,9 @@
+@name Seizure Light
+lightCreate(1,entity():pos())
+lightColor(1,vec(255,0,255))
+lightParent(1,entity())
+timer("lel",1)
+
+if(clk("lel")){
+    lightColor(1,vec(randint(0,255),randint(0,255),randint(0,255)))
+}

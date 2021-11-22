@@ -1,0 +1,40 @@
+@name e2 finder
+
+#When pasted, this prints Every e2 on the map, with their owner, name, and coordinates
+#You can run the search again with /e2f reset
+
+runOnChat(1)
+
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+
+if(first()){
+    timer("find",1000)
+}
+
+#findExcludePlayerProps(owner())
+
+if(clk("find")){
+    findByClass("gmod_wire_expression2")
+    findExcludeEntity(entity())
+    timer("find",100)
+    E2s = findToArray()
+    if(E2s:count() > 0){
+        stoptimer("find")
+        print("<" +E2s:count()+ "> E2's found.")
+        for(I=1,E2s:count()){
+            E2 = E2s[I,entity]
+            print("E2 Found, Owned by: <" +E2:owner():name()+ "> with name: <" +E2:getName()+ "> at location: " +round(E2:pos()))
+        }
+    }
+}
+
+if(chatClk(O)){
+    if(OLS[1,string] == "/e2f"){
+        hideChat(1)
+        if(OLS[2,string] == "reset"){
+            reset()
+            print("E2 Finder Reset.")
+        }
+    }
+}

@@ -1,0 +1,18 @@
+@name CollideDoor2
+@inputs B [Door,B2]:entity
+@outputs 
+@persist 
+@trigger 
+
+
+if(B == 1){
+    Door:propNotSolid(1)
+    B2:setSkin(1)
+    timer("A",2000)
+    B2:soundPlay(1,100,"door/atlantis_door_chime.wav")
+}
+
+if(clk("A")){
+    Door:propNotSolid(0)
+    B2:setSkin(0)
+}

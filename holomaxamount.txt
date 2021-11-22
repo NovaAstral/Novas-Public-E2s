@@ -1,0 +1,5 @@
+#This prints the max amount of holos you can spawn
+#And how many holos you currently have spawned
+
+print("Max: "+holoMaxAmount())
+print("Amount: "+holoAmount())

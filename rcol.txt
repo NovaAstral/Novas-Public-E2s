@@ -1,0 +1,13 @@
+@name rcol
+@inputs In En:entity
+@outputs Col:vector Count 
+
+#This makes a smooth rainbow
+
+interval(10)
+if(In){
+    Count += 0.5
+    Col = hsv2rgb(Count, 1, 1)
+    En:setColor(Col,255)
+    if(Count == 360) { Count = 0 }
+}

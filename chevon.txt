@@ -1,0 +1,67 @@
+@name chevon
+@inputs In
+@outputs Activate_Chevron_numbers:string
+
+#this activates the chevrons in a circle
+
+if(changed((In == 1))){
+    timer("A",500)
+}
+##1
+if(clk("A")){
+    Activate_Chevron_numbers = "100000000"
+    stoptimer("A")
+    timer("B",100)
+}
+##2
+if(clk("B")){
+    Activate_Chevron_numbers = "110000000"
+    stoptimer("B")
+    timer("C",100)
+}
+##3
+if(clk("C")){
+    Activate_Chevron_numbers = "111000000"
+    stoptimer("C")
+    timer("D",100)
+}
+##8
+if(clk("D")){
+    Activate_Chevron_numbers = "111000010"
+    stoptimer("D")
+    timer("E",100)
+}
+##9
+if(clk("E")){
+    Activate_Chevron_numbers = "111000011"
+    stoptimer("E")
+    timer("F",100)
+}
+##4
+if(clk("F")){
+    Activate_Chevron_numbers = "111100011"
+    stoptimer("F")
+    timer("G",100)
+}
+##5
+if(clk("G")){
+    Activate_Chevron_numbers = "111110011"
+    stoptimer("G")
+    timer("H",100)
+}
+##6
+if(clk("H")){
+    Activate_Chevron_numbers = "111111011"
+    stoptimer("H")
+    timer("I",100)
+}
+##7
+if(clk("I")){
+    Activate_Chevron_numbers = "111111111"
+    stoptimer("I")
+}
+
+if(In == 0){
+    Activate_Chevron_numbers = "000000000"
+    stopAllTimers()
+}

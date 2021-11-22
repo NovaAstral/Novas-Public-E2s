@@ -3,7 +3,7 @@
 @outputs Active WarpFactor Tractor Lockdown #Alert
 @outputs GateFF BridgeFF TransFF EngFF ##Forcefields
 @outputs BridgeDoor HangarDoor HangarDoorLeft HangarDoorRight ##Doors
-@persist Water:wirelink
+@persist WaterCW:wirelink WaterCE:entity
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
@@ -11,6 +11,9 @@
 
 #This is the docs on command usage
 #https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk/
+
+#Todo:
+#Drive Core speed commands
 
 runOnChat(1)
 
@@ -101,23 +104,63 @@ if(chatClk(O)){
         print("Cores Unmuted.")
 }
 
- if(OLS[2,string] == "water"){
-    Water = WCore["Collector",entity]:wirelink()
+if(OLS[2,string] == "water"){
+    WaterCW = WCore["Collector",entity]:wirelink()
+    WaterCE = WCore["Collector",entity]
     timer("collect",100)
+}
+
+if(OLS[2,string] == "wplace"){
+    WCore["Spawn Collector",number] = 1
+    timer("placeclct",100)
+    timer("setclct",10)
 }
 }}
 
  if(clk("collect")){
-    stoptimer("collect")
-        if(Water["Active",number] == 0){
-            Water["Activate",number] = 1
+    if(WaterCE:isValid()){
+        if(WaterCW["Active",number] == 0){
+            WaterCW["Activate",number] = 1
             print("Water Collector Online.")
         }
-            else{
-                Water["Activate",number] = 0
-                print("Water Collector Offline.")
-            }
+        else{
+            WaterCW["Activate",number] = 0
+            print("Water Collector Offline.")
+        }
+    }
 }
+
+if(clk("setclct")){
+    WaterCW = WCore["Collector",entity]:wirelink()
+    WaterCE = WCore["Collector",entity]
+}
+
+if(clk("placeclct")){
+    WaterCE:propFreeze(1)
+    #findIncludeEntity(WCore:entity())
+    findIncludeEntity(owner())
+    
+    if(findInBox(vec(15837,-9,15839),vec(-15836,-15836,32)) == 1){ #pegasus
+        print("Water Collector placed on: Shakuras")
+        WaterCE:setPos(vec(-6818,-7200,6730))
+    }
+    
+    if(findInBox(vec(15839,15835,15834),vec(-15839,35,33)) == 1){ #milkyway
+        print("Water Collector placed on: Earth")
+        WaterCE:setPos(vec(-1260,7982,7942))
+    }
+    
+    if(findInBox(vec(15831,-15835,0),vec(-15837,-2269,-14015)) == 1){ #desert
+        print("Water Collector placed on: Desert")
+        WaterCE:setPos(vec(11350,-9220,-9360))
+    }
+    
+    if(findInBox(vec(-15837,-2269,-14015),vec(15837,15838,0)) == 1){ #hiigara
+        print("Water Collector placed on: Hiigara")
+        WaterCE:setPos(vec(5654,6201,-6194))
+    }
+}
+
 
 ####################
 ####Core Systems####

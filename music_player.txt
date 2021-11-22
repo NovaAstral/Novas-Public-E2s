@@ -1,0 +1,57 @@
+@name Music Player
+@inputs Activate Stop B1 B2 B3 B4 B5 B6 B7 B8 B9
+@outputs Sound:string SoundOut:string
+@persist Sound:string
+
+if(changed(Activate) && Activate == 1){
+    entity():soundPlay(1,100000,Sound)
+}
+
+if(changed(Stop) && Stop == 1){
+    soundStop(1)
+}
+
+if(changed(B1) && B1 == 1){
+    Sound = "zeykaa/nova/Clara's Theme (Piano).ogg"
+    SoundOut = "Clara's Theme"
+}
+
+if(changed(B2) && B2 == 1){
+    Sound = "zeykaa/nova/Dont Forget To Breathe.ogg"
+    SoundOut = "Don't Forget to Breathe"
+}
+
+if(changed(B3) && B3 == 1){
+    Sound = "zeykaa/nova/SG1 Window of Opportunity.ogg"
+    SoundOut = "Window of Opportunity"
+}
+
+if(changed(B4) && B4 == 1){
+    Sound = "zeykaa/nova/Slam the day away.ogg"
+    SoundOut = "There's No Cock like Horsecock"
+}
+
+if(changed(B5) && B5 == 1){
+    Sound = "zeykaa/nova/The Worst Day Since Yesterday.ogg"
+    SoundOut = "The Worst Day Since Yesterday"
+}
+
+if(changed(B6) && B6 == 1){
+    Sound = "zeykaa/nova/cumdisguise.mp3"
+    SoundOut = "Cum Disguise"
+}
+
+if(changed(B7) && B7 == 1){
+    Sound = "zeykaa/nova/faith of the heart.mp3"
+    SoundOut = "Faith of the Heart"
+}
+
+if(changed(B8) && B8 == 1){
+    Sound = "zeykaa/nova/gayben.ogg"
+    SoundOut = "Gayben"
+}
+
+if(changed(B9) && B9 == 1){
+    Sound = "zeykaa/nova/losingroney.ogg"
+    SoundOut = "Losing Rodney"
+}

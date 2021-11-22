@@ -1,0 +1,21 @@
+@name Ent Speen
+@inputs Ent:entity
+@outputs X
+@persist X
+
+#This will set a random angle constantly on whatever you wire Ent to
+
+if(first()){
+    timer("0",50)
+}
+
+if(clk("0")){
+    timer("0",100)
+    
+    X+=1
+    
+    if(X >=360){
+        X=0
+    }
+    Ent:setAng(Ent:toWorld(ang(X*random(360),X*random(360),X*random(360))))
+}

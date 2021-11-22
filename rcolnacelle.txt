@@ -1,0 +1,20 @@
+@name rcol
+@inputs In [En,N1,N2,N3,N4,N5,N6,N7,N8]:entity 
+@outputs RainC:vector Count 
+
+interval(10)
+if(In) {
+    Count += 0.5
+    Col = hsv2rgb(Count, 1, 1)
+    En:setColor(Col,255)
+    if(Count == 360) { Count = 0 }
+    
+    N1:setColor(Col)
+    N2:setColor(Col)
+    N3:setColor(Col)
+    N4:setColor(Col)
+    N5:setColor(Col)
+    N6:setColor(Col)
+    N7:setColor(Col)
+    N8:setColor(Col)
+}
