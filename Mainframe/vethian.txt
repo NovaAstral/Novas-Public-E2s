@@ -378,22 +378,22 @@ if(chatClk(O)){
             print("Gateroom Forcefield Activated")
         }
         
-        if(OLS[2,string] == "of"){
+        if(OLS[2,string] == "ot"){
             TransDoor = 1
             print("Transporter Room Door Open")
         }
 
-        if(OLS[2,string] == "cf"){
+        if(OLS[2,string] == "ct"){
             GateDoor = 0
             print("Transporter Room Door Closed")
         }
 
-        if(OLS[2,string] == "orf"){
+        if(OLS[2,string] == "otf"){
             TransFF = 0
             print("Transporter Room Forcefield Deactivated")
         }
 
-        if(OLS[2,string] == "crf"){
+        if(OLS[2,string] == "ctf"){
             TransFF = 1
             print("Transporter Room Forcefield Activated")
         }
@@ -408,12 +408,12 @@ if(chatClk(O)){
             print("Engineering Door Closed")
         }
     
-        if(OLS[2,string] == "oe"){
+        if(OLS[2,string] == "oef"){
             EngFF = 0
             print("Engineering Forcefield Deactivated")
         }
 
-        if(OLS[2,string] == "ce"){
+        if(OLS[2,string] == "cef"){
             EngFF = 1
             print("Engineering Forcefield Activated")
         }
