@@ -1,6 +1,6 @@
 @name e2 finder
 
-#When pasted, this prints Every e2 on the map, with their owner, name, and coordinates
+#When pasted, this prints Every e2 on the map, with their owner, name, coordinates, and average CPU usage
 #You can run the search again with /e2f reset
 
 runOnChat(1)
@@ -24,7 +24,7 @@ if(clk("find")){
         print("<" +E2s:count()+ "> E2's found.")
         for(I=1,E2s:count()){
             E2 = E2s[I,entity]
-            print("E2 Found, Owned by: <" +E2:owner():name()+ "> with name: <" +E2:getName()+ "> at location: " +round(E2:pos()))
+            print("E2 Found, Owned by: <" +E2:owner():name()+ "> with name: <" +E2:getName()+ "> at location: " +round(E2:pos()) + " With a CPU usage of: <" + round(E2:cpuUsage()*1000000) + ">")
         }
     }
 }

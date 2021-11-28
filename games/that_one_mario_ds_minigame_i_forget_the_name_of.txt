@@ -1,0 +1,108 @@
+@name That one Mario DS minigame I forget the name of
+@inputs EGP:wirelink User:entity
+@outputs OCursor:vector2
+@outputs MainMenu OptionsMenu GameMenu #This is temp for debug
+@persist MainMenu OptionsMenu GameMenu
+
+#[
+#Max Objects is 450 on TSCM
+
+Todo:
+Options (Character amount, Character size, Character color, Character names)
+Put the character colors and names at the top of the main menu
+A button that stops the game and takes you back to the main menu
+Sounds
+Scoring System
+Button that appears when you press start that lets you cancel the game from starting
+
+How to do:
+inRange(CharPos + vec2(10,10) + vec2(-10,-10))
+
+Sounds:
+buttons/bell1.wav - Game Start 0.692s (700)
+buttons/blip1.wav - Game Start Timer Sound 0.109 (110)
+buttons/blip2.wav - Next Level 0.276 (280)
+buttons/button11.wav - Wrong 0.462s (470)
+buttons/button9.wav - Correct 0.274 (280)
+]#
+
+if(clk("cursor")){
+    timer("cursor",100)
+    OCursor = EGP:egpCursor(owner())
+}
+
+if(~EGP & EGP){
+    timer("egpcreate",1)   
+}
+
+if(first()){
+    EGP:egpClear()    
+
+    timer("cursor",1)
+    timer("egpcreate",1)
+    
+    MainMenu = 1
+    OptionsMenu = 0
+    GameMenu = 0
+}
+
+if(clk("egpcreate")){
+    EGP:egpClear()
+    
+    #Start Button
+    EGP:egpCircle(2,vec2(256,256),vec2(50)) #Start outline
+    
+    EGP:egpCircle(3,vec2(256,256),vec2(48)) #This is actually a good way to make thick circles
+    EGP:egpColor(3,vec(0,0,0))
+    
+    EGP:egpText(4,"START",vec2(256,245)) #Start text
+    EGP:egpAlign(4,1)
+
+    #Cursor
+    #This is down here because fuck egp render ordering
+    EGP:egpCircleOutline(1,vec2(0,0),vec2(5))
+    EGP:egpParentToCursor(1)
+}
+
+if(~User & User){
+    local Cursor = EGP:egpCursor(User)
+    
+    if(inrange(Cursor,vec2(200,200),vec2(300,300)) && MainMenu == 1){
+        EGP:egpColor(3,vec(0,255,0))
+        EGP:entity():soundPlay(1,600,"buttons/button6.wav")
+        timer("starttimer",500)
+    }
+}
+
+if(clk("starttimer")){
+    MainMenu = 0
+    EGP:egpText(5,"3",vec2(256,100)) #Timer Text
+    EGP:egpSize(5,100)
+    EGP:egpAlign(5,1)
+    EGP:entity():soundPlay(2,110,"buttons/blip1.wav")
+    timer("timer2",1000)
+}
+
+if(clk("timer2")){
+    EGP:egpSetText(5,"2")
+    EGP:entity():soundPlay(3,110,"buttons/blip1.wav")
+    timer("timer1",1000)
+}
+
+if(clk("timer1")){
+    EGP:egpSetText(5,"1")
+    EGP:entity():soundPlay(4,110,"buttons/blip1.wav")
+    timer("startgame",1000)
+}
+
+if(clk("startgame")){
+    EGP:entity():soundPlay(5,700,"buttons/bell1.wav")
+    
+    MainMenu = 0
+    GameMenu = 1
+    
+    for(I = 2,5){
+        EGP:egpRemove(I)
+    }
+}
+

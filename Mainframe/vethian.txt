@@ -1,8 +1,8 @@
 @name Vethian AI
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,S1,S2,S3,Gate,Rings]:wirelink
-@outputs Active WarpFactor Tractor Lockdown #Alert
+@outputs Active WarpFactor Tractor Lockdown ##Alert
 @outputs GateFF BridgeFF TransFF EngFF ##Forcefields
-@outputs BridgeDoor HangarDoor HangarDoorLeft HangarDoorRight ##Doors
+@outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters ##Doors
 @persist WaterCW:wirelink WaterCE:entity
 
 #Made by Nova Astral
@@ -14,6 +14,7 @@
 
 #Todo:
 #Drive Core speed commands
+#E:addCoreTarget("string")
 
 runOnChat(1)
 
@@ -22,13 +23,13 @@ OLS = owner():lastSaid():lower():explode(" ")
 Shipname = "Shipname"
 LS["Name",string] = Shipname
 
-if(first() | duped()){
+if(first() | dupefinished()){
     Active = 1
     WarpFactor = 10
     S1["A",number] = 1
     S2["A",number] = 1
     S3["A",number] = 1
-    timer("aprint",1000)
+    timer("aprint",1000) #Disable this if you don't want the AI to print to faction on start
 }
 
 if(clk("aprint")){
@@ -42,82 +43,86 @@ if(clk("aprint")){
 
 if(chatClk(O)){
     if(OLS[1,string] == "/v"){
-        
         if(OLS[2,string] == "power"){
             if(Energy["Active",number] == 0){
                 Energy["Activate",number] = 1
                 print("Energy Generation Online.")
-                }
-                else{
-                    Energy["Activate",number] = 0
-                    print("Energy Generation Offline. W-why would you turn the power off?")
-}}
-
-    if(OLS[2,string] == "refine"){
-        if(Refinery["Active",number] == 0){
-            Refinery["Activate",number] = 1
-            print("Refinery Online.")
+            }
+            else{
+                Energy["Activate",number] = 0
+                print("Energy Generation Offline. W-why would you turn the power off?")
+            }
         }
+            
+        if(OLS[2,string] == "refine"){
+            if(Refinery["Active",number] == 0){
+                Refinery["Activate",number] = 1
+                print("Refinery Online.")
+            }
             else{
                 Refinery["Activate",number] = 0
                 print("Refinery Offline.")
-}}
-
-    if(OLS[2,string] == "ls"){
-        if(LS["Active",number] == 0){
-            LS["Activate",number] = 1
-            print("Life Support Online.")
+            }
         }
+
+        if(OLS[2,string] == "ls"){
+            if(LS["Active",number] == 0){
+                LS["Activate",number] = 1
+                print("Life Support Online.")
+            }
             else{
                 LS["Activate",number] = 0
                 print("Life Support Offline.")
-}}
+            }
+        }
 
-    if(OLS[2,string] == "noclip"){
-        if(OLS[3,string] == "on"){
-        LS["Disable Noclip",number] = 0
-        print("Anti-Noclip Disabled.")
-    }
-    if(OLS[3,string] == "off"){
-        LS["Disable Noclip",number] = 1
-        print("Anti-Noclip Enabled.")
-    }
-    if(OLS[3,string] == "foff"){
-        LS["Disable Noclip",number] = 2
-        print("Faction only noclip Enabled.")
-    }
-    if(OLS[3,string] == "aoff"){
-        LS["Disable Noclip",number] = 3
-        print("Alliance only noclip Enabled.")
-}}
+        if(OLS[2,string] == "noclip"){
+            if(OLS[3,string] == "on"){
+                LS["Disable Noclip",number] = 0
+                print("Anti-Noclip Disabled.")
+            }
+            if(OLS[3,string] == "off"){
+                LS["Disable Noclip",number] = 1
+                print("Anti-Noclip Enabled.")
+            }
+            if(OLS[3,string] == "foff"){
+                LS["Disable Noclip",number] = 2
+                print("Faction only noclip Enabled.")
+            }
+            if(OLS[3,string] == "aoff"){
+                LS["Disable Noclip",number] = 3
+                print("Alliance only noclip Enabled.")
+            }
+        }
     
-    if(OLS[2,string] == "mute"){
-        LS["Mute",number] = 1
-        Energy["Mute",number] = 1
-        Refinery["Mute",number] = 1
-        print("Cores Muted.")
+        if(OLS[2,string] == "mute"){
+            LS["Mute",number] = 1
+            Energy["Mute",number] = 1
+            Refinery["Mute",number] = 1
+            print("Cores Muted.")
+        }
+        if(OLS[2,string] == "unmute"){
+            LS["Mute",number] = 0
+            Energy["Mute",number] = 0
+            Refinery["Mute",number] = 0
+            print("Cores Unmuted.")
+        }
+
+        if(OLS[2,string] == "water"){
+            WaterCW = WCore["Collector",entity]:wirelink()
+            WaterCE = WCore["Collector",entity]
+            timer("collect",100)
+        }
+
+        if(OLS[2,string] == "wplace"){
+            WCore["Spawn Collector",number] = 1
+            timer("placeclct",100)
+            timer("setclct",10)
+        }
     }
-    if(OLS[2,string] == "unmute"){
-        LS["Mute",number] = 0
-        Energy["Mute",number] = 0
-        Refinery["Mute",number] = 0
-        print("Cores Unmuted.")
 }
 
-if(OLS[2,string] == "water"){
-    WaterCW = WCore["Collector",entity]:wirelink()
-    WaterCE = WCore["Collector",entity]
-    timer("collect",100)
-}
-
-if(OLS[2,string] == "wplace"){
-    WCore["Spawn Collector",number] = 1
-    timer("placeclct",100)
-    timer("setclct",10)
-}
-}}
-
- if(clk("collect")){
+if(clk("collect")){
     if(WaterCE:isValid()){
         if(WaterCW["Active",number] == 0){
             WaterCW["Activate",number] = 1
@@ -137,8 +142,7 @@ if(clk("setclct")){
 
 if(clk("placeclct")){
     WaterCE:propFreeze(1)
-    #findIncludeEntity(WCore:entity())
-    findIncludeEntity(owner())
+    findIncludeEntity(WCore:entity())
     
     if(findInBox(vec(15837,-9,15839),vec(-15836,-15836,32)) == 1){ #pegasus
         print("Water Collector placed on: Shakuras")
@@ -168,7 +172,6 @@ if(clk("placeclct")){
 
 if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels better to me
     if(OLS[1,string] == "/v"){
-        
         if(OLS[2,string] == "plating"){
             if(Core["Plating Enabled",number] == 0){
                 Core["Enable Plating",number] = 1
@@ -177,70 +180,74 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
                 else{
                     Core["Enable Plating",number] = 0
                     print("Plating Generation Disabled.")
-}}
+                }
+            }
+            if(OLS[2,string] == "emitters"){
+                if(Core["Emitters Enabled",number] == 0){
+                    Core["Enable Emitters",number] = 1
+                    print("Pulsar Emitters Online.")
+                }
+                else{
+                    Core["Enable Emitters",number] = 0
+                    print("Pulsar Emitters Offline.")
+                }
+            }
 
-  if(OLS[2,string] == "emitters"){
-        if(Core["Emitters Enabled",number] == 0){
-        Core["Enable Emitters",number] = 1
-        print("Pulsar Emitters Online.")
-    }
-    else{
-        Core["Enable Emitters",number] = 0
-        print("Pulsar Emitters Offline.")
-}}
+            if(OLS[2,string] == "repair"){
+                if(OLS[3,string] == "on"){
+                    Core["Fire Repair Beam",number] = 1
+                    print("Firing Repair Beam.")
+                }
+                if(OLS[3,string] == "off"){
+                    Core["Fire Repair Beam",number] = 0
+                    print("Repair Beam Disabled.")
+                }
+            }
 
-  if(OLS[2,string] == "repair"){
-    if(OLS[3,string] == "on"){
-    Core["Fire Repair Beam",number] = 1
-    print("Firing Repair Beam.")
-}
-  if(OLS[3,string] == "off"){
-    Core["Fire Repair Beam",number] = 0
-    print("Repair Beam Disabled.")
-}}
-
-  if(OLS[2,string] == "tr"){
-    if(OLS[3,string] == "on"){
-    Tractor = 1
-    print("Tractor Beam Enabled.")
-}
-  if(OLS[3,string] == "off"){
-    Tractor = 0
-    print("Tractor Beam Disabled.")
-}}
-
-    if(OLS[2,string] == "sd"){
-        Core["Self Destruct",number] = 1
-        print("Self Destruct Activated.")
-    }
-    
-    if(OLS[2,string] == "shield"){
-        if(Shield["Active",number] == 0){
-            Shield["Activate",number] = 1
-            print("Shield Activated.")
+            if(OLS[2,string] == "tr"){
+                if(OLS[3,string] == "on"){
+                    Tractor = 1
+                    print("Tractor Beam Enabled.")
+                }
+                if(OLS[3,string] == "off"){
+                    Tractor = 0
+                    print("Tractor Beam Disabled.")
+                }
+            }
+            
+            if(OLS[2,string] == "sd"){
+                Core["Self Destruct",number] = 1
+                print("Self Destruct Activated.")
+            }
+            if(OLS[2,string] == "shield"){
+                if(Shield["Active",number] == 0){
+                    Shield["Activate",number] = 1
+                    print("Shield Activated.")
+                }
+                else{
+                    Shield["Activate",number] = 0
+                    print("Shield Deactivated.")
+                }
+            }
+            if(OLS[2,string] == "cloak"){
+                if(Cloak["Active",number] == 0){
+                Cloak["Activate",number] = 1
+                print("Cloak Activated.")
+            }
+            else{
+                Cloak["Activate",number] = 0
+                print("Cloak Deactivated.")
+            }
         }
-        else{
-            Shield["Activate",number] = 0
-            print("Shield Deactivated.")
-}}
 
-    if(OLS[2,string] == "cloak"){
-        if(Cloak["Active",number] == 0){
-            Cloak["Activate",number] = 1
-            print("Cloak Activated.")
+        if(OLS[2,string] == "startup"){
+            print("Activating ship systems. Turning on Plating generation, Life Support, and Power.")
+            Core["Enable Plating",number] = 1
+            LS["Activate",number] = 1
+            Energy["Activate",number] = 1
         }
-        else{
-            Cloak["Activate",number] = 0
-            print("Cloak Deactivated.")
-}}
-
-    if(OLS[2,string] == "startup"){
-        print("Activating ship systems. Turning on Plating generation, Life Support, and Power.")
-        Core["Enable Plating",number] = 1
-        LS["Activate",number] = 1
-        Energy["Activate",number] = 1
+    }
 }
-}}
 
 ##############  
 ####Alarms####
@@ -256,73 +263,75 @@ if(chatClk(O)){
             Gate["Event Horizon Color",vector] = vec(0,0,0)
             #Alert = 1
             print("Condition Green. Stand Down.")
+        }
+
+        if(OLS[2,string] == "blue"){
+            S1["SampleName",string] = "st/misc/bluealert.wav"
+            S2["SampleName",string] = "st/misc/bluealert.wav"
+            S3["SampleName",string] = "st/misc/bluealert.wav"
+            Gate["Event Horizon Color",vector] = vec(0,0,255)
+            #Alert = 2
+            print("Condition Blue. Prepare for Battle.")
+        }
+
+        if(OLS[2,string] == "red"){
+            S1["SampleName",string] = "st/misc/voy_redalert_loop.wav"
+            S2["SampleName",string] = "st/misc/voy_redalert_loop.wav"
+            S3["SampleName",string] = "st/misc/voy_redalert_loop.wav"
+            Gate["Event Horizon Color",vector] = vec(255,0,0)
+            #Alert = 3
+            print("Condition Red. Battle Stations.")
+        }
+
+        if(OLS[2,string] == "black"){
+            S1["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
+            S2["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
+            S3["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
+            Gate["Event Horizon Color",vector] = vec(50,50,50)
+            #Alert = 4
+            print("Condition Black. Shipwide Experiment.")
+        }
+
+        if(OLS[2,string] == "abandon"){
+            S1["SampleName",string] = "st/misc/abandon_ship.wav"
+            S2["SampleName",string] = "st/misc/abandon_ship.wav"
+            S3["SampleName",string] = "st/misc/abandon_ship.wav"
+            Gate["Event Horizon Color",vector] = vec(200,0,0)
+            #Alert = 3
+            print("Abandon Ship.")
+        }
+
+        if(OLS[2,string] == "ldon"){
+            S1["SampleName",string] = "st/misc/rom_redalert.wav"
+            S2["SampleName",string] = "st/misc/rom_redalert.wav"
+            S3["SampleName",string] = "st/misc/rom_redalert.wav"
+            BridgeFF = 1
+            GateFF = 1
+            TransFF = 1
+            EngFF = 1
+            Lockdown = 1
+            Rings["UnUsable",number] = 1
+            Shield["Activate",number] = 1
+            LS["Disable Noclip",number] = 1
+            print("Ship Lockdown Activated")
+        }
+
+        if(OLS[2,string] == "ldoff"){
+            S1["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
+            S2["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
+            S3["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
+            BridgeFF = 0
+            GateFF = 0
+            TransFF = 0
+            EngFF = 0
+            Lockdown = 0
+            Rings["UnUsable",number] = 0
+            LS["Disable Noclip",number] = 0
+            print("Ship Lockdown Activated")
+        }
+    }
 }
 
-    if(OLS[2,string] == "blue"){
-        S1["SampleName",string] = "st/misc/bluealert.wav"
-        S2["SampleName",string] = "st/misc/bluealert.wav"
-        S3["SampleName",string] = "st/misc/bluealert.wav"
-        Gate["Event Horizon Color",vector] = vec(0,0,255)
-        #Alert = 2
-    print("Condition Blue. Prepare for Battle.")
-}
-
-    if(OLS[2,string] == "red"){
-        S1["SampleName",string] = "st/misc/voy_redalert_loop.wav"
-        S2["SampleName",string] = "st/misc/voy_redalert_loop.wav"
-        S3["SampleName",string] = "st/misc/voy_redalert_loop.wav"
-        Gate["Event Horizon Color",vector] = vec(255,0,0)
-        #Alert = 3
-    print("Condition Red. Battle Stations.")
-}
-
-    if(OLS[2,string] == "black"){
-        S1["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
-        S2["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
-        S3["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
-        Gate["Event Horizon Color",vector] = vec(50,50,50)
-        #Alert = 4
-    print("Condition Black. Shipwide Experiment.")
-}
-
-    if(OLS[2,string] == "abandon"){
-        S1["SampleName",string] = "st/misc/abandon_ship.wav"
-        S2["SampleName",string] = "st/misc/abandon_ship.wav"
-        S3["SampleName",string] = "st/misc/abandon_ship.wav"
-        Gate["Event Horizon Color",vector] = vec(200,0,0)
-        #Alert = 3
-    print("Abandon Ship.")
-}
-
-    if(OLS[2,string] == "ldon"){
-        S1["SampleName",string] = "st/misc/rom_redalert.wav"
-        S2["SampleName",string] = "st/misc/rom_redalert.wav"
-        S3["SampleName",string] = "st/misc/rom_redalert.wav"
-        BridgeFF = 1
-        GateFF = 1
-        TransFF = 1
-        EngFF = 1
-        Lockdown = 1
-        Rings["UnUsable",number] = 1
-        Shield["Activate",number] = 1
-        LS["Disable Noclip",number] = 1
-    print("Ship Lockdown Activated")
-}
-
-    if(OLS[2,string] == "ldoff"){
-        S1["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-        S2["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-        S3["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-        BridgeFF = 0
-        GateFF = 0
-        TransFF = 0
-        EngFF = 0
-        Lockdown = 0
-        Rings["UnUsable",number] = 0
-        LS["Disable Noclip",number] = 0
-    print("Ship Lockdown Activated")
-}
-}}
 #########################
 ####Doors/Forcefields####
 #########################
@@ -332,83 +341,124 @@ if(chatClk(O)){
         if(OLS[2,string] == "ob"){
             BridgeDoor = 1
             print("Bridge Door Open")
-}
+        }
 
-    if(OLS[2,string] == "cb"){
-        BridgeDoor = 0
-        print("Bridge Door Closed")
-}
+        if(OLS[2,string] == "cb"){
+            BridgeDoor = 0
+            print("Bridge Door Closed")
+        }
 
-    if(OLS[2,string] == "obf"){
-        BridgeFF = 0
-        print("Bridge Forcefield Deactivated")
-}
+        if(OLS[2,string] == "obf"){
+            BridgeFF = 0
+            print("Bridge Forcefield Deactivated")
+        }
 
-    if(OLS[2,string] == "cbf"){
-        BridgeFF = 1
-        print("Bridge Forcefield Activated")
-}
+        if(OLS[2,string] == "cbf"){
+            BridgeFF = 1
+            print("Bridge Forcefield Activated")
+        }
+        
+        if(OLS[2,string] == "og"){
+            GateDoor = 1
+            print("Gateroom Door Open")
+        }
 
-    if(OLS[2,string] == "og"){
-        GateFF = 0
-        print("Gateroom Forcefield Deactivated")
-}
+        if(OLS[2,string] == "cg"){
+            GateDoor = 0
+            print("Gateroom Door Closed")
+        }
 
-    if(OLS[2,string] == "cg"){
-        GateFF = 1
-        print("Gateroom Forcefield Activated")
-}
+        if(OLS[2,string] == "ogf"){
+            GateFF = 0
+            print("Gateroom Forcefield Deactivated")
+        }
 
-    if(OLS[2,string] == "or"){
-        TransFF = 0
-        print("Ringroom Forcefield Deactivated")
-}
+        if(OLS[2,string] == "cgf"){
+            GateFF = 1
+            print("Gateroom Forcefield Activated")
+        }
+        
+        if(OLS[2,string] == "of"){
+            TransDoor = 1
+            print("Transporter Room Door Open")
+        }
 
-    if(OLS[2,string] == "cr"){
-        TransFF = 1
-        print("Ringroom Forcefield Activated")
-}
+        if(OLS[2,string] == "cf"){
+            GateDoor = 0
+            print("Transporter Room Door Closed")
+        }
 
-    if(OLS[2,string] == "oe"){
-        EngFF = 0
-        print("Engineering Forcefield Deactivated")
-}
+        if(OLS[2,string] == "orf"){
+            TransFF = 0
+            print("Transporter Room Forcefield Deactivated")
+        }
 
-    if(OLS[2,string] == "ce"){
-        EngFF = 1
-        print("Engineering Forcefield Activated")
-}
+        if(OLS[2,string] == "crf"){
+            TransFF = 1
+            print("Transporter Room Forcefield Activated")
+        }
+        
+        if(OLS[2,string] == "oe"){
+            EngDoor = 1
+            print("Engineering Door Open")
+        }
 
-    if(OLS[2,string] == "ohl"){
-        HangarDoorLeft = 1
-        print("Left Hangar Opened.")
-}
+        if(OLS[2,string] == "ce"){
+            EngDoor = 0
+            print("Engineering Door Closed")
+        }
+    
+        if(OLS[2,string] == "oe"){
+            EngFF = 0
+            print("Engineering Forcefield Deactivated")
+        }
 
-    if(OLS[2,string] == "chl"){
-        HangarDoorLeft = 0
-        print("Left Hangar Closed.")
-}
+        if(OLS[2,string] == "ce"){
+            EngFF = 1
+            print("Engineering Forcefield Activated")
+        }
 
-    if(OLS[2,string] == "ohr"){
-        HangarDoorRight = 1
-        print("Right Hangar Opened.")
-}
+        if(OLS[2,string] == "ohl"){
+            HangarDoorLeft = 1
+            print("Left Hangar Opened.")
+        }
 
-    if(OLS[2,string] == "chr"){
-        HangarDoorRight = 0
+        if(OLS[2,string] == "chl"){
+            HangarDoorLeft = 0
+            print("Left Hangar Closed.")
+        }
+        
+        if(OLS[2,string] == "ohr"){
+            HangarDoorRight = 1
+            print("Right Hangar Opened.")
+        }
+
+        if(OLS[2,string] == "chr"){
+            HangarDoorRight = 0
         print("Right Hangar Closed.")
-}
+        }
 
-    if(OLS[2,string] == "oh"){
-        HangarDoor = 1
-        print("Hangar Opened")
-}
+        if(OLS[2,string] == "oh"){
+            HangarDoor = 1
+            print("Hangar Opened")
+        }
 
-    if(OLS[2,string] == "ch"){
-        HangarDoor = 0
-        print("Hangar Closed")
+        if(OLS[2,string] == "ch"){
+            HangarDoor = 0
+            print("Hangar Closed")
+        }
+        
+        if(OLS[2,string] == "os"){
+            Shutters = 1
+            print("Shutters Open")
+        }
+
+        if(OLS[2,string] == "cs"){
+            Shutters = 0
+            print("Shutters Closed")
+        }
+    }
 }
-}}
 
 ############
 ####Misc####
@@ -424,46 +474,61 @@ if(chatClk(O)){
     if(OLS[2,string] == "sloc"){
         Env = Core:getEnvironmentData()
         print("The ship is located at: " +Env)
+    }
 ]#
 
-    if(OLS[2,string] == "resetai"){
-        reset()
-    }
+        if(OLS[2,string] == "reset"){
+            reset()
+        }
 
-    if(OLS[2,string] == "help"){
-        print("Vethian Help can be found at:")
-        print("https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk")
+        if(OLS[2,string] == "help"){
+            print("Vethian Help can be found at:")
+            print("https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk")
+        }
     }
-}}
+}
 
 ##################
 ####Gate/Rings####
 ##################
 if(chatClk(O)){
     if(OLS[1,string] == "/v"){
-
-    if(OLS[2,string] == "closeg"){
-        Gate:stargateClose()
-        print("Closing Gate.")
-}
-
-    if(OLS[2,string] == "dial"){
-        if(OLS[4,string]:length() > 7 && Gate:stargateLocal() == 1){
-            print("Cannot dial outside of local group.")
+        
+        if(OLS[2,string] == "closeg"){
+            Gate:stargateClose()
+            print("Closing Gate.")
+        }
+        if(OLS[2,string] == "dial"){
+            if(OLS[4,string]:length() > 7 && Gate:stargateLocal() == 1){
+                print("Cannot dial outside of local group.")
             }
             else{
                 Gate["Dial Mode",number] = OLS[3,string]:toNumber()
                 Gate["Dial String",string] = OLS[4,string]
-    
-    if(OLS[3,string]:length() > 1){
-        print("Dial Mode cannot be a string")
-        timer("dialreset",100)
+                
+                if(OLS[3,string]:length() > 1){
+                    print("Dial Mode cannot be a string")
+                    timer("dialreset",100)
+                }
+                else{
+                    print("Dialing the gate to: "+OLS[4,string])
+                    timer("gdial",100)
+                }
+            }
         }
-        else{
-            print("Dialing the gate to: "+OLS[4,string])
-            timer("gdial",100)
-}}}
-}}
+        
+        #[ This Quotas the AI because of how it works (and it works very wrong), will maybe fix later
+        if(OLS[2,string] == "gsend"){
+            for(I = 3,256){
+                Gate:stargateTransmit(OLS[I,string])
+                print("Message sent through gate:")
+                print(OLS[I,string])
+            }
+        }
+        ]#
+    }
+}
+
 
 if(clk("gdial")){
     Gate["Start String Dial",number] = 1
@@ -481,37 +546,41 @@ if(clk("dialreset")){
 if(chatClk(O)){
     if(OLS[1,string] == "/v"){
         
-if(OLS[2,string] == "rdial"){
-    if(OLS[3,string]:length() == 0){
-        if(Rings["Usable",number] == 0){
-            print("Rings Disabled, Cannot dial.")
+        if(OLS[2,string] == "rdial"){
+            if(OLS[3,string]:length() == 0){
+                if(Rings["Usable",number] == 0){
+                    print("Rings Disabled, Cannot dial.")
+                }
+                else{
+                    Rings["Dial Closest",number] = 1
+                    print("Dialing closest rings.")
+                    timer("ringreset",100)
+                }
+            }
+        
+            if(OLS[3,string]:length() >= 1){
+                if(Rings["Usable",number] == 0){
+                    print("Rings Disabled, Cannot dial.")
+                }
+                else{
+                    Rings["Dial Address",string] = OLS[3,string]
+                    print("Dialing Rings to: "+ OLS[3,string])
+                    timer("ringreset",100)
+                }
+            
+                if(OLS[2,string] == "roff"){
+                    Rings["UnUsable",number] = 1
+                    print("Rings Disabled")
+                }
+            
+                if(OLS[2,string] == "ron"){
+                    Rings["UnUsable",number] = 0
+                    print("Rings Enabled")
+                }
+            }
         }
-        else{
-        Rings["Dial Closest",number] = 1
-        print("Dialing closest rings.")
-        timer("ringreset",100)
     }
 }
-
-if(OLS[3,string]:length() >= 1){
-    if(Rings["Usable",number] == 0){
-        print("Rings Disabled, Cannot dial.")
-    }
-    else{
-    Rings["Dial Address",string] = OLS[3,string]
-    print("Dialing Rings to: "+ OLS[3,string])
-    timer("ringreset",100)
-    
-    if(OLS[2,string] == "roff"){
-    Rings["UnUsable",number] = 1
-    print("Rings Disabled")
-}
-
-if(OLS[2,string] == "ron"){
-    Rings["UnUsable",number] = 0
-    print("Rings Enabled")
-}}}}
-}}
 
 if(clk("ringreset")){
     Rings["Dial Address",string] = ""
@@ -524,8 +593,8 @@ if(clk("ringreset")){
 
 if(chatClk(O)){
     if(OLS[1,string] == "/v"){
-        if(OLS[2,string] == "wfactor"){
-            if(OLS[3,string]:toNumber() == 0){
+        if(OLS[2,string] == "wspeed"){
+            if(OLS[3,string]:toNumber() <= 0){
                 print("Invalid number specified. Current Warp Factor is: "+WarpFactor)
             }
             elseif(OLS[3,string]:toNumber() >= 11){

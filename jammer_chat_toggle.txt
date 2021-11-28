@@ -22,6 +22,6 @@ if(chatClk(O)){
     }
 }}
 
-if(clk("hideoff")){
+if(clk("hideoff")){ #This isn't actually needed since putting hideChat() inside an if() only hides for the duration of the if()
     hideChat(0)
 }

@@ -1,6 +1,6 @@
 @name Gate Functions
 @inputs Gate:wirelink AsgardTP:wirelink TButton
-@outputs Address:string Name:string Owner:string GateTE:entity
+@outputs Address:string Name:string Owner:string GateTE:entity Message:string
 @persist Dest:vector
 
 interval(500)
@@ -14,6 +14,7 @@ Gateg = stargate(GateE)
 
 AutoIris = 0 #Enables the AutoIris feature that opens the iris of the linked gate if..
 #..you're near the gate dialing it.
+#Might make a chat toggle for this if someone wants it
 
 
 if(changed(Gate["Inbound",number]) & Gate["Inbound",number] == 1 ){
@@ -80,6 +81,7 @@ if(TButton == 1){
 
 if(changed(Gate["Received",string]) & Gate["Received",string]:length() > 0){
     print("Message received through gate: "+Gate["Received",string])
+    Message = Gate["Received",string]
 }
 
 

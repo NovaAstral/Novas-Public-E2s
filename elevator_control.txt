@@ -1,0 +1,45 @@
+@name Elevator Control
+@inputs ElevatorCar:wirelink Up Down
+@outputs Speed FloorSel
+@persist FloorNum Floor FloorSet
+if(first()){
+    FloorNum = 3 #change this to how ever many floors your elevator has
+    
+    Speed = 10
+    
+    timer("elevator",1)
+}
+
+if(~ElevatorCar){
+    Floor = ElevatorCar["Floor",number]
+}
+
+if(clk("elevator")){
+    Floor = ElevatorCar["Floor",number]
+}
+
+if(changed(ElevatorCar["Floor",number])){
+    FloorSel = ElevatorCar["Floor",number]
+}
+
+if(~Up & Up == 1){
+    if(FloorSel >= FloorNum){
+        FloorSet = 1
+        FloorSel = FloorSet
+    }
+    else{
+        FloorSet++
+        FloorSel = FloorSet
+    }
+}
+
+if(~Down & Down == 1){
+    if(FloorSel <= 1){
+        FloorSet = FloorNum
+        FloorSel = FloorSet
+    }
+    else{
+        FloorSet--
+        FloorSel = FloorSet
+    }
+}

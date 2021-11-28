@@ -23,3 +23,14 @@ if(~User & User){
         A = 0
     }
 }
+
+#Here's the thing without comments if you'd just like to copypaste it
+if(~User & User){
+    local Cursor = EGP:egpCursor(User)
+    if(inrange(Cursor,vec2(50,50),vec2(100,100))){
+        A = 1
+    }
+    else{
+        A = 0
+    }
+}
