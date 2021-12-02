@@ -384,6 +384,7 @@ if(chatClk(O)){
             print("Gateroom Forcefield Activated")
         }
         
+        #This is meant for a forcefield that encompasses the area around the gate as a security thing
         if(OLS[2,string] == "ogf"){
             GateFF = 0
             print("Gate Forcefield Deactivated")
