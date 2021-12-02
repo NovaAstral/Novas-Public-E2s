@@ -2,7 +2,10 @@
 @inputs ElevatorCar:wirelink Up Down
 @outputs Speed FloorSel
 @persist FloorNum Floor FloorSet
-if(first()){
+
+#This is kinda buggy when you first use it on a dupe
+
+if(first() | dupefinished()){
     FloorNum = 3 #change this to how ever many floors your elevator has
     
     Speed = 10

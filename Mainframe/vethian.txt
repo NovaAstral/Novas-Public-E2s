@@ -1,9 +1,9 @@
 @name Vethian AI
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,S1,S2,S3,Gate,Rings]:wirelink
-@outputs Active WarpFactor Tractor Lockdown ##Alert
-@outputs GateFF BridgeFF TransFF EngFF ##Forcefields
-@outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters ##Doors
-@persist WaterCW:wirelink WaterCE:entity
+@outputs Active WarpFactor Tractor Lockdown  ##Alert
+@outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
+@outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
+@persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
@@ -15,6 +15,7 @@
 #Todo:
 #Drive Core speed commands
 #E:addCoreTarget("string")
+#Give Vethian more personality in the prints
 
 runOnChat(1)
 
@@ -26,9 +27,12 @@ LS["Name",string] = Shipname
 if(first() | dupefinished()){
     Active = 1
     WarpFactor = 10
+    Shutters = 1
+    
     S1["A",number] = 1
     S2["A",number] = 1
     S3["A",number] = 1
+    
     timer("aprint",1000) #Disable this if you don't want the AI to print to faction on start
 }
 
@@ -219,6 +223,7 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
                 Core["Self Destruct",number] = 1
                 print("Self Destruct Activated.")
             }
+            
             if(OLS[2,string] == "shield"){
                 if(Shield["Active",number] == 0){
                     Shield["Activate",number] = 1
@@ -229,6 +234,7 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
                     print("Shield Deactivated.")
                 }
             }
+            
             if(OLS[2,string] == "cloak"){
                 if(Cloak["Active",number] == 0){
                 Cloak["Activate",number] = 1
@@ -368,14 +374,24 @@ if(chatClk(O)){
             print("Gateroom Door Closed")
         }
 
+        if(OLS[2,string] == "ogrf"){
+            GateRFF = 0
+            print("Gateroom Forcefield Deactivated")
+        }
+
+        if(OLS[2,string] == "cgrf"){
+            GateRFF = 1
+            print("Gateroom Forcefield Activated")
+        }
+        
         if(OLS[2,string] == "ogf"){
             GateFF = 0
-            print("Gateroom Forcefield Deactivated")
+            print("Gate Forcefield Deactivated")
         }
 
         if(OLS[2,string] == "cgf"){
             GateFF = 1
-            print("Gateroom Forcefield Activated")
+            print("Gate Forcefield Activated")
         }
         
         if(OLS[2,string] == "ot"){
@@ -384,7 +400,7 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "ct"){
-            GateDoor = 0
+            TransDoor = 0
             print("Transporter Room Door Closed")
         }
 
@@ -485,7 +501,32 @@ if(chatClk(O)){
             print("Vethian Help can be found at:")
             print("https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk")
         }
+        
+        if(OLS[2,string] == "taim"){
+            AimE = owner():aimEntity()
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                print("Selecting aimed entity as testfire weapon")
+            }
+            else{
+                print("You're not aiming at anything.")
+            }
+            if(OLS[2,string] == "tfire"){
+                if(AimE:isValid()){
+                    print("Testfiring weapon")
+                    AimEW["Fire",number] = 1
+                    timer("unfire",2500)
+                }
+                else{ #This does not work ?
+                    print("You have not selected anything to fire.")
+                }
+            }   
+        }
     }
+}
+
+if(clk("unfire")){
+    AimEW["Fire",number] = 0
 }
 
 ##################

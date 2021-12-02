@@ -6,6 +6,7 @@
 
 #You can also use the User input to lock it so only a certain person can use it like:
 # if(~User & User & User == owner())
+#which makes it so only the owner of the e2 can use the egp
 
 if(~User & User){
     #This detects when someone presses E on the screen, and doesn't require interval() or a timer

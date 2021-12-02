@@ -1,14 +1,18 @@
-@name That one Mario DS minigame I forget the name of
+@name Mario DS Minigame 'Wanted'
 @inputs EGP:wirelink User:entity
 @outputs OCursor:vector2
 @outputs MainMenu OptionsMenu GameMenu #This is temp for debug
-@persist MainMenu OptionsMenu GameMenu
+@persist MainMenu OptionsMenu GameMenu InnoAmount CharSize BoxTopleft:vector2 BoxBottomright:vector2
+@persist Score:string
 
 #[
+
+###########THIS E2 ISN'T FINISHED!###########
+
 #Max Objects is 450 on TSCM
 
 Todo:
-Options (Character amount, Character size, Character color, Character names)
+Options (Innocent amount, Character size, Character colors, Character names)
 Put the character colors and names at the top of the main menu
 A button that stops the game and takes you back to the main menu
 Sounds
@@ -44,7 +48,23 @@ if(first()){
     MainMenu = 1
     OptionsMenu = 0
     GameMenu = 0
+    
+    InnoAmount = 20
+    CharSize = 10
+    
+    Score = 0:toString()
+    
+    timer("BoxSize",1)
+    
+    #timer("startgame",1)
 }
+
+if(clk("BoxSize")){
+    BoxTopleft = vec2(CharSize) + vec2(5)
+    BoxBottomright = vec2(440,512) - vec2(CharSize) - vec2(5)
+}
+
+
 
 if(clk("egpcreate")){
     EGP:egpClear()
@@ -57,21 +77,10 @@ if(clk("egpcreate")){
     
     EGP:egpText(4,"START",vec2(256,245)) #Start text
     EGP:egpAlign(4,1)
-
-    #Cursor
-    #This is down here because fuck egp render ordering
+    
     EGP:egpCircleOutline(1,vec2(0,0),vec2(5))
     EGP:egpParentToCursor(1)
-}
-
-if(~User & User){
-    local Cursor = EGP:egpCursor(User)
-    
-    if(inrange(Cursor,vec2(200,200),vec2(300,300)) && MainMenu == 1){
-        EGP:egpColor(3,vec(0,255,0))
-        EGP:entity():soundPlay(1,600,"buttons/button6.wav")
-        timer("starttimer",500)
-    }
+    EGP:egpOrder(1,450)
 }
 
 if(clk("starttimer")){
@@ -104,5 +113,42 @@ if(clk("startgame")){
     for(I = 2,5){
         EGP:egpRemove(I)
     }
+    
+    EGP:egpLine(6,vec2(440,0),vec2(440,512)) #Separating Line
+    
+    EGP:egpText(7,"Find:",vec2(478,200))
+    EGP:egpAlign(7,1)
+    
+    EGP:egpCircle(8,vec2(477,228),vec2(10,10)) #Thing you need to find
+    EGP:egpColor(8,vec(255,0,255))
+    
+    EGP:egpText(9,"Score:",vec2(477,280))
+    EGP:egpAlign(9,1)
+    
+    EGP:egpText(10,Score,vec2(477,300)) #Score Number
+    EGP:egpAlign(10,1)
+
+    #timer("wantedcreate",1)
+    timer("innocentcreate",1)
 }
 
+if(~User & User){ #buttons
+    local Cursor = EGP:egpCursor(User)
+    
+    if(inrange(Cursor,vec2(200,200),vec2(300,300)) && MainMenu == 1){ #Start button
+        EGP:egpColor(3,vec(0,255,0))
+        EGP:entity():soundPlay(1,600,"buttons/button6.wav")
+        timer("starttimer",500)
+    }
+    
+    #This doesn't work for some reason
+    if(GameMenu == 1 & inrange(Cursor,EGP:egpPos(11) + CharSize,EGP:egpPos(11) - CharSize)){ #Wanted Char
+        print("clicky")
+    }
+}
+
+
+if(clk("innocentcreate")){
+    EGP:egpCircle(11,randvec2(BoxTopleft,BoxBottomright),vec2(CharSize)) #Wanted Character
+    EGP:egpColor(11,vec(255,0,255))
+}

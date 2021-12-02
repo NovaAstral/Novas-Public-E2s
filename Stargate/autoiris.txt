@@ -9,6 +9,7 @@ interval(500)
 
 #Opens the iris of the gate this is wired to when you are within 200 units of the..
 #..gate thats dialing it.
+#This is in the Gate Functions e2, with a toggle to turn it on/off
 
 GateE = Gate:entity()
 Gateg = stargate(GateE)

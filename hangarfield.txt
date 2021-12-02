@@ -7,7 +7,7 @@
 #Link the Forcefield and Door to their respective things and-
 #-the e2 will function automatically when the door opens and closes
 
-if(first()){
+if(first() | dupefinished()){
     timer("statecheck",1)
 }
 
