@@ -512,19 +512,21 @@ if(chatClk(O)){
             else{
                 print("You're not aiming at anything.")
             }
-            if(OLS[2,string] == "tfire"){
-                if(AimE:isValid()){
-                    print("Testfiring weapon")
-                    AimEW["Fire",number] = 1
-                    timer("unfire",2500)
-                }
-                else{ #This does not work ?
-                    print("You have not selected anything to fire.")
-                }
-            }   
         }
+        
+        if(OLS[2,string] == "tfire"){
+            if(AimE:isValid()){
+                print("Testfiring weapon")
+                AimEW["Fire",number] = 1
+                timer("unfire",2500)
+            }
+            else{ #This does not work ?
+                print("You have not selected anything to fire.")
+            }
+        }   
     }
 }
+
 
 if(clk("unfire")){
     AimEW["Fire",number] = 0
