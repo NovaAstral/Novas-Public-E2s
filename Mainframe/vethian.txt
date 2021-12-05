@@ -3,7 +3,7 @@
 @outputs Active WarpFactor Tractor Lockdown Alert:string
 @outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
 @outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
-@persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink
+@persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink GateCol
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
@@ -26,8 +26,8 @@ LS["Name",string] = Shipname
 
 if(first() | dupefinished()){
     Active = 1
-    WarpFactor = 10
-    Shutters = 1
+    WarpFactor = 10 #This is the starting warp factor
+    Shutters = 1 #This opens the shutters when
     
     GateCol = 1 #Set this to 0 if you don't want your event horizon to change colors on alert
     
@@ -262,9 +262,10 @@ if(chatClk(O)){
         
         if(OLS[2,string] == "green"){
             Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",1,100)
+            Core:entity():stopCoreEnvironmentSound()
             Alert = "Green"
             print("Condition Green. Stand Down.")
-            
+
             if(GateCol == 1){
                 Gate["Event Horizon Color",vector] = vec(0,0,0)
             }
