@@ -19,7 +19,7 @@ Sounds
 Scoring System
 Button that appears when you press start that lets you cancel the game from starting
 
-How to do:
+How to do?:
 inRange(CharPos + vec2(10,10) + vec2(-10,-10))
 
 Sounds:

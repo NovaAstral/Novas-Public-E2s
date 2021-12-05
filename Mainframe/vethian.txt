@@ -1,6 +1,6 @@
 @name Vethian AI
-@inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,S1,S2,S3,Gate,Rings]:wirelink
-@outputs Active WarpFactor Tractor Lockdown  ##Alert
+@inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings]:wirelink
+@outputs Active WarpFactor Tractor Lockdown Alert:string
 @outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
 @outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
 @persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink
@@ -29,9 +29,7 @@ if(first() | dupefinished()){
     WarpFactor = 10
     Shutters = 1
     
-    S1["A",number] = 1
-    S2["A",number] = 1
-    S3["A",number] = 1
+    GateCol = 1 #Set this to 0 if you don't want your event horizon to change colors on alert
     
     timer("aprint",1000) #Disable this if you don't want the AI to print to faction on start
 }
@@ -263,56 +261,60 @@ if(chatClk(O)){
     if(OLS[1,string] == "/v"){
         
         if(OLS[2,string] == "green"){
-            S1["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-            S2["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-            S3["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-            Gate["Event Horizon Color",vector] = vec(0,0,0)
-            #Alert = 1
+            Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",1,100)
+            Alert = "Green"
             print("Condition Green. Stand Down.")
+            
+            if(GateCol == 1){
+                Gate["Event Horizon Color",vector] = vec(0,0,0)
+            }
         }
 
         if(OLS[2,string] == "blue"){
-            S1["SampleName",string] = "st/misc/bluealert.wav"
-            S2["SampleName",string] = "st/misc/bluealert.wav"
-            S3["SampleName",string] = "st/misc/bluealert.wav"
-            Gate["Event Horizon Color",vector] = vec(0,0,255)
-            #Alert = 2
+            Core:entity():setCoreEnvironmentSound("st/misc/bluealert.wav",1,100)
+            Alert = "Blue"
             print("Condition Blue. Prepare for Battle.")
+            
+            if(GateCol == 1){
+                Gate["Event Horizon Color",vector] = vec(0,0,255)
+            }
         }
 
         if(OLS[2,string] == "red"){
-            S1["SampleName",string] = "st/misc/voy_redalert_loop.wav"
-            S2["SampleName",string] = "st/misc/voy_redalert_loop.wav"
-            S3["SampleName",string] = "st/misc/voy_redalert_loop.wav"
-            Gate["Event Horizon Color",vector] = vec(255,0,0)
-            #Alert = 3
+            Core:entity():setCoreEnvironmentSound("st/misc/voy_redalert_loop.wav",1,100)
+            Alert = "Red"
             print("Condition Red. Battle Stations.")
+            
+            if(GateCol == 1){
+                Gate["Event Horizon Color",vector] = vec(255,0,0)
+            }
         }
 
         if(OLS[2,string] == "black"){
-            S1["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
-            S2["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
-            S3["SampleName",string] = "st/misc/dsc_black_alert_short.wav"
-            Gate["Event Horizon Color",vector] = vec(50,50,50)
-            #Alert = 4
+            Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",1,100)
+            Alert = "Black"
             print("Condition Black. Shipwide Experiment.")
+            
+            if(GateCol == 1){
+                Gate["Event Horizon Color",vector] = vec(50,50,50)
+            }
         }
 
         if(OLS[2,string] == "abandon"){
-            S1["SampleName",string] = "st/misc/abandon_ship.wav"
-            S2["SampleName",string] = "st/misc/abandon_ship.wav"
-            S3["SampleName",string] = "st/misc/abandon_ship.wav"
-            Gate["Event Horizon Color",vector] = vec(200,0,0)
-            #Alert = 3
+            Core:entity():setCoreEnvironmentSound("st/misc/abandon_ship.wav",1,100)
+            Alert = "Abandon Ship"
             print("Abandon Ship.")
+
+            if(GateCol == 1){
+                Gate["Event Horizon Color",vector] = vec(200,0,0)
+            }
         }
 
         if(OLS[2,string] == "ldon"){
-            S1["SampleName",string] = "st/misc/rom_redalert.wav"
-            S2["SampleName",string] = "st/misc/rom_redalert.wav"
-            S3["SampleName",string] = "st/misc/rom_redalert.wav"
+            Core:entity():setCoreEnvironmentSound("st/misc/rom_redalert.wav",1,100)
             BridgeFF = 1
             GateFF = 1
+            GateRFF = 1
             TransFF = 1
             EngFF = 1
             Lockdown = 1
@@ -323,11 +325,10 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "ldoff"){
-            S1["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-            S2["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
-            S3["SampleName",string] = "st/shuttlecraft/computer_work2.mp3"
+            Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",1,100)
             BridgeFF = 0
             GateFF = 0
+            GateRFF = 0
             TransFF = 0
             EngFF = 0
             Lockdown = 0
