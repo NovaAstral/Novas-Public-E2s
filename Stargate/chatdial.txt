@@ -1,7 +1,7 @@
 @name chat dial
 @inputs Gate:wirelink Rings:wirelink
 
-#Docs are on Page 7 of:
+#Docs are on Page 8 of:
 #https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk
 
 O = owner()

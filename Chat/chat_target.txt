@@ -1,0 +1,12 @@
+@name Chat Target
+@inputs
+@outputs
+@persist
+
+###todo:
+#
+#
+
+###very future todo:
+#link to every weapon on the ship, trace from each weapon to the target
+#if a non-target is between the weapon and the target, make it not fire

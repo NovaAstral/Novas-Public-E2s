@@ -27,6 +27,11 @@ if(clk("find")){
             print("E2 Found, Owned by: <" +E2:owner():name()+ "> with name: <" +E2:getName()+ "> at location: " +round(E2:pos()) + " With a CPU usage of: <" + round(E2:cpuUsage()*1000000) + ">")
         }
     }
+    
+    if(E2s:count() == 0){
+        stopAllTimers()
+        print("No E2's found on the map")
+    }
 }
 
 if(chatClk(O)){

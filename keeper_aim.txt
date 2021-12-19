@@ -1,9 +1,15 @@
 @name keeper aim
 @inputs Active Cannon:entity Cannon2:entity Target:vector
+
 interval(50)
 
-#Made by Cons
+#Made by Quiru for Nova
 
-if(Active & Cannon:isValid()) { Cannon:setAng((Target - Cannon:pos()):toAngle() + ang(90, 0, 0)) }
-if(Active & Cannon2:isValid()) { Cannon2:setAng((Target - Cannon2:pos()):toAngle() + ang(90, 0, 0)) }
+if(Active & Cannon:isValid()){
+	Cannon:setAng((Target - Cannon:pos()):toAngle() + ang(90, 0, 0))
+}
+
+if(Active & Cannon2:isValid()){
+	Cannon2:setAng((Target - Cannon2:pos()):toAngle() + ang(90, 0, 0))
+}
 

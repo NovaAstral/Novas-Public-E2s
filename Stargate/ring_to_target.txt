@@ -2,6 +2,9 @@
 @inputs Rings:wirelink Input Target:entity
 @persist PrevPos:vector
 
+#If you wire this to rings, it will teleport the rings to the Target entity when you activate 'Intput'
+#And then dial to the address set below
+
 RingsE = Rings:entity()
 
 if(Input == 1){
@@ -17,12 +20,13 @@ if(clk("jamcheck")){
 
 if(clk("a")){
     PrevPos = RingsE:pos()
-    Rings["Dial Address",string] = "1234"
+    Rings["Dial Address",string] = "1234" #The address the rings will dial to
     timer("b",1000)
 }
 
 if(clk("b")){
     RingsE:setPos(Target:pos()+vec(0,200,0))
+    #Moves the rings to the target with an offset of 200 so it doesn't ring them up
     timer("c",4000)
 }
 

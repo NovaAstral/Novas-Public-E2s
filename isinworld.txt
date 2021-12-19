@@ -14,7 +14,7 @@ if(changed(Vec) & Vec != vec(0,0,0)){
         #print("startinworld")
     }
     else{
-        #print(owner():name()+" fell out of the world")
+        #print(owner():name()+" fell out of the world") #I wouldn't recommend uncommenting this
     timer("retryvec",10)
 }}
 
@@ -32,7 +32,7 @@ if(clk("checksafe")){
         holoPos(1,SafeVec)
     }
     else{
-        #print(owner():name()+" fell out of the world")
+        #print(owner():name()+" fell out of the world") #I wouldn't recommend uncommenting this
         timer("retryvec",10)
     }
 }

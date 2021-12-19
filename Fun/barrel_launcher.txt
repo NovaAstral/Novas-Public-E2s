@@ -3,7 +3,7 @@
 @outputs EntS:entity EntLP:vector
 @persist S B EntB:entity
 
-#Comment the 'Boom' function at the bottom if you don't have propSetVelocity()
+#Comment the 'Boom' function at the bottom if you don't have the propSetVelocity() function
 
 if(first()){
     #propSpawnUndo(0)
@@ -19,7 +19,7 @@ if(changed(Single) & Single == 1){
     #EntS:setAlpha(0)
     EntS:soundPlay(1,400,"pulse_weapon/dexgun_flyby1.mp3")
     for(S = 1,3){
-        #spriteSpawn(I,"sprites/flare1.vmt")
+        #spriteSpawn(I,"sprites/flare1.vmt") #This needs a e2 core from the workshop
 
     }
     timer("launch",10)

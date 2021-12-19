@@ -7,8 +7,12 @@
 #Discord: Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
-#pls dont use this, its horribe
+#pls dont use this, its horrible with like 900 constant ops
 #and made for a ship with a specific weapon setup that doesn't even exist anymore
+
+#the reason this has 900 constant ops is because this was my e2 to get back into EGP after
+#like 2 or 3 years of not doing it.
+#so every object on the screen is being created again every 100ms
 
 if(first()){
     EGP:egpClear()

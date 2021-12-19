@@ -10,6 +10,8 @@
 #-would require a chair
 #I might make it possible later but I don't know
 
+#I also completely stopped development on this because Quiru made her own version in SF
+
 if(first() | duped()){
     timer("platformfind",10)
 }

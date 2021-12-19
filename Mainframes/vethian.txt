@@ -1,4 +1,4 @@
-@name Vethian AI
+@name Vethian AI 1.0
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings]:wirelink
 @outputs Active WarpFactor Tractor Lockdown Alert:string
 @outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
@@ -27,7 +27,7 @@ LS["Name",string] = Shipname
 if(first() | dupefinished()){
     Active = 1
     WarpFactor = 10 #This is the starting warp factor
-    Shutters = 1 #This opens the shutters when
+    Shutters = 1 #This opens the shutters when the AI is spawned
     
     GateCol = 1 #Set this to 0 if you don't want your event horizon to change colors on alert
     
@@ -261,7 +261,7 @@ if(chatClk(O)){
     if(OLS[1,string] == "/v"){
         
         if(OLS[2,string] == "green"){
-            Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",1,100)
+            Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",0.4,100)
             Core:entity():stopCoreEnvironmentSound()
             Alert = "Green"
             print("Condition Green. Stand Down.")
@@ -272,7 +272,7 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "blue"){
-            Core:entity():setCoreEnvironmentSound("st/misc/bluealert.wav",1,100)
+            Core:entity():setCoreEnvironmentSound("st/misc/bluealert.wav",0.4,100)
             Alert = "Blue"
             print("Condition Blue. Prepare for Battle.")
             
@@ -282,7 +282,7 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "red"){
-            Core:entity():setCoreEnvironmentSound("st/misc/voy_redalert_loop.wav",1,100)
+            Core:entity():setCoreEnvironmentSound("st/misc/voy_redalert_loop.wav",0.4,100)
             Alert = "Red"
             print("Condition Red. Battle Stations.")
             
@@ -292,7 +292,7 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "black"){
-            Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",1,100)
+            Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",0.4,100)
             Alert = "Black"
             print("Condition Black. Shipwide Experiment.")
             
@@ -302,7 +302,7 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "abandon"){
-            Core:entity():setCoreEnvironmentSound("st/misc/abandon_ship.wav",1,100)
+            Core:entity():setCoreEnvironmentSound("st/misc/abandon_ship.wav",0.4,100)
             Alert = "Abandon Ship"
             print("Abandon Ship.")
 
@@ -312,7 +312,7 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "ldon"){
-            Core:entity():setCoreEnvironmentSound("st/misc/rom_redalert.wav",1,100)
+            Core:entity():setCoreEnvironmentSound("st/misc/rom_redalert.wav",0.4,100)
             BridgeFF = 1
             GateFF = 1
             GateRFF = 1
@@ -326,7 +326,7 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "ldoff"){
-            Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",1,100)
+            Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",0.4,100)
             BridgeFF = 0
             GateFF = 0
             GateRFF = 0

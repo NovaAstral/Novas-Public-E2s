@@ -3,6 +3,7 @@
 @outputs Col:vector Count 
 
 #This makes a smooth rainbow on many entities
+#This can also be done much simpler
 
 interval(10)
 if(In) {

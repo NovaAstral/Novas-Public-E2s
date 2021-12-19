@@ -3,6 +3,8 @@
 @outputs
 interval(100)
 
+#Someone on a discord somewhere wanted this version
+
 GateE = Gate:entity()
 
 if(first() | duped()){

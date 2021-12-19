@@ -1,5 +1,5 @@
 @name How to make a button in EGP
-@inputs EGP:wirelink User:entity #This is User on the EGP screen entity
+@inputs EGP:wirelink User:entity #This is User output on the EGP screen entity
 @outputs A
 
 #This is a small tutorial on how to make buttons in EGP
@@ -8,11 +8,18 @@
 # if(~User & User & User == owner())
 #which makes it so only the owner of the e2 can use the egp
 
+if(first()){
+    EGP:egpBox(1,vec2(50,50),vec2(100,100))
+    #This is the square you can press E in, you can use this to more easily visualize buttons
+}
+
 if(~User & User){
     #This detects when someone presses E on the screen, and doesn't require interval() or a timer
     
     local Cursor = EGP:egpCursor(User)
     #This is where the player is aiming when they press E
+    #remove the local if you want to use Cursor somewhere else
+    #You should also put Cursor:vector2 in an @persist under outputs if you want that
     
     if(inrange(Cursor,vec2(50,50),vec2(100,100))){
         #This activates if the player is looking inside this square when they press E
@@ -25,7 +32,7 @@ if(~User & User){
     }
 }
 
-#Here's the thing without comments if you'd just like to copypaste it
+#Here's the thing without comments if you'd just like to copy it
 if(~User & User){
     local Cursor = EGP:egpCursor(User)
     if(inrange(Cursor,vec2(50,50),vec2(100,100))){

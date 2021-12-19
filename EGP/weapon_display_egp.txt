@@ -3,7 +3,7 @@
 @outputs CPos:vector2
 @persist
 
-#This is very WIP and probably wont be done any time soon
+#This is very WIP and probably wont be done ever
 
 interval(200)
 

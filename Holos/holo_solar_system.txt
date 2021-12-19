@@ -7,6 +7,7 @@
 #This is very WIP and currently only the milkyway galaxy works fully
 #Universe isn't implemented at all yet
 #Pegasus doesn't have any planets yet
+#You also can't switch back to milkyway from pegasus
 
 
 #[

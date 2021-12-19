@@ -5,7 +5,7 @@
 
 interval(200)
 
-if(first() | duped()){
+if(first() | dupefinished()){
     EGP:egpClear()
     timer("setup",10)
     timer("first",1000)
@@ -85,6 +85,7 @@ if(changed(Cloak["Subsystem Health",number])){
 
 
 if(changed(HP) & HP <= 30 & Emergency != 1){
+    Core:entity():setCoreEnvironmentSound("alarm/destiny_siren.wav",1,100)
     Emergency = 1
     EGP:egpAlpha(52,255)
     EGP:egpAlpha(53,255)
@@ -93,6 +94,7 @@ if(changed(HP) & HP <= 30 & Emergency != 1){
 }
 
 elseif(changed(HP) & HP >= 30){
+    Core:entity():stopCoreEnvironmentSound()
     Emergency = 0
     EGP:egpAlpha(52,0)
     EGP:egpAlpha(53,0)

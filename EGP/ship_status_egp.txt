@@ -40,7 +40,7 @@ if(clk("create")){
     EGP:egpCircle(13,vec2(306,342),vec2(10,10))
     
     for(I=8,13){
-        EGP:egpColor(I,vec(190,140,90)) #fucking colors
+        EGP:egpColor(I,vec(190,140,90)) #fucking colors >:(
     }
     
     #Zpm inside

@@ -128,8 +128,15 @@ if(clk("startgame")){
     EGP:egpText(10,Score,vec2(477,300)) #Score Number
     EGP:egpAlign(10,1)
 
-    #timer("wantedcreate",1)
-    timer("innocentcreate",1)
+    #timer("innocreate",1)
+    timer("wantedcreate",1)
+}
+
+if(clk("wantedcreate")){
+    EGP:egpCircle(11,randvec2(BoxTopleft,BoxBottomright),vec2(CharSize)) #Wanted Character
+    EGP:egpColor(11,vec(255,0,255))
+    EGP:egpCircle(12,EGP:egpPos(11) + CharSize,vec2(2))
+    EGP:egpCircle(13,EGP:egpPos(11) - CharSize,vec2(2))
 }
 
 if(~User & User){ #buttons
@@ -142,13 +149,8 @@ if(~User & User){ #buttons
     }
     
     #This doesn't work for some reason
-    if(GameMenu == 1 & inrange(Cursor,EGP:egpPos(11) + CharSize,EGP:egpPos(11) - CharSize)){ #Wanted Char
+    if(inrange(Cursor,EGP:egpPos(11) + CharSize,EGP:egpPos(11) - CharSize)){ #Wanted Char
         print("clicky")
     }
 }
 
-
-if(clk("innocentcreate")){
-    EGP:egpCircle(11,randvec2(BoxTopleft,BoxBottomright),vec2(CharSize)) #Wanted Character
-    EGP:egpColor(11,vec(255,0,255))
-}

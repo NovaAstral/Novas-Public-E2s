@@ -1,0 +1,18 @@
+@name simple chat tutorial
+
+runOnChat(1)
+#This makes the e2 trigger whenever someone sends a message in chat
+
+OLS = owner():lastSaid():lower() #the lower() makes it case in-sensitive (eg: /cHaT tEsT would work)
+#This makes it easier for multiple commands so you don't have to type it every time
+
+
+if(chatClk(owner())){
+    if(OLS == "/chat test"){ #This is what you say in chat to trigger this. It must be entirely lowercase
+        #the / is so that it doesn't show up in chat if you mess up the command on TSCM
+
+        print("Chat test succesful")
+        #Print only prints to the owners chat
+        #Don't use botSay(), that outputs to the entire faction       
+    }
+}

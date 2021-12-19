@@ -41,7 +41,7 @@ elseif(Gate:stargateIrisActive() == 0){
     timer("reset",5000)
 }}
 
-#doesn't work because you have to set the text before the gdo sends its code because c(r)ap
+#doesn't work because you have to set the text before the gdo sends its code because cap devs are dumb
 if(clk("gdovalid")){ 
     IC["GDO Text",string] = ":)"
 }
