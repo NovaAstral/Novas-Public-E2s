@@ -8,8 +8,8 @@ OLS = owner():lastSaid():lower() #the lower() makes it case in-sensitive (eg: /c
 
 
 if(chatClk(owner())){
-    if(OLS == "/chat test"){ #This is what you say in chat to trigger this. It must be entirely lowercase
-        #the / is so that it doesn't show up in chat if you mess up the command on TSCM
+    if(OLS == "/chat test"){ #This is what you say in chat to trigger this. the code must be in lowercase
+                #the / is so that it doesn't show up in chat if you mess up the command on TSCM
 
         print("Chat test succesful")
         #Print only prints to the owners chat

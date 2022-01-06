@@ -1,5 +1,5 @@
 @name Iris Computer
-@inputs [IC, Gate]:wirelink
+@inputs [IrisComp, Gate]:wirelink
 @outputs Code
 @persist IrisCodes:table
 
@@ -10,7 +10,7 @@ interval(200)
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
 if(first() | duped()){
-    IC["Disable Menu Mode",number] = 1
+    IrisComp["Disable Menu Mode",number] = 1
 
     IrisCodes = table( #Put iris codes here
     "1234" = 1,
@@ -18,14 +18,14 @@ if(first() | duped()){
 )}
 
 
-if(changed(IC["Received Code",number]) & IC["Received Code",number] > 0){
-    if(IrisCodes:exists(IC["Received Code",number]:toString())){
-        print("Code Valid. Received: "+ IC["Received Code",number])
+if(changed(IrisComp["Received Code",number]) & IrisComp["Received Code",number] > 0){
+    if(IrisCodes:exists(IrisComp["Received Code",number]:toString())){
+        print("Code Valid. Received: "+ IrisComp["Received Code",number])
         timer("gdovalid",10)
         timer("irischeck",10)
         }
     else{
-        print("Code Invalid. Received: "+ IC["Received Code",number])
+        print("Code Invalid. Received: "+ IrisComp["Received Code",number])
         timer("gdoinvalid",10)
         timer("reset",5000)
 }}
@@ -43,15 +43,15 @@ elseif(Gate:stargateIrisActive() == 0){
 
 #doesn't work because you have to set the text before the gdo sends its code because cap devs are dumb
 if(clk("gdovalid")){ 
-    IC["GDO Text",string] = ":)"
+    IrisComp["GDO Text",string] = ":)"
 }
 
 if(clk("gdoinvalid")){
-    IC["GDO Text",string] = ">:("
+    IrisComp["GDO Text",string] = ">:("
 }
 
 if(clk("reset")){
-    IC["GDO Text",string] = ""
+    IrisComp["GDO Text",string] = ""
     stoptimer("irischeck")
     stoptimer("reset")
 }
