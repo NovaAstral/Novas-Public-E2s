@@ -12,6 +12,11 @@
 
 #I also completely stopped development on this because Quiru made her own version in SF
 
+#Todo:
+#Change the light to a wire light
+#
+#
+
 if(first() | duped()){
     timer("platformfind",10)
 }

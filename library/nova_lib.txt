@@ -1,0 +1,16 @@
+@name Nova_Lib
+@persist ColPink:vector ColOrange:vector ColTeam:vector
+
+#This e2 doesn't need to be placed anywhere
+
+#If you need to give this lib to someone, its better if they get the most recent version from:
+#https://github.com/NovaAstral/Novas-Public-E2s
+
+ColPink = vec(255,95,215)
+ColOng = vec(230,110,0)
+ColTeam = teamColor(owner():team())
+
+if(entity():getName() == "Nova_Lib"){
+    printColor(ColPink," [NovaLib] ",ColOrange,"This Library doesn't need to be placed anywhere. Removing.")
+    selfDestruct()
+}

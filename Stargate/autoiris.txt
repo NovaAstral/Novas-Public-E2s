@@ -26,7 +26,7 @@ if(clk("update")){
 }
 
 if(changed(Gate["Open",number]) & Gate["Open",number] == 0){
-    print("Gate Offline")
+    printColor(vec(255,95,215)," [AutoIris] ",vec(230,110,0),"Gate Offline")
 
 }
 
@@ -37,11 +37,11 @@ if(clk("autoiris")){
         if(find():isValid() == 1){
             if(Gate:stargateIrisActive() == 1){
                 Gate:stargateIrisToggle()
-                print("Owner near dialing gate. Opening iris.")
+                printColor(vec(255,95,215)," [AutoIris] ",vec(230,110,0),"Owner near dialing gate. Opening iris.")
                 stoptimer("autoiris")
             }
             elseif(Gate:stargateIrisActive() == 0){
-                print("Owner near dialing gate. Iris already open.")
+                printColor(vec(255,95,215)," [AutoIris] ",vec(230,110,0),"Owner near dialing gate. Iris already open.")
                 stoptimer("autoiris")
             }
         }

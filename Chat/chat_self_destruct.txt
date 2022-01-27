@@ -10,23 +10,23 @@ OLS = owner():lastSaid():lower():explode(" ")
 if(chatClk(O)){
         if(OLS[1,string] == "/sd"){
             if(OLS[2,string] == "stop"){
-                print("Aborting Self Destruct.")
+                printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Aborting Self Destruct.")
                 stoptimer("time")
                 TimeLeft = 0
             }
             if(OLS[2,string]:length() <= 0){
-                print("No time specified. Activating Destruction.")
+                printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"No time specified. Activating Destruction.")
                 Core["Self Destruct",number] = 1
                 Active = 1
             }
             elseif(OLS[2,string] != "stop"){
                 if(OLS[2,string]:toNumber() == 0){
-                    print("Invalid time.")
+                    printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Invalid time.")
                 }
                 else{
                 TimeLeft = OLS[2,string]:toNumber()
                 Active = 1
-                print("Self Destruct activated for <"+ TimeLeft + "> seconds.")
+                printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Self Destruct activated for <"+ TimeLeft + "> seconds.")
                 timer("time",10)
             }
         }
@@ -39,19 +39,19 @@ if(clk("time")){
     
     if(TimeLeft == 0){
         Core["Self Destruct",number] = 1
-        print("Ship Destruct")
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Ship Destruct")
     }
     
     if(TimeLeft == 10){
-        print("Self Destruct in 10 seconds.")
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Self Destruct in 10 seconds.")
     }
     
     if(TimeLeft == 30){
-        print("Self Destruct in 30 seconds.")
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Self Destruct in 30 seconds.")
         Active30 = 1
 }
 
     if(TimeLeft == 60){
-        print("Self Destruct in 60 seconds.")
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Self Destruct in 60 seconds.")
     }
 }

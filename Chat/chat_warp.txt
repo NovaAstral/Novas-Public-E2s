@@ -1,60 +1,44 @@
 @name Chat Warp
-@persist Tar:entity  Vec:vector Tarvec:vector
- 
-#This is a WIP and right now is exactly the same as 'Owner Teleport (NCore)'
+@inputs Drive:wirelink
+@persist WarpVec:vector WarpAng:angle PrevPos:vector X Y Z
+
+#include "Novas-Public-E2s/library/nova_lib"
 
 runOnChat(1)
 OLS = owner():lastSaid():lower():explode(" ")
+O = owner()
 
-if(chatClk(owner())){
-    if(OLS[1,string] == "/tphelp"){
-        print("Teleport Help")
-        print("/tpa - Teleports you to where you're looking")
-        print("/tpp <name> - Teleports you to a player by name")
-        print("/tpv <vec> - Teleports you to coordinates eg: /tpv -9800 -90 -4610")
+if(chatClk(O)){
+    if(OLS[1,string] == "/warp"){
+        if(OLS[2,string] == "vec"){
+            local V = OLS[3,string]:explode(",")
+            local X = V[1,string]:toNumber()
+            local Y = V[2,string]:toNumber()
+            local Z = V[3,string]:toNumber()
+            WarpVec = round(vec(X,Y,Z))
+            print(WarpVec)
+        }
+        if(OLS[4,string]:length() == 0){
+            WarpAng = Drive:entity():angles()
+            print("owo")
+        }
+        
+        elseif(OLS[4,string]:length() >= 1){
+            local V = OLS[3,string]:explode(",")
+            local X = V[1,string]:toNumber()
+            local Y = V[2,string]:toNumber()
+            local Z = V[3,string]:toNumber()
+            WarpAng = round(ang(X,Y,Z))
+            print(WarpAng)
+            print(WarpVec)
+        }
     }
-
-if(OLS[1,string] == "/tpa"){ #Teleport to where you're looking
-    hideChat(1)
-    timer("jamtest",1)
-    owner():teleport(owner():aimPos())
-    Tarvec = owner():aimPos()
-    print("Teleported to aimpos")
 }
 
-if(OLS[1,string] == "/tpp"){ #Teleport to a player by name
-    hideChat(1)
-    if(OLS[2,string]:length() < 1){
-        print("Cannot teleport to nothing.")
-    }
-    else{
-        Tar = findPlayerByName(OLS[2,string])
-        owner():teleport(Tar:pos()+vec(0,50,0))
-        #Teleports you to the player with a 50u offset so you're not inside them
-        print("Teleported to: "+ Tar:name())
-    }
-}
-
-if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
-    hideChat(1)
-    if(OLS[2,string]:length() < 1 & OLS[3,string]:length() < 1 & OLS[4,string]:length() < 1){
-        print("Cannot teleport to nowhere.")
-    }
-    else{
-        X = OLS[2,string]:toNumber()
-        Y = OLS[3,string]:toNumber()
-        Z = OLS[4,string]:toNumber()
-        Vec = round(vec(X,Y,Z))
-        owner():teleport(Vec)
-        print("Teleported to: "+ Vec:toString())
-    }
-}}
 
 #If you're not on TSCM this function will crash the e2 
 if(clk("jamtest")){
-    if(map() == "sb_galaxies_2018_v2"){
-        if(isJammed(Tarvec)){
-            print("Target Jammed, cannot teleport")
-        }
+    if(isJammed(WarpVec)){
+        printColor(ColPink," [Warp] ",ColOng,"Warp destination jammed, cannot warp.")
     }
 }

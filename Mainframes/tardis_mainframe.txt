@@ -27,12 +27,12 @@ if(first() | duped()){
 
 if(clk("tget")){
     if(T:isValid() == 0){
-        print("TARDIS not found. Mainframe Offline.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS not found. Mainframe Offline.")
         exit()
         stopAllTimers()
 }
     else{
-        print("TARDIS Mainframe Online")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Mainframe Online")
         TW = T:wirelink()
         timer("shield",10)
         timer("hpcheck",500)
@@ -50,7 +50,7 @@ if(chatClk(O)){
 if(clk("hpcheck")){
     timer("hpcheck",500)
 if(T:tardisHealth() <= 25){
-    print("WARNING: TARDIS Health is under 25%! ("+T:tardisHealth()+"%)")
+    printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"WARNING: TARDIS Health is under 25%! ("+T:tardisHealth()+"%)")
     O:soundPlay(1,5,"tardis/cloisterbell.wav")
     stoptimer("hpcheck")
 }}
@@ -73,7 +73,7 @@ stoptimer("shield")
 timer("shieldcheck",10)
 if(clk("shieldcheck")){
 if(Shield:isValid() == 0){
-    print("WARNING: Shield Offline! Generating new shield and activating.")
+    printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"WARNING: Shield Offline! Generating new shield and activating.")
     T:soundPlay(2,5,"tardis/cloisterbell.wav")
     timer("shield",10)
     timer("shielda",20)
@@ -87,10 +87,10 @@ if(clk("shielda")){
 if(chatClk(O)){
     if(OLS == "/t help"){
         hideChat(1)
-        print("help, ts on, ts off, tfly, thp, tv, th, tiso, tpos, tlpos, tang, tlang, tlock.")
-        print("tlfly, tmoving, tphys, tpilot, tpower, ttrepair, ttracking, tvisible.")
-        print("tmat, tdemat here, tdemat me, tdemat, treturn, ttfly, tthads, ttiso, ttlock.")
-        print("ttlongfly, ttphase, ttphys, ttpower, ttrepair, tu, tadv.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"help, ts on, ts off, tfly, thp, tv, th, tiso, tpos, tlpos, tang, tlang, tlock.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"tlfly, tmoving, tphys, tpilot, tpower, ttrepair, ttracking, tvisible.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"tmat, tdemat here, tdemat me, tdemat, treturn, ttfly, tthads, ttiso, ttlock.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"ttlongfly, ttphase, ttphys, ttpower, ttrepair, tu, tadv.")
 }
 
     if(OLS == "/ts on"){
@@ -98,7 +98,7 @@ if(chatClk(O)){
         Shield:propNotSolid(0)
         Shield:propDraw(1)
         T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
-        print("TARDIS Shield Activated")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Shield Activated")
 }
 
 if(OLS == "/ts off"){
@@ -106,7 +106,7 @@ if(OLS == "/ts off"){
     Shield:propNotSolid(1)
     Shield:propDraw(0)
     T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-    print("TARDIS Shield Deactivated")
+    printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Shield Deactivated")
 }
 }
 
@@ -118,142 +118,142 @@ if(chatClk(O)){
     if(OLS == "/tfly"){
         hideChat(1)
         if(T:tardisFlying() == 1){
-            print("TARDIS Flightmode is Active")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Flightmode is Active")
             }
             else{
-                print("TARDIS Flightmode is Inactive")
+                printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Flightmode is Inactive")
 }}
 
     if(OLS == "/thp"){
         hideChat(1)
-        print("TARDIS Health is at " +T:tardisHealth()+"% ("+TW["Health",number]+")")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Health is at " +T:tardisHealth()+"% ("+TW["Health",number]+")")
 }
 
     if(OLS == "/tv"){
         hideChat(1)
         if(T:tardisInVortex() == 1){
-            print("The TARDIS is in the vortex")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"The TARDIS is in the vortex")
     }
     else{
-        print("The TARDIS is not in the vortex")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"The TARDIS is not in the vortex")
 }}
 
     if(OLS == "/th"){
         hideChat(1)
         if(T:tardisIsHADS() == 1){
-            print("TARDIS HADS is Active")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS HADS is Active")
         }
         else{
-            print("TARDIS HADS is Inactive")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS HADS is Inactive")
 }}
 
     if(OLS == "/tiso"){
         hideChat(1)
         if(T:tardisIsomorphic() == 1){
-            print("TARDIS Isomorphic is Active")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Isomorphic is Active")
         }
         else{
-            print("TARDIS Isomorphic is Inactive")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Isomorphic is Inactive")
 }}
 
     if(OLS == "/tpos"){
         hideChat(1)
-        print("TARDIS coordinates are: "+T:pos():round(0))
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS coordinates are: "+T:pos():round(0))
 }
 
     if(OLS == "/tlpos"){
         hideChat(1)
-        print("TARDIS previous coordinates are: "+T:tardisLastPos():round(0))
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS previous coordinates are: "+T:tardisLastPos():round(0))
 }
 
     if(OLS == "/tang"){
         hideChat(1)
-        print("TARDIS current angle is: "+T:angles():round(0))
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS current angle is: "+T:angles():round(0))
 }
 
     if(OLS == "/tlang"){
         hideChat(1)
-        print("TARDIS previous angle is: "+T:tardisLastAng():round(0))
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS previous angle is: "+T:tardisLastAng():round(0))
 }
 
     if(OLS == "/tlock"){
         hideChat(1)
         if(T:tardisLocked() == 1){
-            print("TARDIS is locked")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS is locked")
         }
         
         else{
-            print("TARDIS is unlocked")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS is unlocked")
 }}
 
     if(OLS == "/tlfly"){
         hideChat(1)
         if(T:tardisLongflighted() == 1){
-            print("TARDIS Long Flight is Active")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Long Flight is Active")
         }
         
         else{
-            print("TARDIS Long Flight is Inactive")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Long Flight is Inactive")
 }}
 
     if(OLS == "/tmoving"){
         hideChat(1)
         if(T:tardisMoving() == 1){
-            print("TARDIS is moving")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS is moving")
         }
         
         else{
-            print("TARDIS is not moving")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS is not moving")
 }}
 
     if(OLS == "/tphys"){
         hideChat(1)
         if(T:tardisMoving() == 1){
-            print("TARDIS Physical Lock Active")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Physical Lock Active")
         }
         
         else{
-            print("TARDIS Physical Lock Inactive")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Physical Lock Inactive")
 }}
 
     if(OLS == "/tpilot"){
         hideChat(1)
-        print("TARDIS pilot is: "+T:tardisPilot():toString())
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS pilot is: "+T:tardisPilot():toString())
 }
 
     if(OLS == "/tpower"){
         hideChat(1)
         if(T:tardisPowered() == 1){
-            print("TARDIS Power Online")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Power Online")
         }
         
         else{
-            print("TARDIS Power Offline")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Power Offline")
 }}
 
     if(OLS == "/trepair"){
         hideChat(1)
         if(T:tardisSelfrepairing() == 1){
-            print("TARDIS Self Repair Online")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Self Repair Online")
         }
         
         else{
-            print("TARDIS Self Repair Offlne")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Self Repair Offlne")
 }}
 
     if(OLS == "/ttracking"){
         hideChat(1)
-        print("TARDIS is tracking: "+T:tardisTracking():toString())
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS is tracking: "+T:tardisTracking():toString())
 }
 
     if(OLS == "/tvisible"){
         hideChat(1)
         if(T:tardisVisible() == 1){
-            print("TARDIS Cloaking system Online")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Cloaking system Online")
         }
         
         else{
-            print("TARDIS Cloaking system Offline")
+            printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Cloaking system Offline")
 }}}
 
 #################
@@ -264,92 +264,92 @@ if(chatClk(O)){
     if(OLS == "/tmat"){
         hideChat(1)
         T:tardisMaterialise()
-        print("TARDIS Materialising")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Materialising")
 }
 
     if(OLS == "/tdemat here"){
         hideChat(1)
         T:tardisDemat(owner():aimPos(),T:angles())
         T:tardisSetDestination(owner():aimPos(),T:angles())
-        print("TARDIS Dematerialising to Aimpos")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Dematerialising to Aimpos")
 }
 
     if(OLS == "/tdemat me"){
         hideChat(1)
         T:tardisDemat(owner():pos(),T:angles())
         T:tardisSetDestination(owner():pos(),T:angles())
-        print("TARDIS Dematerialising to you.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Dematerialising to you.")
 }
 
     if(OLS == "/tdemat"){
         hideChat(1)
         T:tardisFastDemat()
-        print("TARDIS Dematerialising")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Dematerialising")
 }
 
     if(OLS == "/treturn"){
         hideChat(1)
         T:tardisFastReturn()
-        print("TARDIS returning to previous location.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS returning to previous location.")
 }
 
     if(OLS == "/ttfly"){
         hideChat(1)
         T:tardisFlightmode()
-        print("TARDIS Flightmode Toggled")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Flightmode Toggled")
 }
 
     if(OLS == "/tthads"){
         hideChat(1)
         T:tardisHADS()
-        print("TARDIS HADS toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS HADS toggled.")
 }
 
     if(OLS == "/ttiso"){
         hideChat(1)
         T:tardisIsomorph()
-        print("TARDIS Isomorphic Toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Isomorphic Toggled.")
 }
 
     if(OLS == "/ttlock"){
         hideChat(1)
         T:tardisLock()
-        print("TARDIS Lock Toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Lock Toggled.")
 }
 
     if(OLS == "/ttlongfly"){
         hideChat(1)
         T:tardisLongflight()
-        print("TARDIS Long Flight Toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Long Flight Toggled.")
 }
 
     if(OLS == "/ttphase"){
         hideChat(1)
         T:tardisPhase()
-        print("TARDIS Phase Toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Phase Toggled.")
 }
 
     if(OLS == "/ttphys"){
         hideChat(1)
         T:tardisPhyslock()
-        print("TARDIS Physlock Toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Physlock Toggled.")
 }
 
     if(OLS == "/ttpower"){
         hideChat(1)
         T:tardisPower()
-        print("TARDIS Power Toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Power Toggled.")
 }
 
     if(OLS == "/ttrepair"){
         hideChat(1)
         T:tardisSelfrepair()
-        print("TARDIS Self Repair Toggled.")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Self Repair Toggled.")
 }
     if(OLS == "/tu"){
         hideChat(1)
         T:use()
-        print("TARDIS Doors Toggled")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Doors Toggled")
 }}
 
 #############################
@@ -359,7 +359,7 @@ if(chatClk(O)){
 if(chatClk(O)){
     if(OLS == "/tadv"){ #This only works on the Legacy TARDIS, and you must wire the buttons manually
         hideChat(1)
-        print("Activating Advanced Takeoff")
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"Activating Advanced Takeoff")
         B1:use()
         timer("adv1",Advt)
 }}

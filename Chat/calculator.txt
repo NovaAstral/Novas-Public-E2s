@@ -1,0 +1,34 @@
+@name Calculator
+
+runOnChat(1)
+
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+
+if(chatClk(O)){
+    if(OLS[1,string] == "/calc"){
+        if(OLS[2,string]:toNumber() == 0 | OLS[4,string]:toNumber() == 0){
+            print("NaN or 0 Used as Input, Cannot Calculate.")
+        }
+        elseif(OLS[3,string] == "+"){
+            printColor("Calc: ", vec(0,255,115), OLS[2,string]:toNumber() + OLS[4,string]:toNumber())
+        }
+        
+        elseif(OLS[3,string] == "-"){
+            printColor("Calc: ", vec(0,255,115), OLS[2,string]:toNumber() - OLS[4,string]:toNumber())
+        }
+        
+        elseif(OLS[3,string] == "*" | OLS[3,string] == "x"){
+            printColor("Calc: ", vec(0,255,115), OLS[2,string]:toNumber() * OLS[4,string]:toNumber())
+        }
+        
+        elseif(OLS[3,string] == "/"){
+            printColor("Calc: ", vec(0,255,115), OLS[2,string]:toNumber() / OLS[4,string]:toNumber())
+        }
+        
+        elseif(OLS[3,string] == "^"){
+            printColor("Calc: ", vec(0,255,115), OLS[2,string]:toNumber() ^ OLS[4,string]:toNumber())
+        }
+    }
+}
+

@@ -1,0 +1,20 @@
+@name Ring Light
+@inputs Rings:wirelink EntIgnore:entity
+@outputs 
+
+#This is made for rings pointing down on the bottom of ships
+
+IgnoreArray = array(Rings:entity(),EntIgnore)
+
+interval(200)
+
+if(changed(Rings["Active",number]) & Rings["Active",number] == 1){
+    rangerFilter(IgnoreArray)
+    local RangerData = rangerOffset(Rings:entity():pos(), Rings:entity():pos() + Rings:entity():up() * 10000)
+    
+    lightCreate(1,RangerData:pos(),vec(255,255,255),100,10)
+}
+
+if(changed(Rings["Active",number]) & Rings["Active",number] == 0){
+    lightRemoveAll()   
+}

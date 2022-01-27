@@ -21,7 +21,7 @@ AutoIris = 0 #Enables the AutoIris feature that opens the iris of the linked gat
 
 
 if(changed(Gate["Inbound",number]) & Gate["Inbound",number] == 1 ){
-    print("Incoming Wormhole")
+    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Incoming Wormhole")
     
     if(InboundAlarm == 1){
         ShipCore:entity():setCoreEnvironmentSound(InboundAlarmS,0.2,100)
@@ -36,7 +36,7 @@ if(changed(Gate["Open",number]) & Gate["Open",number] == 1 & Gate["Inbound",numb
 }
 
 if(clk("waitin")){
-    print("Gate Active from: < " +Name+ " > with address < " +Address+ " > owned by: <" +Owner+ " >")
+    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Gate Active from: < " +Name+ " > with address < " +Address+ " > owned by: <" +Owner+ " >")
 }
 
 if(changed(Gate["Open",number]) & Gate["Open",number] == 1 & Gate["Inbound",number] == 0){
@@ -45,11 +45,11 @@ if(changed(Gate["Open",number]) & Gate["Open",number] == 1 & Gate["Inbound",numb
 }
 
 if(clk("waitout")){
-    print("Outgoing wormhole to: < " +Name+ " > with address < " +Address+ " > owned by: < " +Owner+ " >")
+    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Outgoing wormhole to: < " +Name+ " > with address < " +Address+ " > owned by: < " +Owner+ " >")
 }
 
-if(changed(Gate["Open",number]) & Gate["Open",number] == 0){
-    print("Gate Offline")
+if(changed(Gate["Active",number]) & Gate["Active",number] == 0){
+    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Gate Offline")
     stoptimer("autoiris")
     Address = ""
     Name = ""
@@ -75,11 +75,11 @@ if(clk("world")){
 
 if(changed(TButton) & TButton == 1){
     if(isJammed(GateTE:pos()+GateTE:forward()*100)){
-    print("Destination Jammed. Transport Aborted.")
+    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Destination Jammed. Transport Aborted.")
     owner():soundPlay(1,2000,"st/shuttlecraft/computer_deny.wav")
 }
     if((isJammed(owner():pos()))){
-        print("Origin Jammed. Transport Aborted.")
+        printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Origin Jammed. Transport Aborted.")
         owner():soundPlay(2,2000,"st/shuttlecraft/computer_deny.wav")
 }
     else{
@@ -89,7 +89,7 @@ if(changed(TButton) & TButton == 1){
 
 
 if(changed(Gate["Received",string]) & Gate["Received",string]:length() > 0){
-    print("Message received through gate: "+Gate["Received",string])
+    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Message received through gate: "+Gate["Received",string])
     Message = Gate["Received",string]
 }
 
@@ -102,11 +102,11 @@ if(AutoIris == 1){
         if(find():isValid() == 1){
             if(Gate:stargateIrisActive() == 1){
                 Gate:stargateIrisToggle()
-                print("Owner near dialing gate. Opening iris.")
+                printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Owner near dialing gate. Opening iris.")
                 stoptimer("autoiris")
             }
             elseif(Gate:stargateIrisActive() == 0){
-                print("Owner near dialing gate. Iris already open.")
+                printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Owner near dialing gate. Iris already open.")
                 stoptimer("autoiris")
             }
         }

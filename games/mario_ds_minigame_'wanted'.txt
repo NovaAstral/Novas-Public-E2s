@@ -135,8 +135,6 @@ if(clk("startgame")){
 if(clk("wantedcreate")){
     EGP:egpCircle(11,randvec2(BoxTopleft,BoxBottomright),vec2(CharSize)) #Wanted Character
     EGP:egpColor(11,vec(255,0,255))
-    EGP:egpCircle(12,EGP:egpPos(11) + CharSize,vec2(2))
-    EGP:egpCircle(13,EGP:egpPos(11) - CharSize,vec2(2))
 }
 
 if(~User & User){ #buttons
@@ -147,9 +145,8 @@ if(~User & User){ #buttons
         EGP:entity():soundPlay(1,600,"buttons/button6.wav")
         timer("starttimer",500)
     }
-    
-    #This doesn't work for some reason
-    if(inrange(Cursor,EGP:egpPos(11) + CharSize,EGP:egpPos(11) - CharSize)){ #Wanted Char
+
+    if(inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize)){ #Wanted Char
         print("clicky")
     }
 }

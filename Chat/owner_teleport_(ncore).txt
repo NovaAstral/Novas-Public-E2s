@@ -3,16 +3,17 @@
 
 #If you're not on TSCM, you need an addon called 'Nexus Core'
 #You can find Nexus Core at https://steamcommunity.com/sharedfiles/filedetails/?id=106681516
+#You will also need to comment line 56 to line 62
 
 runOnChat(1)
 OLS = owner():lastSaid():lower():explode(" ")
 
 if(chatClk(owner())){
     if(OLS[1,string] == "/tphelp"){
-        print("Teleport Help")
-        print("/tpa - Teleports you to where you're looking")
-        print("/tpp <name> - Teleports you to a player by name")
-        print("/tpv <vec> - Teleports you to coordinates eg: /tpv -9800 -90 -4610")
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Teleport Help")
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"/tpa - Teleports you to where you're looking")
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"/tpp <name> - Teleports you to a player by name")
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"/tpv <vec> - Teleports you to coordinates eg: /tpv -9800 -90 -4610")
     }
 
 if(OLS[1,string] == "/tpa"){ #Teleport to where you're looking
@@ -20,26 +21,26 @@ if(OLS[1,string] == "/tpa"){ #Teleport to where you're looking
     timer("jamtest",1)
     owner():teleport(owner():aimPos())
     Tarvec = owner():aimPos()
-    print("Teleported to aimpos")
+    printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Teleported to aimpos")
 }
 
 if(OLS[1,string] == "/tpp"){ #Teleport to a player by name
     hideChat(1)
     if(OLS[2,string]:length() < 1){
-        print("Cannot teleport to nothing.")
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Cannot teleport to nothing.")
     }
     else{
         Tar = findPlayerByName(OLS[2,string])
         owner():teleport(Tar:pos()+vec(0,50,0))
         #Teleports you to the player with a 50u offset so you're not inside them
-        print("Teleported to: "+ Tar:name())
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Teleported to: "+ Tar:name())
     }
 }
 
 if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
     hideChat(1)
     if(OLS[2,string]:length() < 1 & OLS[3,string]:length() < 1 & OLS[4,string]:length() < 1){
-        print("Cannot teleport to nowhere.")
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Cannot teleport to nowhere.")
     }
     else{
         X = OLS[2,string]:toNumber()
@@ -47,7 +48,7 @@ if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
         Z = OLS[4,string]:toNumber()
         Vec = round(vec(X,Y,Z))
         owner():teleport(Vec)
-        print("Teleported to: "+ Vec:toString())
+        printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Teleported to: "+ Vec:toString())
     }
 }}
 
@@ -55,7 +56,7 @@ if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
 if(clk("jamtest")){
     if(map() == "sb_galaxies_2018_v2"){
         if(isJammed(Tarvec)){
-            print("Target Jammed, cannot teleport")
+            printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Target Jammed, cannot teleport")
         }
     }
 }

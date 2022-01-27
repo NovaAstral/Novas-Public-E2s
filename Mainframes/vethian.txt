@@ -1,13 +1,15 @@
-@name Vethian AI 1.1
+@name Vethian AI 1.2
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 
-@outputs Active WarpFactor Tractor Lockdown Alert:string SDTimeLeft
+@outputs Active WarpFactor Tractor Lockdown Alert:string SDTimeLeft DistressCall DistressLocation:string
 @outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
 @outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
+@outputs Fire WepStrength WepRate WepType  ##Weapon Control
 
-@persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink Shipname:string
-@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed
+@persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink Shipname:string DistressLocation:string
+@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced
+@persist SH CP HP Prefix:string
 
 @autoupdate
 #remove the above line if you want to have different ship names
@@ -41,17 +43,26 @@
 #Make screens
 #Weapons control
 #Warnings for if you try to use a command but the thing isn't linked
+#Auto-Distress Call
+#Weapon Strength/Refire rate
+#Weapon Type Control
+#Change Distress find to normal find and incorporate that into both new distress and player/ship find
 
+#[
 
-#V1.1 Changes:
-# - Merged my Chat Self Destruct e2
-# - Enabled autoupdate so you don't have to save a new dupe of your ship when you download an update
-# - Fixed deactivating lockdown saying you've activated lockdown
-# - Changed all print() into printColor() as it looks better
-# - Updated the fuck out of the Todo so you can see what I want to do with this AI someday
-# - Merged my Chat Calculator e2
-# - Made Drive core speed commands as cspeed and ctspeed (speed and turnspeed)
+V1.2 Changes:
 
+- Distress Call '/v distress' Sends location, hull, shield, and plating status to alliance
+- Option to change Chat Prefix
+- Made disabling and enabling rings actually work (/v roff/ron)
+- Basic fire control with '/v fire <on/off>'
+- Weapon Strength control with '/v wstrength <number>'
+- Weapon Fire rate control with '/v wrate <number>'
+- Made a lib for colors (and later other things) so code is better
+- Made it so you can send messages through the gate with '/v gsend'
+]#
+
+#include "Novas-Public-E2s/library/nova_lib"
 
 runOnChat(1)
 
@@ -59,7 +70,7 @@ O = owner()
 OLS = owner():lastSaid():lower():explode(" ")
 
 if(first() | dupefinished()){
-    Active = 1
+    Active = 1 #This is just an active output to link things to
     WarpFactor = 10 #This is the starting warp factor
     Shutters = 1 #This opens the shutters when the AI is spawned
     
@@ -69,10 +80,18 @@ if(first() | dupefinished()){
     
     Shipname = "Shipname" #Change this to the name of your ship
     LS["Name",string] = Shipname
+
+    #AutoDistress = 1 #Disable this if you don't want your ship to send a distress call at 30% hull
+    #This isn't implemented yet
+    
+    Prefix = "/v" #If you don't use a / or ! in this, I will personally find you, and stab you.
+
+    WepStrength = 10 #I would set these lower if you dont have alot of resources
+    WepRate = 10
 }
 
 if(clk("aprint")){
-    botSay("AI","[Vethian]",vec(255,95,215),"Vethian AI active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
+    botSay("AI"," [Vethian] ",ColPink,"Vethian AI active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
 }
 
 #################
@@ -81,56 +100,56 @@ if(clk("aprint")){
 
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "power"){
             if(Energy["Active",number] == 0){
                 Energy["Activate",number] = 1
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Energy Generation Online.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Energy Generation Online.")
             }
             else{
                 Energy["Activate",number] = 0
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Energy Generation Offline. W-why would you turn the power off?")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Energy Generation Offline. W-why would you turn the power off?")
             }
         }
             
         if(OLS[2,string] == "refine"){
             if(Refinery["Active",number] == 0){
                 Refinery["Activate",number] = 1
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Refinery Online.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Refinery Online.")
             }
             else{
                 Refinery["Activate",number] = 0
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Refinery Offline.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Refinery Offline.")
             }
         }
 
         if(OLS[2,string] == "ls"){
             if(LS["Active",number] == 0){
                 LS["Activate",number] = 1
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Life Support Online.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Life Support Online.")
             }
             else{
                 LS["Activate",number] = 0
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Life Support Offline.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Life Support Offline.")
             }
         }
 
         if(OLS[2,string] == "noclip"){
             if(OLS[3,string] == "on"){
                 LS["Disable Noclip",number] = 0
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Anti-Noclip Disabled.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Anti-Noclip Disabled.")
             }
             if(OLS[3,string] == "off"){
                 LS["Disable Noclip",number] = 1
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Anti-Noclip Enabled.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Anti-Noclip Enabled.")
             }
             if(OLS[3,string] == "foff"){
                 LS["Disable Noclip",number] = 2
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Faction only noclip Enabled.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Faction only noclip Enabled.")
             }
             if(OLS[3,string] == "aoff"){
                 LS["Disable Noclip",number] = 3
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Alliance only noclip Enabled.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Alliance only noclip Enabled.")
             }
         }
     
@@ -138,13 +157,13 @@ if(chatClk(O)){
             LS["Mute",number] = 1
             Energy["Mute",number] = 1
             Refinery["Mute",number] = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Cores Muted.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cores Muted.")
         }
         if(OLS[2,string] == "unmute"){
             LS["Mute",number] = 0
             Energy["Mute",number] = 0
             Refinery["Mute",number] = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Cores Unmuted.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cores Unmuted.")
         }
 
         if(OLS[2,string] == "water"){
@@ -165,11 +184,11 @@ if(clk("collect")){
     if(WaterCE:isValid()){
         if(WaterCW["Active",number] == 0){
             WaterCW["Activate",number] = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Water Collector Online.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector Online.")
         }
         else{
             WaterCW["Activate",number] = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Water Collector Offline.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector Offline.")
         }
     }
 }
@@ -184,28 +203,34 @@ if(clk("placeclct")){
     findIncludeEntity(WCore:entity())
     
     if(findInBox(vec(15837,-9,15839),vec(-15836,-15836,32)) == 1){ #pegasus
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Water Collector placed on: Shakuras")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Shakuras")
         WaterCE:setPos(vec(-6818,-7200,6730))
+        WPlaced = 1
     }
     
     if(findInBox(vec(15839,15835,15834),vec(-15839,35,33)) == 1){ #milkyway
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Water Collector placed on: Earth")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Earth")
         WaterCE:setPos(vec(-1260,7982,7942))
+        WPlaced = 1
     }
     
     if(findInBox(vec(15831,-15835,0),vec(-15837,-2269,-14015)) == 1){ #desert
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Water Collector placed on: Desert")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Desert")
         WaterCE:setPos(vec(11350,-9220,-9360))
+        WPlaced = 1
     }
     
     if(findInBox(vec(-15837,-2269,-14015),vec(15837,15838,0)) == 1){ #hiigara
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Water Collector placed on: Hiigara")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Hiigara")
         WaterCE:setPos(vec(5654,6201,-6194))
+        WPlaced = 1
     }
     
-    else{
-        print("not in a boxhole")
+    elseif(WPlaced == 0){ #This should only trigger if you're in build/member/admin
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Why are you trying to use a water collector here?")
     }
+    
+    WPlaced = 0
 }
 
 
@@ -214,74 +239,86 @@ if(clk("placeclct")){
 ####################
 
 if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels better to me
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "plating"){
             if(Core["Plating Enabled",number] == 0){
                 Core["Enable Plating",number] = 1
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Plating Generation Enabled.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Plating Generation Enabled.")
                 }
                 else{
                     Core["Enable Plating",number] = 0
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Plating Generation Disabled.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Plating Generation Disabled.")
                 }
             }
+            
+            if(OLS[2,string] == "fire"){
+                if(OLS[3,string] == "on"){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Firing Weapons")
+                    Fire = 1
+                }
+                if(OLS[3,string] == "off"){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Weapons Offline")
+                    Fire = 0
+                }
+            }
+            
             if(OLS[2,string] == "emitters"){
                 if(Core["Emitters Enabled",number] == 0){
                     Core["Enable Emitters",number] = 1
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Pulsar Emitters Online.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Pulsar Emitters Online.")
                 }
                 else{
                     Core["Enable Emitters",number] = 0
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Pulsar Emitters Offline.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Pulsar Emitters Offline.")
                 }
             }
 
             if(OLS[2,string] == "repair"){
                 if(OLS[3,string] == "on"){
                     Core["Fire Repair Beam",number] = 1
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Firing Repair Beam.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Firing Repair Beam.")
                 }
                 if(OLS[3,string] == "off"){
                     Core["Fire Repair Beam",number] = 0
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Repair Beam Disabled.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Repair Beam Disabled.")
                 }
             }
 
             if(OLS[2,string] == "tr"){
                 if(OLS[3,string] == "on"){
                     Tractor = 1
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Tractor Beam Enabled.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Tractor Beam Enabled.")
                 }
                 if(OLS[3,string] == "off"){
                     Tractor = 0
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Tractor Beam Disabled.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Tractor Beam Disabled.")
                 }
             }
             
             if(OLS[2,string] == "shield"){
                 if(Shield["Active",number] == 0){
                     Shield["Activate",number] = 1
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Shield Activated.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shield Activated.")
                 }
                 else{
                     Shield["Activate",number] = 0
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Shield Deactivated.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shield Deactivated.")
                 }
             }
             
             if(OLS[2,string] == "cloak"){
                 if(Cloak["Active",number] == 0){
                 Cloak["Activate",number] = 1
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Cloak Activated.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cloak Activated.")
             }
             else{
                 Cloak["Activate",number] = 0
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Cloak Deactivated.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cloak Deactivated.")
             }
         }
 
         if(OLS[2,string] == "startup"){
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Activating ship systems. Turning on Plating generation, Life Support, and Power.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Activating ship systems. Turning on Plating generation, Life Support, and Power.")
             Core["Enable Plating",number] = 1
             LS["Activate",number] = 1
             Energy["Activate",number] = 1
@@ -290,25 +327,25 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
     
     if(OLS[2,string] == "sd"){
         if(OLS[3,string] == "stop"){
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Aborting Self Destruct.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aborting Self Destruct.")
             stoptimer("sdtime")
             SDTimeLeft = 0
         }
         
         if(OLS[3,string]:length() <= 0){
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," No time specified. Activating Destruction.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"No time specified. Activating Destruction.")
             Core["Self Destruct",number] = 1
             Active = 1
         }
         
         elseif(OLS[3,string] != "stop"){
             if(OLS[3,string]:toNumber() == 0){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Invalid time.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid time.")
             }
             else{
                 SDTimeLeft = OLS[3,string]:toNumber()
                 Active = 1
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Self Destruct activated for <"+ SDTimeLeft + "> seconds.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destruct activated for <"+ SDTimeLeft + "> seconds.")
                 timer("sdtime",10)
             }
         }
@@ -321,19 +358,19 @@ if(clk("sdtime")){
     
     if(SDTimeLeft == 0){
         Core["Self Destruct",number] = 1
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Ship Destruct")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship Destruct")
     }
     
     if(SDTimeLeft == 10){
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Self Destruct in 10 seconds.")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destruct in 10 seconds.")
     }
     
     if(SDTimeLeft == 30){
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Self Destruct in 30 seconds.")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destruct in 30 seconds.")
 }
 
     if(SDTimeLeft == 60){
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Self Destruct in 60 seconds.")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destruct in 60 seconds.")
     }
 }
 
@@ -342,13 +379,13 @@ if(clk("sdtime")){
 ##############
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         
         if(OLS[2,string] == "green"){
             Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",0.4,100)
             Core:entity():stopCoreEnvironmentSound()
             Alert = "Green"
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Condition Green. Stand Down.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Green. Stand Down.")
 
             if(GateCol == 1){
                 Gate["Event Horizon Color",vector] = vec(0,0,0)
@@ -358,7 +395,7 @@ if(chatClk(O)){
         if(OLS[2,string] == "blue"){
             Core:entity():setCoreEnvironmentSound("st/misc/bluealert.wav",0.4,100)
             Alert = "Blue"
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Condition Blue. Prepare for Battle.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Blue. Prepare for Battle.")
             
             if(GateCol == 1){
                 Gate["Event Horizon Color",vector] = vec(0,0,255)
@@ -368,7 +405,7 @@ if(chatClk(O)){
         if(OLS[2,string] == "red"){
             Core:entity():setCoreEnvironmentSound("st/misc/voy_redalert_loop.wav",0.4,100)
             Alert = "Red"
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Condition Red. Battle Stations.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Red. Battle Stations.")
             
             if(GateCol == 1){
                 Gate["Event Horizon Color",vector] = vec(255,0,0)
@@ -378,7 +415,7 @@ if(chatClk(O)){
         if(OLS[2,string] == "black"){
             Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",0.4,100)
             Alert = "Black"
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Condition Black. Shipwide Experiment.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Black. Shipwide Experiment.")
             
             if(GateCol == 1){
                 Gate["Event Horizon Color",vector] = vec(50,50,50)
@@ -388,7 +425,7 @@ if(chatClk(O)){
         if(OLS[2,string] == "abandon"){
             Core:entity():setCoreEnvironmentSound("st/misc/abandon_ship.wav",0.4,100)
             Alert = "Abandon Ship"
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Abandon Ship.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Abandon Ship.")
 
             if(GateCol == 1){
                 Gate["Event Horizon Color",vector] = vec(200,0,0)
@@ -406,7 +443,7 @@ if(chatClk(O)){
             Rings["UnUsable",number] = 1
             Shield["Activate",number] = 1
             LS["Disable Noclip",number] = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Ship Lockdown Activated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship Lockdown Activated")
         }
 
         if(OLS[2,string] == "ldoff"){
@@ -419,7 +456,7 @@ if(chatClk(O)){
             Lockdown = 0
             Rings["UnUsable",number] = 0
             LS["Disable Noclip",number] = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Ship Lockdown Deactivated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship Lockdown Deactivated")
         }
     }
 }
@@ -428,137 +465,137 @@ if(chatClk(O)){
 ####Doors/Forcefields####
 #########################
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         
         if(OLS[2,string] == "ob"){
             BridgeDoor = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Bridge Door Open")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Open")
         }
 
         if(OLS[2,string] == "cb"){
             BridgeDoor = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Bridge Door Closed")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Closed")
         }
 
         if(OLS[2,string] == "obf"){
             BridgeFF = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Bridge Forcefield Deactivated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Deactivated")
         }
 
         if(OLS[2,string] == "cbf"){
             BridgeFF = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Bridge Forcefield Activated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Activated")
         }
         
         if(OLS[2,string] == "og"){
             GateDoor = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Gateroom Door Open")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Door Open")
         }
 
         if(OLS[2,string] == "cg"){
             GateDoor = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Gateroom Door Closed")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Door Closed")
         }
 
         if(OLS[2,string] == "ogrf"){
             GateRFF = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Gateroom Forcefield Deactivated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Forcefield Deactivated")
         }
 
         if(OLS[2,string] == "cgrf"){
             GateRFF = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Gateroom Forcefield Activated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Forcefield Activated")
         }
         
         #This is meant for a forcefield that encompasses the area around the gate as a security thing
         if(OLS[2,string] == "ogf"){
             GateFF = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Gate Forcefield Deactivated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate Forcefield Deactivated")
         }
 
         if(OLS[2,string] == "cgf"){
             GateFF = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Gate Forcefield Activated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate Forcefield Activated")
         }
         
         if(OLS[2,string] == "ot"){
             TransDoor = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Transporter Room Door Open")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Door Open")
         }
 
         if(OLS[2,string] == "ct"){
             TransDoor = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Transporter Room Door Closed")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Door Closed")
         }
 
         if(OLS[2,string] == "otf"){
             TransFF = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Transporter Room Forcefield Deactivated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Forcefield Deactivated")
         }
 
         if(OLS[2,string] == "ctf"){
             TransFF = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Transporter Room Forcefield Activated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Forcefield Activated")
         }
         
         if(OLS[2,string] == "oe"){
             EngDoor = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Engineering Door Open")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Door Open")
         }
 
         if(OLS[2,string] == "ce"){
             EngDoor = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Engineering Door Closed")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Door Closed")
         }
     
         if(OLS[2,string] == "oef"){
             EngFF = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Engineering Forcefield Deactivated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Forcefield Deactivated")
         }
 
         if(OLS[2,string] == "cef"){
             EngFF = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Engineering Forcefield Activated")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Forcefield Activated")
         }
 
         if(OLS[2,string] == "ohl"){
             HangarDoorLeft = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Left Hangar Opened.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Left Hangar Opened.")
         }
 
         if(OLS[2,string] == "chl"){
             HangarDoorLeft = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Left Hangar Closed.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Left Hangar Closed.")
         }
         
         if(OLS[2,string] == "ohr"){
             HangarDoorRight = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Right Hangar Opened.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Right Hangar Opened.")
         }
 
         if(OLS[2,string] == "chr"){
             HangarDoorRight = 0
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Right Hangar Closed.")
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Right Hangar Closed.")
         }
 
         if(OLS[2,string] == "oh"){
             HangarDoor = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Hangar Opened")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Hangar Opened")
         }
 
         if(OLS[2,string] == "ch"){
             HangarDoor = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Hangar Closed")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Hangar Closed")
         }
         
         if(OLS[2,string] == "os"){
             Shutters = 1
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Shutters Open")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shutters Open")
         }
 
         if(OLS[2,string] == "cs"){
             Shutters = 0
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Shutters Closed")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shutters Closed")
         }
     }
 }
@@ -568,15 +605,15 @@ if(chatClk(O)){
 ############
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "sugged"){
-            botSayAlliance("AI","Vethian",vec(255,95,215),"sugged xd")
+            botSayAlliance("AI","Vethian",ColPink,"sugged xd")
         }
 
 #[ #ship/player location  THIS DOESNT WORK BECAUSE E2 HAS NO STARGAZER FUNCTIONS DAMNIT
     if(OLS[2,string] == "sloc"){
         Env = Core:getEnvironmentData()
-        printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0),"The ship is located at: " +Env)
+        printColor(ColTeam,"[AI]",ColPink," [Vethian]",ColOng,"The ship is located at: " +Env)
     }
 ]#
 
@@ -585,77 +622,77 @@ if(chatClk(O)){
         }
 
         if(OLS[2,string] == "help"){
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Vethian Help can be found at:")
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Vethian Help can be found at:")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk")
         }
         
         if(OLS[2,string] == "taim"){
             AimE = owner():aimEntity()
             if(AimE:isValid()){
                 AimEW = owner():aimEntity():wirelink()
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Selecting aimed entity as testfire weapon")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Selecting aimed entity as testfire weapon")
             }
             else{
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," You're not aiming at anything.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
             }
         }
         
         if(OLS[2,string] == "tfire"){
             if(AimE:isValid()){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Testfiring weapon")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Testfiring weapon")
                 AimEW["Fire",number] = 1
                 timer("unfire",2500)
             }
-            else{ #This does not work ?
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," You have not selected anything to fire.")
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You have not selected anything to fire.")
             }
         }   
     }
 }
 
-
 if(clk("unfire")){
     AimEW["Fire",number] = 0
 }
+
 
 ##################
 ####Gate/Rings####
 ##################
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         
         if(OLS[2,string] == "closeg"){
             Gate:stargateClose()
-            printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Closing Gate.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Closing Gate.")
         }
         if(OLS[2,string] == "dial"){
             if(OLS[4,string]:length() > 7 && Gate:stargateLocal() == 1){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Cannot dial outside of local group.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot dial outside of local group.")
             }
             else{
                 Gate["Dial Mode",number] = OLS[3,string]:toNumber()
                 Gate["Dial String",string] = OLS[4,string]
                 
                 if(OLS[3,string]:length() > 1){
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Dial Mode cannot be a string")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Dial Mode cannot be a string")
                     timer("dialreset",100)
                 }
                 else{
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Dialing the gate to: "+OLS[4,string])
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Dialing the gate to: "+OLS[4,string])
                     timer("gdial",100)
                 }
             }
         }
         
-        #[ This Quotas the AI because of how it works (and it works very wrong), will maybe fix later
         if(OLS[2,string] == "gsend"){
-            for(I = 3,256){
-                Gate:stargateTransmit(OLS[I,string])
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Message sent through gate:")
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0),OLS[I,string])
+            if(Gate["Active",number] == 0){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate is offline, cannot send a message.")
+            }
+            else{
+                Gate:stargateTransmit(owner():lastSaid():sub(9))
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Message sent through gate: "+owner():lastSaid():sub(9))
             }
         }
-        ]#
     }
 }
 
@@ -674,47 +711,85 @@ if(clk("dialreset")){
 ###Rings###
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         
         if(OLS[2,string] == "rdial"){
             if(OLS[3,string]:length() == 0){
                 if(Rings["Usable",number] == 0){
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Rings Disabled, Cannot dial.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Rings Disabled, Cannot dial.")
                 }
                 else{
                     Rings["Dial Closest",number] = 1
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Dialing closest rings.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Dialing closest rings.")
                     timer("ringreset",100)
                 }
             }
         
             if(OLS[3,string]:length() >= 1){
                 if(Rings["Usable",number] == 0){
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Rings Disabled, Cannot dial.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Rings Disabled, Cannot dial.")
                 }
                 else{
                     Rings["Dial Address",string] = OLS[3,string]
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Dialing Rings to: "+ OLS[3,string])
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Dialing Rings to: "+ OLS[3,string])
                     timer("ringreset",100)
                 }
-            
-                if(OLS[2,string] == "roff"){
-                    Rings["UnUsable",number] = 1
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Rings Disabled")
-                }
-            
-                if(OLS[2,string] == "ron"){
-                    Rings["UnUsable",number] = 0
-                    printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Rings Enabled")
-                }
             }
+        }
+            
+        if(OLS[2,string] == "roff"){
+            Rings["UnUsable",number] = 1
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Rings Disabled")
+        }
+            
+        if(OLS[2,string] == "ron"){
+            Rings["UnUsable",number] = 0
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Rings Enabled")
         }
     }
 }
 
+
 if(clk("ringreset")){
     Rings["Dial Address",string] = ""
     Rings["Dial Closest",number] = 0
+}
+
+
+####################
+###Weapon Control###
+####################
+
+if(chatClk(O)){
+    if(OLS[1,string] == Prefix){
+        if(OLS[2,string] == "wstrength"){
+            if(OLS[3,string]:toNumber() < 0){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Weapon Strength is: "+WepStrength)
+            }
+            elseif(OLS[3,string]:toNumber() >= 11){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Weapon Strength cannot go above 10. Setting Weapon Strength to max.")
+                WepStrength = 10
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Weapon Strength changed to: "+OLS[3,string]:toNumber())
+                WepStrength = OLS[3,string]:toNumber()
+            }
+        }
+        
+        if(OLS[2,string] == "wrate"){
+            if(OLS[3,string]:toNumber() < 0){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Weapon Rate is: "+WepStrength)
+            }
+            elseif(OLS[3,string]:toNumber() >= 11){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Weapon Rate cannot go above 10. Setting Weapon Rate to max.")
+                WepRate = 10
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Weapon Rate changed to: "+OLS[3,string]:toNumber())
+                WepRate = OLS[3,string]:toNumber()
+            }
+        }
+    }    
 }
 
 ##########
@@ -722,17 +797,17 @@ if(clk("ringreset")){
 ##########
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "wspeed"){
             if(OLS[3,string]:toNumber() <= 0){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Invalid number specified. Current Warp Factor is: "+WarpFactor)
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Warp Factor is: "+WarpFactor)
             }
             elseif(OLS[3,string]:toNumber() >= 11){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Warp Factor cannot go above 9.975. Setting Warp Factor to max.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warp Factor cannot go above 9.975. Setting Warp Factor to max.")
                 WarpFactor = 10
             }
             else{
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Warp Factor changed to: "+OLS[3,string]:toNumber())
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warp Factor changed to: "+OLS[3,string]:toNumber())
                 WarpFactor = OLS[3,string]:toNumber()
             }
         }
@@ -744,18 +819,18 @@ if(chatClk(O)){
 ################
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "cspeed"){
             if(OLS[3,string]:toNumber() < 0){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Invalid number specified. Current Drive Core Speed is: "+DCoreSpeed)
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Drive Core Speed is: "+DCoreSpeed)
             }
             elseif(OLS[3,string]:toNumber() > 2){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Drive Core Speed cannot go above 2. Setting Speed to max.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Drive Core Speed cannot go above 2. Setting Speed to max.")
                 DCoreSpeed = 2
                 DriveCore["Speed Multiplier",number] = 2
             }
             else{
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Drive Core Speed changed to: "+OLS[3,string]:toNumber())
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Drive Core Speed changed to: "+OLS[3,string]:toNumber())
                 DCoreSpeed = OLS[3,string]:toNumber()
                 DriveCore["Speed Multiplier",number] = OLS[3,string]:toNumber()
             }
@@ -765,18 +840,18 @@ if(chatClk(O)){
 
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "ctspeed"){
             if(OLS[3,string]:toNumber() < 0.5){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Invalid number specified. Current Drive core Turnspeed is: "+DCoreTurnSpeed)
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Drive core Turnspeed is: "+DCoreTurnSpeed)
             }
             elseif(OLS[3,string]:toNumber() > 2){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Drive Core Turnspeed cannot go above 2. Setting Turnspeed to max.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Drive Core Turnspeed cannot go above 2. Setting Turnspeed to max.")
                 DCoreTurnSpeed = 2
                 DriveCore["Turn Rate Multiplier",number] = 2
             }
             else{
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Drive Core Turnspeed changed to: "+OLS[3,string]:toNumber())
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Drive Core Turnspeed changed to: "+OLS[3,string]:toNumber())
                 DCoreTurnSpeed = OLS[3,string]:toNumber()
                 DriveCore["Turn Rate Multiplier",number] = OLS[3,string]:toNumber()
             }
@@ -788,30 +863,120 @@ if(chatClk(O)){
 ################
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/v"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "calc"){
             if(OLS[3,string]:toNumber() == 0 | OLS[5,string]:toNumber() == 0){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," NaN or 0 Used as Input, Cannot Calculate.")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"NaN or 0 Used as Input, Cannot Calculate.")
             }
             elseif(OLS[4,string] == "+"){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Calc: ", vec(0,255,115), OLS[3,string]:toNumber() + OLS[5,string]:toNumber())
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Calc: ", vec(0,255,115), OLS[3,string]:toNumber() + OLS[5,string]:toNumber())
             }
             
             elseif(OLS[4,string] == "-"){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Calc: ", vec(0,255,115), OLS[3,string]:toNumber() - OLS[5,string]:toNumber())
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Calc: ", vec(0,255,115), OLS[3,string]:toNumber() - OLS[5,string]:toNumber())
             }
             
             elseif(OLS[4,string] == "*" | OLS[4,string] == "x"){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Calc: ", vec(0,255,115), OLS[3,string]:toNumber() * OLS[5,string]:toNumber())
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Calc: ", vec(0,255,115), OLS[3,string]:toNumber() * OLS[5,string]:toNumber())
             }
-        
+            
             elseif(OLS[4,string] == "/"){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Calc: ", vec(0,255,115), OLS[3,string]:toNumber() / OLS[5,string]:toNumber())
-           }
-        
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Calc: ", vec(0,255,115), OLS[3,string]:toNumber() / OLS[5,string]:toNumber())
+            }
+            
             elseif(OLS[4,string] == "^"){
-                printColor(teamColor(owner():team()),"[AI]",vec(255,95,215)," [Vethian]",vec(230,110,0)," Calc: ", vec(0,255,115), OLS[3,string]:toNumber() ^ OLS[5,string]:toNumber())
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Calc: ", vec(0,255,115), OLS[3,string]:toNumber() ^ OLS[5,string]:toNumber())
             }
         }
     }
+}
+
+
+###################
+###Distress Call###
+###################
+
+if(chatClk(O)){
+    if(OLS[1,string] == Prefix){
+        if(OLS[2,string] == "distress"){
+            findIncludeEntity(Core:entity())
+            
+            if(findInBox(vec(15839,15835,15834),vec(-15839,35,33)) == 1){ #Milkyway
+                DistressLocation = "Milkyway Space"
+                Found = 1
+            }
+            
+            if(findInSphere(vec(0,8032,8064),4280) == 1){ #Earth
+                DistressLocation = "Earth"
+                Found = 1
+            }
+            
+            if(findInSphere(vec(-4480,13792,9920),1550) == 1){ #Moon
+                DistressLocation = "Moon"
+                Found = 1
+            }
+            
+            
+            if(findInBox(vec(15837,-9,15839),vec(-15836,-15836,32)) == 1){ #Pegasus
+                DistressLocation = "Pegasus Space"
+                Found = 1
+            }
+            
+            if(findInSphere(vec(-7552,-7056,6832),5160) == 1){ #Shakur
+                DistressLocation = "Shakuras"
+                Found = 1
+            }
+            
+            if(findInBox(vec(7068,-11246,10079),vec(9769,-4816,9032)) == 1){ #Station
+                DistressLocation = "Station"
+                Found = 1
+            }
+            
+            
+            if(findInBox(vec(15835,15840,0),vec(-15840,-15838,-14012)) == 1){ #Universe
+                DistressLocation = "Universe Space"
+                Found = 1
+            }
+            
+            if(findInSphere(vec(7168,8704,-6064),5015) == 1){ #Hiigara
+                DistressLocation = "Hiigara"
+                Found = 1
+            }
+            
+            if(findInSphere(vec(10624,-10668,-9384),4112) == 1){ #Desert
+                DistressLocation = "Desert"
+                Found = 1
+            }
+            
+            if(findInSphere(vec(-9792,-79,-4688),3122) == 1){ #Lava
+                DistressLocation = "Lava"
+                Found = 1
+            }
+            
+            elseif(Found == 0){
+                print("You are in an unrecognized location. Cannot send Distress Call ")
+            }
+            
+            if(Shield:entity():type() == "atlantis_shield_emitter"){
+                ShieldCurEng = Shield["Current Energy",number]
+                ShieldMaxEng = Shield["Max Energy",number]
+            }
+            elseif(Shield:entity():type() == "st_shield_emitter"){
+                ShieldCurEng = Shield["Total Charge",number]
+                ShieldMaxEng = Shield["Max Charge",number]
+            }
+            
+            SH = round(ShieldCurEng / ShieldMaxEng * 100)
+            CP = round(Core["Plating",number])
+            HP = round(Core["Health",number] / Core["Max Health",number] * 100)
+            
+            botSayAlliance("AI"," [Vethian] ",ColPink,"Distress Call initated from: [" +Shipname+ "] Owned by: [" +owner():name()+ "]")
+            timer("distresswait",2000)
+            Found = 0
+        }
+    }
+}
+
+if(clk("distresswait")){ #Distress Info
+    botSayAlliance("AI"," [Vethian] ",ColPink,"Distress Location: [" +DistressLocation+ "] Shields at: [" +SH+ "%] Plating at: [" +CP+ "%] Hull at: [" +HP+ "%]")
 }

@@ -16,7 +16,7 @@ if(chatClk(O)){
         timer("ptarget",10)
         
         if(E:type() == "player"){
-            print("You cannot destroy other players!")
+            printColor(vec(255,95,215)," [C14] ",vec(230,110,0),"You cannot destroy other players!")
             O:soundPlay(4,1,"st/shuttlecraft/alert_critical.mp3")
             stopAllTimers()
         }
@@ -38,13 +38,13 @@ if(clk("beam")){
 if(clk("test")){
     
     if(PadW["Energising",number] == 0){
-        print("Entity can't be energised, aborting code 14")
+        printColor(vec(255,95,215)," [C14] ",vec(230,110,0),"Entity can't be energised, aborting code 14")
         O:soundPlay(1,1,"st/shuttlecraft/computer_deny.wav")
         stopAllTimers()
         holoDelete(1)
     }
     else{
-        print("Initiating Transporter Code 14 on aimed entity.")
+        printColor(vec(255,95,215)," [C14] ",vec(230,110,0),"Initiating Transporter Code 14 on aimed entity.")
         timer("explode",1000)
         timer("col",10)
         O:soundPlay(2,1,"st/shuttlecraft/computer_work.mp3")

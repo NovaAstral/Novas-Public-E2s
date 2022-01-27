@@ -21,16 +21,16 @@ if(clk("find")){
     E2s = findToArray()
     if(E2s:count() > 0){
         stoptimer("find")
-        print("<" +E2s:count()+ "> E2's found.")
+        printColor(vec(255,95,215)," [E2 Finder] ",vec(230,110,0),"<" +E2s:count()+ "> E2's found.")
         for(I=1,E2s:count()){
             E2 = E2s[I,entity]
-            print("E2 Found, Owned by: <" +E2:owner():name()+ "> with name: <" +E2:getName()+ "> at location: " +round(E2:pos()) + " With a CPU usage of: <" + round(E2:cpuUsage()*1000000) + ">")
+            printColor(vec(255,95,215)," [E2 Finder] ",vec(230,110,0),"E2 Found, Owned by: <" +E2:owner():name()+ "> with name: <" +E2:getName()+ "> at location: " +round(E2:pos()) + " With a CPU usage of: <" + round(E2:cpuUsage()*1000000) + ">")
         }
     }
     
     if(E2s:count() == 0){
         stopAllTimers()
-        print("No E2's found on the map")
+        printColor(vec(255,95,215)," [E2 Finder] ",vec(230,110,0),"No E2's found on the map")
     }
 }
 
@@ -39,7 +39,7 @@ if(chatClk(O)){
         hideChat(1)
         if(OLS[2,string] == "reset"){
             reset()
-            print("E2 Finder Reset.")
+            printColor(vec(255,95,215)," [E2 Finder] ",vec(230,110,0),"E2 Finder Reset.")
         }
     }
 }
