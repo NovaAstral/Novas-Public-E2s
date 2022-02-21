@@ -1,20 +1,15 @@
-@name Vethian AI 1.2
+@name Vethian AI 1.3
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 
-@outputs Active WarpFactor Tractor Lockdown Alert:string SDTimeLeft DistressCall DistressLocation:string
+@outputs Active WarpFactor Tractor Lockdown Alert:string SDTimeLeft SDActive DistressCall DistressLocation:string Jam
 @outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
 @outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
 @outputs Fire WepStrength WepRate WepType  ##Weapon Control
 
 @persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink Shipname:string DistressLocation:string
-@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced
+@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam
 @persist SH CP HP Prefix:string
-
-@autoupdate
-#remove the above line if you want to have different ship names
-#you'll have to update the ai on ships manually though
-
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
@@ -43,23 +38,22 @@
 #Make screens
 #Weapons control
 #Warnings for if you try to use a command but the thing isn't linked
-#Auto-Distress Call
-#Weapon Strength/Refire rate
 #Weapon Type Control
 #Change Distress find to normal find and incorporate that into both new distress and player/ship find
 
 #[
 
-V1.2 Changes:
+V1.3 Changes:
 
-- Distress Call '/v distress' Sends location, hull, shield, and plating status to alliance
-- Option to change Chat Prefix
-- Made disabling and enabling rings actually work (/v roff/ron)
-- Basic fire control with '/v fire <on/off>'
-- Weapon Strength control with '/v wstrength <number>'
-- Weapon Fire rate control with '/v wrate <number>'
-- Made a lib for colors (and later other things) so code is better
-- Made it so you can send messages through the gate with '/v gsend'
+- Fixed turning lockdown off not disabling the core sound
+- Added '/v o'neill' ;)
+- Added an SDActive output for when self destruct is active
+- Added a sound to self destruct
+- Removed autoupdate because it was annoying me
+- Added the ability for the ai to say things to faction and alliance (/v fsay and /v asay) Don't abuse this or i'll remove it.
+- Added Jammer controls with '/v jam'
+- Changed the faction/alliance noclip commands from '/v noclip foff/aoff' to '/v noclip fac/ally'
+- Made the '/v water' command print a warning if you dont have a water core linked, or you dont have a collector placed
 ]#
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -111,7 +105,7 @@ if(chatClk(O)){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Energy Generation Offline. W-why would you turn the power off?")
             }
         }
-            
+        
         if(OLS[2,string] == "refine"){
             if(Refinery["Active",number] == 0){
                 Refinery["Activate",number] = 1
@@ -143,11 +137,11 @@ if(chatClk(O)){
                 LS["Disable Noclip",number] = 1
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Anti-Noclip Enabled.")
             }
-            if(OLS[3,string] == "foff"){
+            if(OLS[3,string] == "fac"){
                 LS["Disable Noclip",number] = 2
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Faction only noclip Enabled.")
             }
-            if(OLS[3,string] == "aoff"){
+            if(OLS[3,string] == "ally"){
                 LS["Disable Noclip",number] = 3
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Alliance only noclip Enabled.")
             }
@@ -190,6 +184,9 @@ if(clk("collect")){
             WaterCW["Activate",number] = 0
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector Offline.")
         }
+    }
+    else{
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Core not linked or collector not placed. Cannot collect water.")
     }
 }
 
@@ -328,14 +325,16 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
     if(OLS[2,string] == "sd"){
         if(OLS[3,string] == "stop"){
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aborting Self Destruct.")
+            Core:entity():stopCoreEnvironmentSound()
             stoptimer("sdtime")
             SDTimeLeft = 0
+            SDActive = 0
         }
         
         if(OLS[3,string]:length() <= 0){
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"No time specified. Activating Destruction.")
             Core["Self Destruct",number] = 1
-            Active = 1
+            SDActive = 1
         }
         
         elseif(OLS[3,string] != "stop"){
@@ -344,7 +343,8 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
             }
             else{
                 SDTimeLeft = OLS[3,string]:toNumber()
-                Active = 1
+                SDActive = 1
+                Core:entity():setCoreEnvironmentSound("alarm/sga_midway_selfdestruct.wav",1,100)
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destruct activated for <"+ SDTimeLeft + "> seconds.")
                 timer("sdtime",10)
             }
@@ -448,6 +448,7 @@ if(chatClk(O)){
 
         if(OLS[2,string] == "ldoff"){
             Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",0.4,100)
+            Core:entity():stopCoreEnvironmentSound()
             BridgeFF = 0
             GateFF = 0
             GateRFF = 0
@@ -609,6 +610,18 @@ if(chatClk(O)){
         if(OLS[2,string] == "sugged"){
             botSayAlliance("AI","Vethian",ColPink,"sugged xd")
         }
+        
+        if(OLS[2,string] == "asay"){
+            botSayAlliance("AI","Vethian",ColPink,owner():lastSaid():sub(8))
+        }
+        
+        if(OLS[2,string] == "fsay"){
+            botSay("AI","Vethian",ColPink,owner():lastSaid():sub(8))
+        }
+        
+        if(OLS[2,string] == "o'neill"){
+            timer("whacko",1) # :)
+        }
 
 #[ #ship/player location  THIS DOESNT WORK BECAUSE E2 HAS NO STARGAZER FUNCTIONS DAMNIT
     if(OLS[2,string] == "sloc"){
@@ -755,6 +768,24 @@ if(clk("ringreset")){
     Rings["Dial Closest",number] = 0
 }
 
+####################
+###Jammer Control###
+####################
+
+if(chatClk(O)){
+    if(OLS[1,string] == Prefix){
+        if(OLS[2,string] == "jam"){
+            if(Jam == 0){
+                Jam = 1
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Jammer Online")
+            }
+            elseif(Jam == 1){
+                Jam = 0
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Jammer Offline")
+            }
+        }
+    }
+}
 
 ####################
 ###Weapon Control###

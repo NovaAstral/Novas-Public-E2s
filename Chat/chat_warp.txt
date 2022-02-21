@@ -1,8 +1,16 @@
 @name Chat Warp
-@inputs Drive:wirelink
-@persist WarpVec:vector WarpAng:angle PrevPos:vector X Y Z
+@inputs Drive:entity
+@outputs Warp Destination:vector AngleOffset:angle PrevPos:vector PrevAng:angle
+@persist WarpVec:vector WarpAng:angle PrevPos:vector PrevAng:angle DriveOffset:angle
 
 #include "Novas-Public-E2s/library/nova_lib"
+
+if(first()){
+    DriveOffset = Drive:angles()
+    
+    Loc = WarpLoc
+    LocList = Loc:keys():concat(", ")
+}
 
 runOnChat(1)
 OLS = owner():lastSaid():lower():explode(" ")
@@ -15,30 +23,121 @@ if(chatClk(O)){
             local X = V[1,string]:toNumber()
             local Y = V[2,string]:toNumber()
             local Z = V[3,string]:toNumber()
+            
             WarpVec = round(vec(X,Y,Z))
-            print(WarpVec)
-        }
-        if(OLS[4,string]:length() == 0){
-            WarpAng = Drive:entity():angles()
-            print("owo")
+            
+            if(isJammed(WarpVec)){
+                printColor(ColPink,"[Warp] ",ColOng,"Destination jammed, cannot warp.")
+            }
+            else{
+                if(WarpVec == vec(0,0,0)){
+                    printColor(ColPink,"[Warp] ",ColOng,"Cannot warp to 0,0,0")
+                }
+                else{
+                    printColor(ColPink,"[Warp] ",ColOng,"Warping to Vector: "+WarpVec)
+                    Destination = WarpVec
+                    Warp = 1
+                    PrevPos = Drive:pos()
+                    timer("reset",1000)
+                }
+            }
         }
         
-        elseif(OLS[4,string]:length() >= 1){
-            local V = OLS[3,string]:explode(",")
-            local X = V[1,string]:toNumber()
-            local Y = V[2,string]:toNumber()
-            local Z = V[3,string]:toNumber()
-            WarpAng = round(ang(X,Y,Z))
-            print(WarpAng)
-            print(WarpVec)
+        if(OLS[2,string] == "back"){
+            if(isJammed(PrevPos)){
+                printColor(ColPink,"[Warp] ",ColOng,"Destination jammed, cannot warp.")
+            }
+            else{
+                Destination = PrevPos
+                Warp = 1
+                PrevPos = Drive:pos()
+                
+                printColor(ColPink,"[Warp] ",ColOng,"Warping to previous position")
+                timer("reset",1000)
+            }
+        }
+
+        
+        if(OLS[2,string] == "ang"){
+            if(OLS[3,string] == "reset"){
+                AngleOffset = Drive:toLocal(ang(0,0,0)) + DriveOffset
+                Destination = Drive:pos()
+                Warp = 1
+                PrevAng = Drive:angles() + DriveOffset
+                
+                printColor(ColPink,"[Warp] ",ColOng,"Resetting ship angles: "+WarpAng)
+                timer("reset",1000)
+            }
+            
+            #[
+            if(OLS[3,string] == "back"){ #This doesn't work properly for some reason
+                AngleOffset = Drive:toLocal(PrevAng)
+                Destination = Drive:pos()
+                Warp = 1
+                PrevAng = Drive:angles() + DriveOffset
+                
+                printColor(ColPink,"[Warp] ",ColOng,"Rotating to previous angles: "+round(PrevAng + DriveOffset))
+                timer("reset",1000)
+            }
+            ]#
+            
+            elseif(OLS[3,string] != "reset"){
+                if(OLS[3,string] != "back"){ #I hate this but I can't think of a better way to do it
+                    local V = OLS[3,string]:explode(",")
+                    local X = V[1,string]:toNumber()
+                    local Y = V[2,string]:toNumber()
+                    local Z = V[3,string]:toNumber()
+                    
+                    WarpAng = round(ang(X,Y,Z))
+                    AngleOffset = WarpAng
+                    PrevAng = Drive:angles() + DriveOffset
+                    Destination = Drive:pos()
+                    Warp = 1
+                    
+                    printColor(ColPink,"[Warp] ",ColOng,"Rotating to angle offset: "+WarpAng)
+                    timer("reset",1000)
+                }
+            }
+        }
+        
+        elseif(OLS[2,string] == "ply"){
+            if(findPlayerByName(OLS[3,string]):isValid()){
+                Ply = findPlayerByName(OLS[3,string])
+                PlyCol = teamColor(Ply:team())
+                
+                if(isJammed(Ply:pos())){
+                    printColor(ColPink,"[Warp] <",PlyCol,Ply:name(),ColOng,"> Is Jammed, cannot warp.")
+                }
+                
+                Destination = Ply:pos()
+                Warp = 1
+                PrevPos = Drive:pos()
+                printColor(ColPink,"[Warp] ",ColOng,"Warping to Player: <",PlyCol,Ply:name(),ColOng,">")
+                timer("reset",1000)
+            }
+            else{
+                printColor(ColPink,"[Warp] ",ColOng,"Cannot find anyone with that name")
+            }
+        }
+        
+        if(Loc:exists(OLS[2,string])){
+            Destination = round(Loc[OLS[2,string],vector])
+            Warp = 1
+            PrevPos = Drive:pos()
+            
+            printColor(ColPink,"[Warp] ",ColOng,"Warping to location: "+OLS[2,string])
+            timer("reset",1000)
+        }
+        else{
+            printColor(ColPink,"[Warp] ",ColOng,"Cannot warp to: "+OLS[2,string])
         }
     }
 }
 
 
-#If you're not on TSCM this function will crash the e2 
-if(clk("jamtest")){
-    if(isJammed(WarpVec)){
-        printColor(ColPink," [Warp] ",ColOng,"Warp destination jammed, cannot warp.")
-    }
+
+if(clk("reset")){
+    Warp = 0
+    Destination = vec()
+    AngleOffset = ang()
 }

@@ -1,0 +1,75 @@
+@name Alert Submat
+@inputs Alert:string [E1,E2,E3,E4,E5,E6,E7,E8,E9,E10]:entity
+@outputs 
+
+#You probably wont find this useful, this was made for my crossfield
+
+if(changed(Alert)){
+    if(Alert == "Green"){
+        E1:setSubMaterial(4,"cmats/light") #
+        E2:setSubMaterial(4,"cmats/light") #
+        E3:setSubMaterial(6,"cmats/light") #
+        E4:setSubMaterial(4,"cmats/light") #
+        E5:setSubMaterial(4,"cmats/light") #
+        E6:setSubMaterial(6,"cmats/light") #
+        E7:setMaterial("cmats/light")
+        E8:setMaterial("cmats/light")
+        E9:setMaterial("cmats/light")
+        E10:setMaterial("cmats/light")
+        E7:setColor(0,255,255)
+        E8:setColor(0,255,255)
+        E9:setColor(0,255,255)
+        E10:setColor(0,255,255)
+    }
+    
+    if(Alert == "Blue"){
+        E1:setSubMaterial(4,"glow/flash_blue")
+        E2:setSubMaterial(4,"glow/flash_blue")
+        E3:setSubMaterial(6,"glow/flash_blue")
+        E4:setSubMaterial(4,"glow/flash_blue")
+        E5:setSubMaterial(4,"glow/flash_blue")
+        E6:setSubMaterial(6,"glow/flash_blue")
+        E7:setMaterial("glow/flash_blue")
+        E8:setMaterial("glow/flash_blue")
+        E9:setMaterial("glow/flash_blue")
+        E10:setMaterial("glow/flash_blue")
+        E7:setColor(255,255,255)
+        E8:setColor(255,255,255)
+        E9:setColor(255,255,255)
+        E10:setColor(255,255,255)
+    }
+    
+    if(Alert == "Red" | Alert == "Abandon Ship" | Alert == "Lockdown"){
+        E1:setSubMaterial(4,"cmats/flash_red")
+        E2:setSubMaterial(4,"cmats/flash_red")
+        E3:setSubMaterial(6,"cmats/flash_red")
+        E4:setSubMaterial(4,"cmats/flash_red")
+        E5:setSubMaterial(4,"cmats/flash_red")
+        E6:setSubMaterial(6,"cmats/flash_red")
+        E7:setMaterial("cmats/flash_red")
+        E8:setMaterial("cmats/flash_red")
+        E9:setMaterial("cmats/flash_red")
+        E10:setMaterial("cmats/flash_red")
+        E7:setColor(255,255,255)
+        E8:setColor(255,255,255)
+        E9:setColor(255,255,255)
+        E10:setColor(255,255,255)
+    }
+    
+    if(Alert == "Black"){
+        E1:setSubMaterial(4,"glow/flash_white")
+        E2:setSubMaterial(4,"glow/flash_white")
+        E3:setSubMaterial(6,"glow/flash_white")
+        E4:setSubMaterial(4,"glow/flash_white")
+        E5:setSubMaterial(4,"glow/flash_white")
+        E6:setSubMaterial(6,"glow/flash_white")
+        E7:setMaterial("glow/flash_white")
+        E8:setMaterial("glow/flash_white")
+        E9:setMaterial("glow/flash_white")
+        E10:setMaterial("glow/flash_white")
+        E7:setColor(255,255,255)
+        E8:setColor(255,255,255)
+        E9:setColor(255,255,255)
+        E10:setColor(255,255,255)
+    }
+}

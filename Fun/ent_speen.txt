@@ -12,10 +12,10 @@ if(first()){
 if(clk("0")){
     timer("0",100)
     
-    X+=1
+    X += 1
     
-    if(X >=360){
-        X=0
+    if(X >= 360){
+        X = 0
     }
-    Ent:setAng(Ent:toWorld(ang(X*random(360),X*random(360),X*random(360))))
+    Ent:setAng(entity():toWorld(ang(X*random(360),X*random(360),X*random(360))))
 }

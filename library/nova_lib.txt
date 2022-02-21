@@ -1,5 +1,5 @@
 @name Nova_Lib
-@persist ColPink:vector ColOrange:vector ColTeam:vector
+@persist ColPink:vector ColOng:vector ColTeam:vector WarpLoc:table
 
 #This e2 doesn't need to be placed anywhere
 
@@ -11,6 +11,63 @@ ColOng = vec(230,110,0)
 ColTeam = teamColor(owner():team())
 
 if(entity():getName() == "Nova_Lib"){
-    printColor(ColPink," [NovaLib] ",ColOrange,"This Library doesn't need to be placed anywhere. Removing.")
+    printColor(ColPink," [NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. Removing.")
     selfDestruct()
+}
+
+
+WarpLoc["earth",vector] = vec(-89.812,8258.625,10690.25) #These are copied from my PCPU, i'll probably change them later
+WarpLoc["shakur",vector] = vec(-7576.469,-7152.125,9060.281)
+WarpLoc["desert",vector] = vec(10813.469,-9631.781,-8541.219)
+WarpLoc["hiigara",vector] = vec(6144.75,9267.938,-4660.031)
+WarpLoc["lava",vector] = vec(-9891.5,167.563,-4283.75)
+WarpLoc["milk",vector] = vec(-7659.344,8215.219,8300.563)
+WarpLoc["pegasus",vector] = vec(1703.844,-8593.844,9143.375)
+WarpLoc["universe",vector] = vec(111.344,-2874.812,-3954.719)
+WarpLoc["unicorner",vector] = vec(-9001.88, -7556.98, -10626.96)
+WarpLoc["hangar",vector] = vec(-7576.469,-7152.125,5560.281)
+WarpLoc["moon",vector] = vec(-4938,13441,10444)
+WarpLoc["members",vector] = vec(13,-94,-15202)
+WarpLoc["secret",vector] = vec(-6797,-6485,-15328)
+WarpLoc["phoenix",vector] = vec(-7539.68,-6805.75,3581.61)
+WarpLoc["build2",vector] = vec(12820,4475,-15105)
+WarpLoc["build3",vector] = vec(12820,-4130,-15105)
+WarpLoc["build4",vector] = vec(12820,-12345,-15105)
+WarpLoc["hiigarabase",vector] = vec(7556,6805,-7450)
+
+if(clk("whacko")){
+    printColor(ColPink," [O'Neill] ",ColOng,"I'm telling you Teal'c, if we don't find a way out of this soon, I'm gonna lose it.")
+    timer("whacko 2",6000)
+    owner():soundPlay(1,22,"wacko.wav")
+}
+if(clk("whacko 2")){
+    printColor(ColPink," [O'Neill] ",ColOng,"Lose it. It means, go crazy.")
+    timer("whacko 3",4000)
+}
+if(clk("whacko 3")){
+    printColor(ColPink," [O'Neill] ",ColOng,"Nuts.")
+    timer("whacko 4",2000)
+}
+if(clk("whacko 4")){
+    printColor(ColPink," [O'Neill] ",ColOng,"Insane.")
+    timer("whacko 5",1500)
+}
+if(clk("whacko 5")){
+    printColor(ColPink," [O'Neill] ",ColOng,"Bonzo.")
+    timer("whacko 6",1400)
+}
+if(clk("whacko 6")){
+    printColor(ColPink," [O'Neill] ",ColOng,"No longer in possession of ones faculties.")
+    timer("whacko 7",2200)
+}
+if(clk("whacko 7")){
+    printColor(ColPink," [O'Neill] ",ColOng,"Three fries short of a happy meal.")
+    timer("whacko 8",2200)
+}
+if(clk("whacko 8")){
+    printColor(ColPink," [O'Neill] ",ColOng,"WHACKO!!!")
+    timer("whacko 9",2000)
+}
+if(clk("whacko 9")){
+    error("WHACKO!!!")
 }

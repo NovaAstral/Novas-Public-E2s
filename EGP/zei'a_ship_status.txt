@@ -309,7 +309,7 @@ if(clk("setup")){
     EGP:egpSize(31,25)
     EGP:egpColor(31,vec(255,255,255))
 
-    EGP:egpText(32,"T'ile",vec2(123,105)) #Means 'Exoskeleton' (Plating)
+    EGP:egpText(32,"Til'e",vec2(123,105)) #Means 'Exoskeleton' (Plating)
     EGP:egpSize(32,30)
     EGP:egpColor(32,vec(255,255,255))
     
@@ -321,7 +321,7 @@ if(clk("setup")){
     EGP:egpSize(34,16)
     EGP:egpColor(34,vec(255,255,255))
     
-    EGP:egpText(35,"Yp'yote Ei'n",vec2(358,138)) #Means 'Shield System'
+    EGP:egpText(35,"Yp'yote Kuni",vec2(358,138)) #Means 'Shield System'
     EGP:egpSize(35,18)
     EGP:egpColor(35,vec(255,255,255))
     

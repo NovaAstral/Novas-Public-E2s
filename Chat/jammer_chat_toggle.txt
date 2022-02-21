@@ -8,9 +8,7 @@ OLS = owner():lastSaid():lower():explode(" ")
 
 if(chatClk(O)){
     if(OLS[1,string] == "/jammer"){
-    hideChat(1)
-    timer("hideoff",10)
-    if(OLS[2,string] == "toggle"){
+        hideChat(1)
         if(Active == 0){
             Active = 1
             print("Jammer Online")
@@ -20,8 +18,4 @@ if(chatClk(O)){
             print("Jammer Offline")
         }
     }
-}}
-
-if(clk("hideoff")){ #This isn't actually needed since putting hideChat() inside an if() only hides for the duration of the if()
-    hideChat(0)
 }

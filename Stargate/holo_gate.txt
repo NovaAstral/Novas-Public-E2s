@@ -9,7 +9,8 @@ timer("setup",1000)
 noCollideAll(entity(),0)
 }
 
-#Consolio made a better version of this
+#Quiru made a better version of this
+#That version may replace this e2 later as alot of it is my work too
 
 if(clk("setup")){
     stoptimer("setup")

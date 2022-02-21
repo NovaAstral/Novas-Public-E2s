@@ -9,29 +9,42 @@ OLS = owner():lastSaid():lower():explode(" ")
 runOnChat(1)
 
 if(chatClk(O)){
-if(OLS[1,string] == "/closeg"){
-    hideChat(1)
-    Gate:stargateClose()
-    printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Closing Gate.")
-}
+    if(OLS[1,string] == "/closeg"){
+        hideChat(1)
+        Gate:stargateClose()
+        printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Closing Gate.")
+    }
 
-if(OLS[1,string] == "/dial"){
-    hideChat(1)
-    if(OLS[3,string]:length() > 7 && Gate:stargateLocal() == 1){
-        printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Cannot dial outside of local group.")
-    }
-    else{
-    Gate["Dial Mode",number] = OLS[2,string]:toNumber()
-    Gate["Dial String",string] = OLS[3,string]
+    if(OLS[1,string] == "/dial"){
+        hideChat(1)
     
-    if(OLS[2,string]:length() > 1){
-        printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dial Mode cannot be a string")
-        timer("dialreset",100)
+        if(OLS[3,string]:length() > 7 && Gate:stargateLocal() == 1){
+            printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Cannot dial outside of local group.")
+        }
+        else{
+            Gate["Dial Mode",number] = OLS[2,string]:toNumber()
+            Gate["Dial String",string] = OLS[3,string]
+        
+            if(OLS[2,string]:length() > 1){
+                printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dial Mode cannot be a string")
+                timer("dialreset",100)
+            }
+            else{
+                printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dialing the gate to: "+OLS[3,string])
+                timer("gdial",100)
+            }
+        }
+        
+        if(OLS[2,string] == "player"){ #This doesn't work
+            local GateArray = array("stargate_atlantis","stargate_infinity")
+            local Ply = findPlayerByName(OLS[3,string])
+            findByClass("stargate_*")
+            
+            
+            local GateE = 1
+        }
     }
-    else{
-    printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dialing the gate to: "+OLS[3,string])
-    timer("gdial",100)
-}}}}
+}
 
 if(clk("gdial")){
     Gate["Start String Dial",number] = 1
@@ -46,37 +59,42 @@ if(clk("dialreset")){
 
 ###Rings
 if(chatClk(O)){
-if(OLS[1,string] == "/rdial"){
-    hideChat(1)
-    if(OLS[2,string]:length() == 0){
-        if(Rings["Usable",number] == 0){
-            printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Disabled, Cannot dial.")
+    if(OLS[1,string] == "/rdial"){
+        hideChat(1)
+        if(OLS[2,string]:length() == 0){
+            if(Rings["Usable",number] == 0){
+                printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Disabled, Cannot dial.")
+            }
+            else{
+                Rings["Dial Closest",number] = 1
+                printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dialing closest rings.")
+                timer("ringreset",100)
+            }
         }
-        else{
-        Rings["Dial Closest",number] = 1
-        printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dialing closest rings.")
-        timer("ringreset",100)
-}}
 
-if(OLS[2,string]:length() >= 1){
-    if(Rings["Usable",number] == 0){
-        printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Disabled, Cannot dial.")
-    }
-    else{
-    Rings["Dial Address",string] = OLS[2,string]
-    printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dialing Rings to: "+ OLS[2,string])
-    timer("ringreset",100)
+        if(OLS[2,string]:length() >= 1){
+            if(Rings["Usable",number] == 0){
+                printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Disabled, Cannot dial.")
+            }
+            else{
+                Rings["Dial Address",string] = OLS[2,string]
+                printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Dialing Rings to: "+ OLS[2,string])
+                timer("ringreset",100)
     
-    if(OLS[1,string] == "/roff"){
-    Rings["UnUsable",number] = 1
-    printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Disabled")
-}
+                if(OLS[1,string] == "/roff"){
+                    Rings["UnUsable",number] = 1
+                    printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Disabled")
+                }
 
-if(OLS[1,string] == "/ron"){
-    hideChat(1)
-    Rings["UnUsable",number] = 0
-    printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Enabled")
-}}}}}
+                if(OLS[1,string] == "/ron"){
+                    hideChat(1)
+                    Rings["UnUsable",number] = 0
+                    printColor(vec(255,95,215)," [Chat Dial] ",vec(230,110,0),"Rings Enabled")
+                }
+            }
+        }
+    }
+}
 
 if(clk("ringreset")){
     Rings["Dial Address",string] = ""

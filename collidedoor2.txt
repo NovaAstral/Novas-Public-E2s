@@ -4,6 +4,7 @@
 @persist 
 @trigger 
 
+#This does not work on TSCM. Person disabled propNotSolid()
 
 if(B == 1){
     Door:propNotSolid(1)
