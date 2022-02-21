@@ -668,9 +668,9 @@ if(clk("unfire")){
 }
 
 
-##################
-####Gate/Rings####
-##################
+######################
+####Gate/Rings/Jam####
+######################
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
         
@@ -768,9 +768,8 @@ if(clk("ringreset")){
     Rings["Dial Closest",number] = 0
 }
 
-####################
+
 ###Jammer Control###
-####################
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
