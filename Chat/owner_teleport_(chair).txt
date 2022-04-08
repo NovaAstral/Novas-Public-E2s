@@ -23,7 +23,7 @@ if(OLS[1,string] == "/tpp"){ #Teleport to player by name
     }
     else{
         Tar = findPlayerByName(OLS[2,string])
-        timer("seatspawn",10)
+        timer("seatspawnplayer",10)
     }
 }
 

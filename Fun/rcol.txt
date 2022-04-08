@@ -1,16 +1,26 @@
 @name rcol
-@inputs In En:entity
-@outputs Col:vector Count 
+@inputs In [N1,N2,N3,N4]:entity 
+@outputs RainCol:vector Count 
 
-#This makes a smooth rainbow
+if(In == 1){
+    timer("col",10)
+}
+else{
+    stopAllTimers()
+}
 
-interval(10)
-if(In){
-    Count += 0.5
-    Col = hsv2rgb(Count, 1, 1)
-    En:setColor(Col,255)
+if(clk("col")){
+    timer("col",10)
     
-    if(Count == 360){
+    Count += 0.5
+    RainCol = hsv2rgb(Count, 1, 1)
+    
+    if(Count == 360){ 
         Count = 0
     }
+    
+    N1:setColor(RainCol)
+    N2:setColor(RainCol)
+    N3:setColor(RainCol)
+    N4:setColor(RainCol)
 }

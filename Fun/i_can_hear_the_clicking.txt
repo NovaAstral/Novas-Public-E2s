@@ -34,4 +34,5 @@ if(changed(Found) && Found == 0){
 if(clk("sound")){
     timer("sound",300)
     entity():soundPlay(1,0,"button/button_hangar1.wav") # br/ambience/br_crikt_lp_01.wav
+    soundPitch(1,randint(200,255))
 }

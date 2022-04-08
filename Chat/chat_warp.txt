@@ -1,15 +1,33 @@
 @name Chat Warp
-@inputs Drive:entity
-@outputs Warp Destination:vector AngleOffset:angle PrevPos:vector PrevAng:angle
-@persist WarpVec:vector WarpAng:angle PrevPos:vector PrevAng:angle DriveOffset:angle
+@inputs Drive:wirelink
+@outputs Warp Destination:vector AngleOffset:angle PrevPos:vector
+@persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput]:string
 
 #include "Novas-Public-E2s/library/nova_lib"
 
 if(first()){
-    DriveOffset = Drive:angles()
+    LocList = WarpLoc:keys():concat(", ")
     
-    Loc = WarpLoc
-    LocList = Loc:keys():concat(", ")
+    function void warp(WarpVec:vector,Ang:angle){
+        if(WarpVec == vec(0,0,0)){
+            printColor(ColPink,"[Warp] ",ColOng,"Cannot warp to 0,0,0")
+        }
+        else{
+            if(isJammed(WarpVec)){
+                printColor(ColPink,"[Warp] ",ColOng,"Destination jammed, cannot warp.")
+                return
+            }
+            PrevPos = DriveEnt:pos()
+            PrevAng = DriveEnt:angles()
+            Drive[DestInput,vector] = WarpVec
+            Drive[AngInput,angle] = Ang
+            Destination = WarpVec
+            Angle = ang()
+
+            timer("reset",1000)
+            timer("warp",100)
+        }
+    }
 }
 
 runOnChat(1)
@@ -19,114 +37,65 @@ O = owner()
 if(chatClk(O)){
     if(OLS[1,string] == "/warp"){
         if(OLS[2,string] == "vec"){
+            WarpF = 1
             local V = OLS[3,string]:explode(",")
             local X = V[1,string]:toNumber()
             local Y = V[2,string]:toNumber()
             local Z = V[3,string]:toNumber()
             
-            WarpVec = round(vec(X,Y,Z))
+            local Dest = round(vec(X,Y,Z))
             
-            if(isJammed(WarpVec)){
-                printColor(ColPink,"[Warp] ",ColOng,"Destination jammed, cannot warp.")
-            }
-            else{
-                if(WarpVec == vec(0,0,0)){
-                    printColor(ColPink,"[Warp] ",ColOng,"Cannot warp to 0,0,0")
-                }
-                else{
-                    printColor(ColPink,"[Warp] ",ColOng,"Warping to Vector: "+WarpVec)
-                    Destination = WarpVec
-                    Warp = 1
-                    PrevPos = Drive:pos()
-                    timer("reset",1000)
-                }
-            }
+            printColor(ColPink,"[Warp] ",ColOng,"Warping to Vector: "+Dest)
+            warp(Dest,AngleOffset)
         }
+    }
+    if(OLS[2,string] == "back"){
+        WarpF = 1
+        printColor(ColPink,"[Warp] ",ColOng,"Warping to previous position")
+        warp(PrevPos,AngleOffset)
+    }
         
-        if(OLS[2,string] == "back"){
-            if(isJammed(PrevPos)){
-                printColor(ColPink,"[Warp] ",ColOng,"Destination jammed, cannot warp.")
-            }
-            else{
-                Destination = PrevPos
-                Warp = 1
-                PrevPos = Drive:pos()
-                
-                printColor(ColPink,"[Warp] ",ColOng,"Warping to previous position")
-                timer("reset",1000)
-            }
-        }
-
-        
-        if(OLS[2,string] == "ang"){
-            if(OLS[3,string] == "reset"){
-                AngleOffset = Drive:toLocal(ang(0,0,0)) + DriveOffset
-                Destination = Drive:pos()
-                Warp = 1
-                PrevAng = Drive:angles() + DriveOffset
-                
-                printColor(ColPink,"[Warp] ",ColOng,"Resetting ship angles: "+WarpAng)
-                timer("reset",1000)
-            }
+    if(OLS[2,string] == "ang"){
+        if(OLS[3,string] == "reset"){
+            WarpF = 1
+            local AngOffset = DriveEnt:toLocal(ang(0,0,0)) + DriveOffset
+            local Dest = DriveEnt:pos()
             
-            #[
-            if(OLS[3,string] == "back"){ #This doesn't work properly for some reason
-                AngleOffset = Drive:toLocal(PrevAng)
-                Destination = Drive:pos()
-                Warp = 1
-                PrevAng = Drive:angles() + DriveOffset
-                
-                printColor(ColPink,"[Warp] ",ColOng,"Rotating to previous angles: "+round(PrevAng + DriveOffset))
-                timer("reset",1000)
-            }
-            ]#
-            
-            elseif(OLS[3,string] != "reset"){
-                if(OLS[3,string] != "back"){ #I hate this but I can't think of a better way to do it
-                    local V = OLS[3,string]:explode(",")
-                    local X = V[1,string]:toNumber()
-                    local Y = V[2,string]:toNumber()
-                    local Z = V[3,string]:toNumber()
-                    
-                    WarpAng = round(ang(X,Y,Z))
-                    AngleOffset = WarpAng
-                    PrevAng = Drive:angles() + DriveOffset
-                    Destination = Drive:pos()
-                    Warp = 1
-                    
-                    printColor(ColPink,"[Warp] ",ColOng,"Rotating to angle offset: "+WarpAng)
-                    timer("reset",1000)
-                }
-            }
+            printColor(ColPink,"[Warp] ",ColOng,"Resetting ship angles: "+AngOffset)
+            warp(Dest,AngOffset)
         }
-        
-        elseif(OLS[2,string] == "ply"){
-            if(findPlayerByName(OLS[3,string]):isValid()){
-                Ply = findPlayerByName(OLS[3,string])
-                PlyCol = teamColor(Ply:team())
-                
-                if(isJammed(Ply:pos())){
-                    printColor(ColPink,"[Warp] <",PlyCol,Ply:name(),ColOng,"> Is Jammed, cannot warp.")
-                }
-                
-                Destination = Ply:pos()
-                Warp = 1
-                PrevPos = Drive:pos()
-                printColor(ColPink,"[Warp] ",ColOng,"Warping to Player: <",PlyCol,Ply:name(),ColOng,">")
-                timer("reset",1000)
-            }
-            else{
-                printColor(ColPink,"[Warp] ",ColOng,"Cannot find anyone with that name")
-            }
-        }
-        
-        if(Loc:exists(OLS[2,string])){
-            Destination = round(Loc[OLS[2,string],vector])
-            Warp = 1
-            PrevPos = Drive:pos()
+        elseif(OLS[3,string] != "reset"){
+            WarpF = 1
+            local V = OLS[3,string]:explode(",")
+            local X = V[1,string]:toNumber()
+            local Y = V[2,string]:toNumber()
+            local Z = V[3,string]:toNumber()
+    
+            local Ang = round(ang(X,Y,Z))
+            local Dest = DriveEnt:pos()
             
+            warp(Dest,Ang)
+            printColor(ColPink,"[Warp] ",ColOng,"Rotating to angle offset: "+Ang)
+        }
+    }
+    
+    if(OLS[1,string] == "/warp" & WarpF == 0){
+        Ply = findPlayerByName(OLS[2,string])
+        
+        if(Ply:isPlayer()){
+            WarpF = 1
+            PlyCol = teamColor(Ply:team())
+            local Dest = Ply:pos()
+        
+            warp(Dest,AngleOffset)
+            printColor(ColPink,"[Warp] ",ColOng,"Warping to Player: <",PlyCol,Ply:name(),ColOng,">")
+        }
+        elseif(WarpLoc:exists(OLS[2,string])){
+            WarpF = 1
+            local Dest = round(WarpLoc[OLS[2,string],vector])
+            
+            warp(Dest,AngleOffset)
             printColor(ColPink,"[Warp] ",ColOng,"Warping to location: "+OLS[2,string])
-            timer("reset",1000)
         }
         else{
             printColor(ColPink,"[Warp] ",ColOng,"Cannot warp to: "+OLS[2,string])
@@ -135,9 +104,70 @@ if(chatClk(O)){
 }
 
 
-
 if(clk("reset")){
-    Warp = 0
     Destination = vec()
-    AngleOffset = ang()
+    Drive[DestInput,vector] = vec()
+    Warp = 0
+    Drive[WarpInput,number] = 0
+    WarpF = 0
+}
+
+if(clk("warp")){
+    Warp = 1
+    Drive[WarpInput,number] = 1
+}
+
+if(changed(Drive)){
+    if(->Drive){
+        DriveEnt = Drive:entity()
+        DriveOffset = DriveEnt:angles()
+        DriveType = DriveEnt:type()
+        
+        if(DriveType == "ship_drive" | DriveType == "bsg_drive" | DriveType == "st_warp_drive" | DriveType == "sg_hyperdrive" | DriveType == "spore_drive" | DriveType == "quantum_slipstream_drive"){
+            DestInput = "Destination"
+            WarpInput = "Activate"
+            AngInput = "Angle Offset"
+            printColor(ColPink,"[Warp] ",ColOng,"TSCM Drive Linked.")
+        }
+        elseif(DriveType == "gmod_wire_hoverdrivecontroler" | DriveType == "gmod_wire_teleporter"){
+            DestInput = "TargetPos"
+            WarpInput = "Jump"
+            printColor(ColPink,"[Warp] ",ColOng,"Wire Drive Linked")
+        }
+        elseif(DriveType == "warpdrive"){ #SBEP Warp Drive
+            DestInput = "Destination"
+            WarpInput = "Warp"
+            AngInput = ""
+            printColor(ColPink,"[Warp] ",ColOng,"SBEPDrive Linked")
+        }
+        elseif(DriveType == "st_shuttle_type11"){
+            DestInput = "Transwarp Destination"
+            WarpInput = "Transwarp"
+            printColor(ColPink,"[Warp] ",ColOng,"Type 11 Shuttle Linked")
+        }
+        elseif(DriveType == "st_shuttle_type9" | DriveType == "st_Shuttle_type6"){
+            DestInput = "Warp Destination"
+            WarpInput = "Engage Warp"
+            printColor(ColPink,"[Warp] ",ColOng,"Shuttle Linked")
+        }
+        elseif(DriveType == "sci_fi_shuttle"){
+            DestInput = "FTL Co-ordinates"
+            WarpInput = "FTL Jump"
+            printColor(ColPink,"[Warp] ",ColOng,"Sci-fi Shuttle Linked")
+        }
+        elseif(DriveType == "sent_tardis_interior" | DriveType == "sent_tardis"){
+            DestInput = "XYZ"
+            WarpInput = "Demat" 
+            printColor(ColPink,"[Warp] ",ColOng,"TARDIS Linked")
+        }
+        elseif(->Destination & ->Warp){
+            printColor(ColPink,"[Warp] ",ColOng,"Manual Drive Linked")
+        }        
+        elseif(->Drive){
+            printColor(ColPink,"[Warp] ",ColOng,"Unable to link to: "+DriveType)
+        }        
+        else{
+            printColor(ColPink,"[Warp] ",ColOng,"Drive Unlinked")
+        }
+    }
 }

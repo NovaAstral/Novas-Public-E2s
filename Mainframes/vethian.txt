@@ -1,4 +1,4 @@
-@name Vethian AI 1.3
+@name Vethian AI 1.4
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 
@@ -7,7 +7,7 @@
 @outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
 @outputs Fire WepStrength WepRate WepType  ##Weapon Control
 
-@persist WaterCW:wirelink WaterCE:entity AimE:entity AimEW:wirelink Shipname:string DistressLocation:string
+@persist WaterCW:wirelink WaterCE:entity AimEF:entity AimEFW:wirelink AimE:entity AimEW:wirelink Shipname:string DistressLocation:string
 @persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam
 @persist SH CP HP Prefix:string
 
@@ -40,20 +40,19 @@
 #Warnings for if you try to use a command but the thing isn't linked
 #Weapon Type Control
 #Change Distress find to normal find and incorporate that into both new distress and player/ship find
-
+#Make all the functions from v1.4 better
+#Remove all wire inputs by using autofind
 #[
 
-V1.3 Changes:
-
-- Fixed turning lockdown off not disabling the core sound
-- Added '/v o'neill' ;)
-- Added an SDActive output for when self destruct is active
-- Added a sound to self destruct
-- Removed autoupdate because it was annoying me
-- Added the ability for the ai to say things to faction and alliance (/v fsay and /v asay) Don't abuse this or i'll remove it.
-- Added Jammer controls with '/v jam'
-- Changed the faction/alliance noclip commands from '/v noclip foff/aoff' to '/v noclip fac/ally'
-- Made the '/v water' command print a warning if you dont have a water core linked, or you dont have a collector placed
+V1.4 Changes:
+- Added the Player's name to fsay/asay and sugged
+= Added '/v disable' which activates the 'Disable' input on whatever you're looking at for 5 seconds
+- Added a warning if you use '/v taim' and the entity you're aiming at doesn't have a fire input
+- Added '/v activate' and '/v deactivate' which activate and deactivate the entity you're looking at (You can also use '/v work' and '/v workn't'
+- Added '/v open' and '/v close' which opens and closes the SBEP door you're looking at (You must be looking at the doorframe) ('/v closen't' works to open doors too)
+- Fixed not being able to open doors when disabling lockdown
+- Added '/v sd this' which self destructs the aimed ship core
+- Added '/v lock' and '/v unlock' which locks/unlocks the door you're looking at.
 ]#
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -68,7 +67,7 @@ if(first() | dupefinished()){
     WarpFactor = 10 #This is the starting warp factor
     Shutters = 1 #This opens the shutters when the AI is spawned
     
-    GateCol = 1 #Set this to 0 if you don't want your event horizon to change colors on alert
+    GateCol = 1 #Set this to 0 if you don't want your gate event horizon to change colors on alert
     
     timer("aprint",1000) #Disable this if you don't want the AI to print to faction on start
     
@@ -323,6 +322,24 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
     }
     
     if(OLS[2,string] == "sd"){
+        if(OLS[3,string] == "this"){
+            AimE = owner():aimEntity()
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Self Destruct")){
+                    AimEW["Self Destruct",number] = 1
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destructing aimed Ship Core.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Self Destruct input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
+
+        
         if(OLS[3,string] == "stop"){
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aborting Self Destruct.")
             Core:entity():stopCoreEnvironmentSound()
@@ -337,7 +354,7 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
             SDActive = 1
         }
         
-        elseif(OLS[3,string] != "stop"){
+        elseif(OLS[3,string] != "stop" & OLS[3,string] != "this"){
             if(OLS[3,string]:toNumber() == 0){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid time.")
             }
@@ -440,6 +457,14 @@ if(chatClk(O)){
             TransFF = 1
             EngFF = 1
             Lockdown = 1
+            BridgeDoor = 0
+            EngDoor = 0
+            GateDoor = 0
+            TransDoor = 0
+            HangarDoor = 0
+            HangarDoorLeft = 0
+            HangarDoorRight = 0
+            Shutters = 0
             Rings["UnUsable",number] = 1
             Shield["Activate",number] = 1
             LS["Disable Noclip",number] = 1
@@ -608,15 +633,15 @@ if(chatClk(O)){
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "sugged"){
-            botSayAlliance("AI","Vethian",ColPink,"sugged xd")
+            botSayAlliance(owner():name(),"Vethian",ColPink,"sugged xd")
         }
         
         if(OLS[2,string] == "asay"){
-            botSayAlliance("AI","Vethian",ColPink,owner():lastSaid():sub(8))
+            botSayAlliance(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(8))
         }
         
         if(OLS[2,string] == "fsay"){
-            botSay("AI","Vethian",ColPink,owner():lastSaid():sub(8))
+            botSay(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(8))
         }
         
         if(OLS[2,string] == "o'neill"){
@@ -640,10 +665,15 @@ if(chatClk(O)){
         }
         
         if(OLS[2,string] == "taim"){
-            AimE = owner():aimEntity()
-            if(AimE:isValid()){
-                AimEW = owner():aimEntity():wirelink()
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Selecting aimed entity as testfire weapon")
+            AimEF = owner():aimEntity()
+            if(AimEF:isValid()){
+                AimEFW = owner():aimEntity():wirelink()
+                if(AimEFW:hasInput("Fire")){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Selecting aimed entity as testfire weapon")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Fire input.")
+                }
             }
             else{
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
@@ -651,20 +681,144 @@ if(chatClk(O)){
         }
         
         if(OLS[2,string] == "tfire"){
-            if(AimE:isValid()){
+            if(AimEF:isValid()){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Testfiring weapon")
-                AimEW["Fire",number] = 1
-                timer("unfire",2500)
+                AimEFW["Fire",number] = 1
+                timer("unaim",2500)
             }
             else{
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You have not selected anything to fire.")
             }
-        }   
+        }
+        
+        if(OLS[2,string] == "disable"){
+            AimE = owner():aimEntity()
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Disable")){
+                    AimEW["Disable",number] = 1
+                    timer("unaim",5000)
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Disabling Aimed Entity for 5 seconds.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Disable input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
+        
+        if(OLS[2,string] == "activate" | OLS[2,string] == "work"){
+            AimE = owner():aimEntity()
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Activate")){
+                    AimEW["Activate",number] = 1
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Activating aimed entity.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have an Activate input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
+        
+        if(OLS[2,string] == "deactivate" | OLS[2,string] == "workn't"){
+            AimE = owner():aimEntity()
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Activate")){
+                    AimEW["Activate",number] = 0
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Deactivating aimed entity.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have an Activate input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
+        
+        if(OLS[2,string] == "open" | OLS[2,string] == "closen't"){
+            AimE = owner():aimEntity()
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Open") | AimEW:hasInput("Open_1")){
+                    AimEW["Open",number] = 1
+                    AimEW["Open_1",number] = 1
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Opening aimed Door.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have an Open or Open_1 input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
+        
+        if(OLS[2,string] == "close"){
+            AimE = owner():aimEntity()
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Open") | AimEW:hasInput("Open_1")){
+                    AimEW["Open",number] = 0
+                    AimEW["Open_1",number] = 0
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Closing aimed Door.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have an Open or Open_1 input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
+        
+        if(OLS[2,string] == "lock"){
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Lock") | AimEW:hasInput("Lock_1")){
+                    AimEW["Lock",number] = 1
+                    AimEW["Lock_1",number] = 1
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Locking aimed Door.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Lock or Lock_1 input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
+        
+        if(OLS[2,string] == "unlock"){
+            if(AimE:isValid()){
+                AimEW = owner():aimEntity():wirelink()
+                if(AimEW:hasInput("Lock") | AimEW:hasInput("Lock_1")){
+                    AimEW["Lock",number] = 0
+                    AimEW["Lock_1",number] = 0
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Unlocking aimed Door.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Lock or Lock_1 input.")
+                }
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
+            }
+        }
     }
 }
 
-if(clk("unfire")){
-    AimEW["Fire",number] = 0
+
+if(clk("unaim")){
+    AimEFW["Fire",number] = 0
+    AimEW["Disable",number] = 0
 }
 
 
