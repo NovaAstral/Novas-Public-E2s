@@ -105,6 +105,7 @@ if(clk("usecheck")){
             if(TFlop == 1 & SolarSys == 1){ #Milkyway
                 stoptimer("solarspin")
                 EGP:entity():setPos(entity():pos() + vec(0,0,-2)) #Puts the EGP emitter under the e2
+                EGP:entity():setAng(entity():angles() + ang(180,0,0)) #I dont think this works properly
                 timer("parentegp",10) #this has to be a timer because setpos doesn't move it before it parents
                 EGP["Scale",number] = 0.5
                 EGP["Angle",angle] = owner():angles() + ang(0,-90,90)

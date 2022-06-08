@@ -1,9 +1,9 @@
-@name Mario DS Minigame 'Wanted'
+@name Mario DS Minigame 'Wanted!'
 @inputs EGP:wirelink User:entity
 @outputs OCursor:vector2
-@outputs MainMenu OptionsMenu GameMenu #This is temp for debug
+@outputs MainMenu OptionsMenu GameMenu Score #This is temp for debug
 @persist MainMenu OptionsMenu GameMenu InnoAmount CharSize BoxTopleft:vector2 BoxBottomright:vector2
-@persist Score:string
+@persist Score PrevScore WantedCol:vector
 
 #[
 
@@ -12,12 +12,15 @@
 #Max Objects is 450 on TSCM
 
 Todo:
-Options (Innocent amount, Character size, Character colors, Character names)
-Put the character colors and names at the top of the main menu
+Options (Innocent amount, Character size)
 A button that stops the game and takes you back to the main menu
-Sounds
-Scoring System
+Fix the damn Sounds
+Good Scoring System
 Button that appears when you press start that lets you cancel the game from starting
+Figure out how the fuck file read/writing works to save scores, and even have score syncing between multiple people with net
+'Characters' mode where you have like 5 characters each with different colors and you need to find 1 of them (like the original ds game)
+
+Maybe make an offshoot that is the 'Concentration' game from DBC
 
 How to do?:
 inRange(CharPos + vec2(10,10) + vec2(-10,-10))
@@ -36,12 +39,12 @@ if(clk("cursor")){
 }
 
 if(~EGP & EGP){
-    timer("egpcreate",1)   
+    timer("egpcreate",1)
 }
 
 if(first()){
-    EGP:egpClear()    
-
+    EGP:egpClear()
+    
     timer("cursor",1)
     timer("egpcreate",1)
     
@@ -49,10 +52,8 @@ if(first()){
     OptionsMenu = 0
     GameMenu = 0
     
-    InnoAmount = 20
-    CharSize = 10
-    
-    Score = 0:toString()
+    InnoAmount = 20 #Limit is around 190 before the e2 crashes
+    CharSize = 30
     
     timer("BoxSize",1)
     
@@ -67,7 +68,13 @@ if(clk("BoxSize")){
 
 
 if(clk("egpcreate")){
+    Score = 0
+    
     EGP:egpClear()
+    
+    EGP:egpText(14,"Wanted!",vec2(255,75))
+    EGP:egpSize(14,80)
+    EGP:egpAlign(14,1)
     
     #Start Button
     EGP:egpCircle(2,vec2(256,256),vec2(50)) #Start outline
@@ -81,6 +88,11 @@ if(clk("egpcreate")){
     EGP:egpCircleOutline(1,vec2(0,0),vec2(5))
     EGP:egpParentToCursor(1)
     EGP:egpOrder(1,450)
+    
+    EGP:egpText(12,"Previous Score:",vec2(255,335))
+    EGP:egpAlign(12,1)
+    EGP:egpText(13,PrevScore:toString(),vec2(255,355))
+    EGP:egpAlign(13,1)
 }
 
 if(clk("starttimer")){
@@ -110,35 +122,27 @@ if(clk("startgame")){
     MainMenu = 0
     GameMenu = 1
     
-    for(I = 2,5){
-        EGP:egpRemove(I)
-    }
+    EGP:egpClear()
     
     EGP:egpLine(6,vec2(440,0),vec2(440,512)) #Separating Line
     
     EGP:egpText(7,"Find:",vec2(478,200))
     EGP:egpAlign(7,1)
-    
-    EGP:egpCircle(8,vec2(477,228),vec2(10,10)) #Thing you need to find
-    EGP:egpColor(8,vec(255,0,255))
+
     
     EGP:egpText(9,"Score:",vec2(477,280))
     EGP:egpAlign(9,1)
     
-    EGP:egpText(10,Score,vec2(477,300)) #Score Number
+    EGP:egpText(10,Score:toString(),vec2(477,300)) #Score Number
     EGP:egpAlign(10,1)
 
-    #timer("innocreate",1)
+    timer("innocreate",1)
     timer("wantedcreate",1)
-}
-
-if(clk("wantedcreate")){
-    EGP:egpCircle(11,randvec2(BoxTopleft,BoxBottomright),vec2(CharSize)) #Wanted Character
-    EGP:egpColor(11,vec(255,0,255))
 }
 
 if(~User & User){ #buttons
     local Cursor = EGP:egpCursor(User)
+    soundPurge()
     
     if(inrange(Cursor,vec2(200,200),vec2(300,300)) && MainMenu == 1){ #Start button
         EGP:egpColor(3,vec(0,255,0))
@@ -146,8 +150,47 @@ if(~User & User){ #buttons
         timer("starttimer",500)
     }
 
-    if(inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize)){ #Wanted Char
-        print("clicky")
+    if(inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize)){ #Wanted Char press
+        #print("clicky")
+        timer("wantedcreate",10)
+        timer("innocreate",10)
+        
+        EGP:entity():soundPlay(6,280,"buttons/button9.wav")
+        
+        Score = Score+10
+        EGP:egpSetText(10,Score:toString())
+    }
+    if(!inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize) & GameMenu == 1){ #You missed
+        #print("hecc")
+        EGP:entity():soundPlay(7,470,"buttons/button11.wav")
+        
+        GameMenu = 0
+        MainMenu = 1
+        PrevScore = Score
+        timer("egpcreate",1)
     }
 }
 
+if(clk("wantedcreate")){
+    WantedCol = vec(randint(75,255),randint(75,255),randint(75,255))
+    
+    EGP:egpCircle(8,vec2(477,228),vec2(10,10)) #Find dot on the sidebar
+    #EGP:egpColor(8,vec(75,75,75))
+    EGP:egpColor(8,WantedCol)
+    
+    EGP:egpCircle(11,randvec2(BoxTopleft,BoxBottomright),vec2(CharSize)) #Wanted Character
+    #EGP:egpColor(11,vec(255,0,255))
+    EGP:egpColor(11,WantedCol)
+}
+
+if(clk("innocreate")){ #door stuck (incorrect inno creation number)
+    for(I = 1,InnoAmount){
+        InnoCol = vec(randint(75,255),randint(75,255),randint(75,255))
+        
+        EGP:egpCircle(I+100,randvec2(BoxTopleft,BoxBottomright),vec2(CharSize))
+        EGP:egpColor(I+100,InnoCol)
+        if(InnoCol == WantedCol){
+            EGP:egpColor(I+100,vec(randint(75,255),randint(75,255),randint(75,255)))
+        }
+    }
+}

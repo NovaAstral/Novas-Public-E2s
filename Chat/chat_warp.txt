@@ -5,6 +5,8 @@
 
 #include "Novas-Public-E2s/library/nova_lib"
 
+#warp back warps to the wrong place, might be saucer spin or wirelink selector
+
 if(first()){
     LocList = WarpLoc:keys():concat(", ")
     
@@ -17,7 +19,7 @@ if(first()){
                 printColor(ColPink,"[Warp] ",ColOng,"Destination jammed, cannot warp.")
                 return
             }
-            PrevPos = DriveEnt:pos()
+            PrevPos = entity():pos()
             PrevAng = DriveEnt:angles()
             Drive[DestInput,vector] = WarpVec
             Drive[AngInput,angle] = Ang

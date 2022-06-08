@@ -11,7 +11,8 @@ ColOng = vec(230,110,0)
 ColTeam = teamColor(owner():team())
 
 if(entity():getName() == "Nova_Lib"){
-    printColor(ColPink," [NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. Removing.")
+    printColor(ColPink,"[NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. Removing.")
+    printColor(ColPink,"[NovaLib] ",ColOng,"If you're trying to give this to someone, send them to https://github.com/NovaAstral/Novas-Public-E2s")
     selfDestruct()
 }
 
@@ -35,6 +36,7 @@ WarpLoc["build2",vector] = vec(12820,4475,-15105)
 WarpLoc["build3",vector] = vec(12820,-4130,-15105)
 WarpLoc["build4",vector] = vec(12820,-12345,-15105)
 WarpLoc["hiigarabase",vector] = vec(7556,6805,-7450)
+
 
 if(clk("whacko")){
     printColor(ColPink," [O'Neill] ",ColOng,"I'm telling you Teal'c, if we don't find a way out of this soon, I'm gonna lose it.")
