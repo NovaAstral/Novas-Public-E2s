@@ -1,8 +1,8 @@
 @name Mario DS Minigame 'Wanted!'
 @inputs EGP:wirelink User:entity
 @outputs OCursor:vector2
-@outputs MainMenu OptionsMenu GameMenu Score #This is temp for debug
-@persist MainMenu OptionsMenu GameMenu InnoAmount CharSize BoxTopleft:vector2 BoxBottomright:vector2
+@outputs MainMenu OptionsMenu GameMenu LostGame Score #This is temp for debug
+@persist MainMenu OptionsMenu GameMenu LostGame InnoAmount CharSize BoxTopleft:vector2 BoxBottomright:vector2
 @persist Score PrevScore WantedCol:vector
 
 #[
@@ -13,8 +13,6 @@
 
 Todo:
 Options (Innocent amount, Character size)
-A button that stops the game and takes you back to the main menu
-Fix the damn Sounds
 Good Scoring System
 Button that appears when you press start that lets you cancel the game from starting
 Figure out how the fuck file read/writing works to save scores, and even have score syncing between multiple people with net
@@ -23,7 +21,7 @@ Figure out how the fuck file read/writing works to save scores, and even have sc
 Maybe make an offshoot that is the 'Concentration' game from DBC
 
 How to do?:
-inRange(CharPos + vec2(10,10) + vec2(-10,-10))
+inrange(Cursor,CharPos + CharSize,CharPos - CharSize)
 
 Sounds:
 buttons/bell1.wav - Game Start 0.692s (700)
@@ -79,40 +77,44 @@ if(clk("egpcreate")){
     #Start Button
     EGP:egpCircle(2,vec2(256,256),vec2(50)) #Start outline
     
-    EGP:egpCircle(3,vec2(256,256),vec2(48)) #This is actually a good way to make thick circles
+    EGP:egpCircle(3,vec2(256,256),vec2(48)) #Star Button
     EGP:egpColor(3,vec(0,0,0))
     
     EGP:egpText(4,"START",vec2(256,245)) #Start text
     EGP:egpAlign(4,1)
     
-    EGP:egpCircleOutline(1,vec2(0,0),vec2(5))
-    EGP:egpParentToCursor(1)
-    EGP:egpOrder(1,450)
-    
     EGP:egpText(12,"Previous Score:",vec2(255,335))
     EGP:egpAlign(12,1)
     EGP:egpText(13,PrevScore:toString(),vec2(255,355))
     EGP:egpAlign(13,1)
+    
+    timer("cursorcreate",100)
+}
+
+if(clk("cursorcreate")){
+    EGP:egpCircleOutline(1,vec2(0,0),vec2(5))
+    EGP:egpParentToCursor(1)
+    EGP:egpOrder(1,1)
 }
 
 if(clk("starttimer")){
     MainMenu = 0
-    EGP:egpText(5,"3",vec2(256,100)) #Timer Text
-    EGP:egpSize(5,100)
+    EGP:egpText(5,"3",vec2(256,160)) #Timer Text
+    EGP:egpSize(5,50)
     EGP:egpAlign(5,1)
-    EGP:entity():soundPlay(2,110,"buttons/blip1.wav")
+    #EGP:entity():soundPlay(2,110,"buttons/blip1.wav")
     timer("timer2",1000)
 }
 
 if(clk("timer2")){
     EGP:egpSetText(5,"2")
-    EGP:entity():soundPlay(3,110,"buttons/blip1.wav")
+    #EGP:entity():soundPlay(3,110,"buttons/blip1.wav")
     timer("timer1",1000)
 }
 
 if(clk("timer1")){
     EGP:egpSetText(5,"1")
-    EGP:entity():soundPlay(4,110,"buttons/blip1.wav")
+    #EGP:entity():soundPlay(4,110,"buttons/blip1.wav")
     timer("startgame",1000)
 }
 
@@ -138,19 +140,35 @@ if(clk("startgame")){
 
     timer("innocreate",1)
     timer("wantedcreate",1)
+    
+    timer("cursorcreate",100)
+    
+    EGP:egpCircleOutline(15,vec2(477,450),vec2(30)) #Quit button outline
+    EGP:egpCircleOutline(16,vec2(477,450),vec2(29)) #Quit button thiccener
+    EGP:egpCircle(17,vec2(477,450),vec2(29)) #Quit Button Inside
+    EGP:egpColor(17,vec(0,0,0))
+    EGP:egpText(18,"Quit",vec2(477,440))
+    EGP:egpAlign(18,1)
 }
 
 if(~User & User){ #buttons
     local Cursor = EGP:egpCursor(User)
-    soundPurge()
+    timer("soundpurge",1000)
     
     if(inrange(Cursor,vec2(200,200),vec2(300,300)) && MainMenu == 1){ #Start button
         EGP:egpColor(3,vec(0,255,0))
         EGP:entity():soundPlay(1,600,"buttons/button6.wav")
         timer("starttimer",500)
     }
+    
+    if(inrange(Cursor,vec2(447,420),vec2(507,480)) && GameMenu == 1){ #Quit button
+        EGP:entity():soundPlay(1,600,"buttons/button6.wav")
+        EGP:egpColor(17,vec(0,255,0))
+        timer("soundpurge",600)
+        timer("resetgame",1000)
+    }
 
-    if(inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize)){ #Wanted Char press
+    if(inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize) & LostGame == 0){ #Wanted Char press
         #print("clicky")
         timer("wantedcreate",10)
         timer("innocreate",10)
@@ -160,15 +178,31 @@ if(~User & User){ #buttons
         Score = Score+10
         EGP:egpSetText(10,Score:toString())
     }
-    if(!inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize) & GameMenu == 1){ #You missed
+    if(!inrange(Cursor,EGP:egpPos(11) - CharSize,EGP:egpPos(11) + CharSize) & inrange(Cursor,vec2(0,0),vec2(440,512)) & GameMenu == 1){ #You missed
         #print("hecc")
+        LostGame = 1
         EGP:entity():soundPlay(7,470,"buttons/button11.wav")
+        timer("resetgame",5000)
         
-        GameMenu = 0
-        MainMenu = 1
-        PrevScore = Score
-        timer("egpcreate",1)
+        for(I = 1,InnoAmount){
+            EGP:egpColor(I+100,vec(100,100,100))
+        }
     }
+}
+
+if(clk("soundpurge")){
+    soundPurge()
+}
+
+if(clk("resetgame")){
+    EGP:entity():soundPlay(5,700,"buttons/bell1.wav")
+    
+    GameMenu = 0
+    MainMenu = 1
+    LostGame = 0
+    PrevScore = Score
+        
+    timer("egpcreate",1)
 }
 
 if(clk("wantedcreate")){
@@ -183,7 +217,7 @@ if(clk("wantedcreate")){
     EGP:egpColor(11,WantedCol)
 }
 
-if(clk("innocreate")){ #door stuck (incorrect inno creation number)
+if(clk("innocreate")){
     for(I = 1,InnoAmount){
         InnoCol = vec(randint(75,255),randint(75,255),randint(75,255))
         
