@@ -1,6 +1,6 @@
 @name Vector Selector
 @inputs Up Down
-@outputs Vector:vector VectorString:string Number NumberString:string
+@outputs Vector:vector VectorString:string LocName:string Number NumberString:string
 @persist Number
 
 #Made by Nova Astral
@@ -52,33 +52,41 @@ if(changed(Number) & Number >= 9){
 
 if(changed(Number) & Number == 1){
     Vector = vec(-1886,9554,8080)
+    LocName = ""
 }
 
 if(changed(Number) & Number == 2){
     Vector = vec(12900,-10661,-9183)
+    LocName = ""
 }
 
 if(changed(Number) & Number == 3){
     Vector = vec(9415,6234,-6007)
+    LocName = ""
 }
 
 if(changed(Number) & Number == 4){
     Vector = vec(9431,6800,-7359)
+    LocName = ""
 }
 
 if(changed(Number) & Number == 5){
     Vector = vec(-6301,-3485,6880)
+    LocName = ""
 }
 
 if(changed(Number) & Number == 6){
     Vector = vec(-11190,497,-4655)
+    LocName = ""
 }
 
 if(changed(Number) & Number == 7){
     Vector = vec(8363,-6861,9392)
+    LocName = ""
 }
 
 if(changed(Number) & Number == 8){
     Vector = vec(10748,-12979,-10223)
+    LocName = ""
 }
 

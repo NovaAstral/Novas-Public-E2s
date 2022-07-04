@@ -5,9 +5,9 @@
 
 #include "Novas-Public-E2s/library/nova_lib"
 
-#warp back warps to the wrong place, might be saucer spin or wirelink selector
+#warp back warps to the wrong place
 
-if(first()){
+if(first() | dupefinished()){
     LocList = WarpLoc:keys():concat(", ")
     
     function void warp(WarpVec:vector,Ang:angle){

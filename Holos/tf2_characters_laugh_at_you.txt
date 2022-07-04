@@ -1,0 +1,199 @@
+@name TF2 Characters laugh at you
+@persist Snd:string SndInt Holo:entity
+
+if(first()){
+    timer("run",1000)
+    timer("setang",1100)
+}
+
+if(clk("run")){
+    timer("soundset",10)
+    timer("soundplay",100)
+    SndInt = randint(1,18)
+}
+
+if(clk("soundplay")){
+    Holo:soundPlay(1,0,Snd)
+}
+
+if(clk("purge")){
+    soundPurge()
+    holoDeleteAll()
+    timer("run",1)
+}
+
+if(clk("setang")){
+    timer("setang",10)
+    
+    findByClass("player")
+    findInSphere(entity():pos(),200)
+    ClosestPly = findClosest(entity():pos())
+    
+    holoAng(1,ClosestPly:angles() + ang(0,180,0))
+}
+
+if(clk("soundset")){
+    if(SndInt == 1){
+        Snd = "vo/demoman_laughlong01.mp3" #178
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/demo.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 2){
+        Snd = "vo/demoman_laughlong02.mp3" #178
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/demo.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 3){
+        Snd = "vo/engineer_laughlong01.mp3" #146
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/engineer.mdl")
+        holoAnim(1,145)
+        Holo = holoEntity(1)
+        timer("purge",4500)
+
+    }
+    if(SndInt == 4){
+        Snd = "vo/engineer_laughlong02.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/engineer.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",3500)
+    }
+    if(SndInt == 5){
+        Snd = "vo/heavy_laughlong01.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/heavy.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5200)
+    }
+    if(SndInt == 6){
+        Snd = "vo/heavy_laugherbigsnort01.mp3" #196
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/heavy.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 7){
+        Snd = "vo/medic_laughlong01.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/medic.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5000)
+    }
+    if(SndInt == 8){
+        Snd = "vo/medic_laughlong02.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/medic.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 9){
+        Snd = "vo/pyro_laugh_addl04.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/pyro.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 10){
+        Snd = "vo/pyro_laughlong01.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/pyro.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",3000)
+    }
+    if(SndInt == 11){
+        Snd = "vo/scout_laughhappy02.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/scout.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 12){
+        Snd = "vo/scout_laughlong02.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/scout.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 13){
+        Snd = "vo/sniper_laughlong01.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/sniper.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",4000)
+    }
+    if(SndInt == 14){
+        Snd = "vo/sniper_laughlong02.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/sniper.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",4000)
+    }
+    if(SndInt == 15){
+        Snd = "vo/soldier_laughlong01.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/soldier.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 16){
+        Snd = "vo/soldier_laughlong03.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/soldier.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",5500)
+    }
+    if(SndInt == 17){
+        Snd = "vo/spy_laughlong01.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/spy.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",7000)
+    }
+    if(SndInt == 18){
+        Snd = "vo/spy_laughhappy03.mp3"
+        holoCreate(1)
+        holoPos(1,entity():pos())
+        holoModel(1,"models/player/spy.mdl")
+        holoAnim(1,"layer_taunt_laugh")
+        Holo = holoEntity(1)
+        timer("purge",2000)
+    }
+}

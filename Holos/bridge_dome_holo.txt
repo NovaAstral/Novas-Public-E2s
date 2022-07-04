@@ -1,0 +1,42 @@
+@name Bridge Dome Holo
+@inputs Parent:entity Alpha
+@outputs 
+
+#this only exists because TSCM decided to disable resizing of some phx props
+
+Scale = 2.2
+Offset = vec(-40,0,-30)
+
+if(changed(Alpha)){
+    holoAlpha(1,Alpha)
+    holoAlpha(2,Alpha)
+}
+
+holoCreate(1)
+holoCreate(2)
+
+holoModel(1,"models/props_phx/construct/windows/window_dome360.mdl")
+holoModel(2,"models/props_phx/construct/windows/window_dome360.mdl")
+
+holoScale(1,vec(Scale,Scale,Scale))
+holoScale(2,vec(Scale,Scale,Scale))
+
+holoPos(1,Parent:pos()+Offset)
+holoPos(2,Parent:pos()+vec(0,0,1)+Offset)
+
+holoParent(1,Parent)
+holoParent(2,Parent)
+
+holoAng(2,ang(180,0,0))
+
+#holoAlpha(1,254)
+
+holoEntity(1):setSubMaterial(1,"veegi/metal_dark")
+holoEntity(2):setSubMaterial(1,"veegi/metal_dark")
+
+holoEntity(1):setSubMaterial(2,"veegi/light")
+holoEntity(2):setSubMaterial(2,"veegi/light")
+
+holoEntity(1):setSubMaterial(3,"veegi/metal_dark")
+holoEntity(2):setSubMaterial(3,"veegi/metal_dark")
+

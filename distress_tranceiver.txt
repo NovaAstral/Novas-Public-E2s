@@ -1,0 +1,18 @@
+@name Distress Tranceiver
+@inputs A E:entity
+@outputs 
+
+if(first()){
+    dsJoinGroup("VDC")
+    dsSetScope(2)
+}
+
+if(changed(A) & A == 1){
+    dsSend("Distress","VDC","Distress Call Initiated from: "+owner():name()+"'s "+entity():getName())
+    #print(dsProbe("VDC",1))
+    dsSendDirect("Distress",E,"Distress Call Initiated from: "+owner():name()+"'s "+entity():getName())
+}
+
+if(dsClk()){
+    print(dsGetString())
+}

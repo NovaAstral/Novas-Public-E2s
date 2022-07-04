@@ -21,13 +21,13 @@ if(clk("jamcheck")){
 if(clk("a")){
     PrevPos = RingsE:pos()
     Rings["Dial Address",string] = "1234" #The address the rings will dial to
-    timer("b",1000)
+    timer("b",4000)
 }
 
 if(clk("b")){
-    RingsE:setPos(Target:pos()+vec(0,200,0))
+    RingsE:setPos(Target:pos()+vec(0,150,0))
     #Moves the rings to the target with an offset of 200 so it doesn't ring them up
-    timer("c",4000)
+    timer("c",600)
 }
 
 if(clk("c")){

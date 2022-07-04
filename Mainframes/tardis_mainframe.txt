@@ -245,7 +245,7 @@ if(chatClk(O)){
         hideChat(1)
         printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS is tracking: "+T:tardisTracking():toString())
 }
-
+    
     if(OLS == "/tvisible"){
         hideChat(1)
         if(T:tardisVisible() == 1){
@@ -350,7 +350,14 @@ if(chatClk(O)){
         hideChat(1)
         T:use()
         printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS Doors Toggled")
-}}
+}
+
+    if(OLS == "/ttrack"){
+        hideChat(1)
+        T:tardisTrack(owner():aimEntity())
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"TARDIS is now tracking: "+T:tardisTracking():toString())
+    }
+}
 
 #############################
 ###Legacy Advanced Takeoff###

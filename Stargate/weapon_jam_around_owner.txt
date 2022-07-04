@@ -1,0 +1,6 @@
+@name Weapon Jam Around Owner
+@inputs WepJammer:entity
+@outputs 
+
+#This E2 will take the linked Tollan Weapon Disabler and constantly teleport it above your head so anyone near you cannot use weapons
+

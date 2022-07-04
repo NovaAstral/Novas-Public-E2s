@@ -1,0 +1,563 @@
+@name Vector Bank Selector
+@inputs EGP:wirelink User:entity
+@outputs CursorOut:vector2 LocName:string Vector:vector Bank
+@persist Bank
+@persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string
+@persist [B2N1,B2N2,B2N3,B2N4,B2N5,B2N6,B2N7,B2N8,B2N9,B2N10,B2N11,B2N12]:string
+@persist [B1V1,B1V2,B1V3,B1V4,B1V5,B1V6,B1V7,B1V8,B1V9,B1V10,B1V11,B1V12]:vector
+@persist [B2V1,B2V2,B2V3,B2V4,B2V5,B2V6,B2V7,B2V8,B2V9,B2V10,B2V11,B2V12]:vector
+#@model models/Madman07/com_device/stone.mdl
+
+interval(200)
+
+CursorOut = EGP:egpCursor(owner())
+
+if(first() | duped()){
+    LocName = "Earth"
+    Vector = vec(-1886,9554,8080)
+    
+    EGP:egpClear()
+    timer("update",100)
+    timer("egpcreate",10)
+    
+    B1N1 = "Earth"
+    B1V1 = vec(-1886,9554,8080)
+    
+    B1N2 = "Moon"
+    B1V2 = vec(-4099,13470,9957)
+    
+    B1N3 = "Shakuras"
+    B1V3 = vec(-6301,-3485,6880)
+    
+    B1N4 = "Station"
+    B1V4 = vec(8363,-6861,9392)
+    
+    B1N5 = "Hiigara"
+    B1V5 = vec(9415,6234,-6007)
+    
+    B1N6 = "Under Hiigara"
+    B1V6 = vec(9431,6800,-7359)
+    
+    B1N7 = "Desert"
+    B1V7 = vec(12900,-10661,-9183)
+    
+    B1N8 = "Under Desert"
+    B1V8 = vec(10748,-12979,-10223)
+    
+    B1N9 = "Lava"
+    B1V9 = vec(-11190,497,-4655)
+    
+    B1N10 = "???"
+    B1V10 = vec(0)
+    
+    B1N11 = "???"
+    B1V12 = vec(0)
+    
+    
+    B2N1 = "Build 1"
+    B2V1 = vec(10496,12288,-16156)
+    
+    B2N2 = "Build 2"
+    B2V2 = vec(10495,4095,-16156)
+    
+    B2N3 = "Build 3"
+    B2V3 = vec(10496,-4096,-16156)
+    
+    B2N4 = "Build 4"
+    B2V4 = vec(10496,-12287,-16156)
+    
+    B2N5 = "???"
+    B2V5 = vec(0)
+    
+    B2N6 = "???"
+    B2V6 = vec(0)
+    
+    B2N7 = "???"
+    B2V7 = vec(0)
+    
+    B2N8 = "???"
+    B2V8 = vec(0)
+    
+    B2N9 = "???"
+    B2V9 = vec(0)
+    
+    B2N10 = "???"
+    B2V10 = vec(0)
+    
+    B2N11 = "???"
+    B2V11 = vec(0)
+    
+    B2N12 = "???"
+    B2V12 = vec()
+}
+
+if(~EGP & EGP){
+    timer("egpcreate",10)
+}
+
+if(clk("update")){
+    VectorString = Vector:toString()
+    stoptimer("update")
+}
+
+if(clk("egpcreate")){
+    Bank = 1
+    
+    EGP:egpBox(1,vec2(256),vec2(512)) #Background
+    EGP:egpColor(1,vec(75))
+    
+    EGP:egpRoundedBoxOutline(2,vec2(118,60),vec2(200,80)) #Titlebox
+    EGP:egpText(3,"Vector Bank Selector",vec2(118,50))
+    EGP:egpAlign(3,1)
+    EGP:egpSize(3,20)
+    
+    EGP:egpRoundedBoxOutline(4,vec2(396,60),vec2(200,80)) #Bank Box
+    
+    EGP:egpCircleOutline(5,vec2(335,60),vec2(30)) #Bank Switch
+    EGP:egpText(6,"Switch",vec2(335,50))
+    EGP:egpAlign(6,1)
+    
+    EGP:egpRoundedBoxOutline(7,vec2(430,60),vec2(120,60))
+    EGP:egpText(8,"Selected Bank:",vec2(430,40))
+    EGP:egpAlign(8,1)
+    EGP:egpText(9,"1",vec2(430,60))
+    EGP:egpAlign(9,1)
+    
+    EGP:egpRoundedBoxOutline(10,vec2(256,300),vec2(480,380)) #Main button box
+    
+    EGP:egpBoxOutline(11,vec2(135,150),vec2(200,50)) #Selector1
+    EGP:egpText(12,B1N1,vec2(135,130))
+    EGP:egpAlign(12,1)
+    EGP:egpText(13,B1V1:toString(),vec2(135,150))
+    EGP:egpAlign(13,1)
+    
+    EGP:egpBoxOutline(16,vec2(135,210),vec2(200,50)) #Selector2
+    EGP:egpText(17,B1N2,vec2(135,190))
+    EGP:egpAlign(17,1)
+    EGP:egpText(18,B1V2:toString(),vec2(135,210))
+    EGP:egpAlign(18,1)
+    
+    EGP:egpBoxOutline(21,vec2(135,270),vec2(200,50)) #Selector3
+    EGP:egpText(22,B1N3,vec2(135,250))
+    EGP:egpAlign(22,1)
+    EGP:egpText(23,B1V3:toString(),vec2(135,270))
+    EGP:egpAlign(23,1)
+    
+    EGP:egpBoxOutline(26,vec2(135,330),vec2(200,50)) #Selector4
+    EGP:egpText(27,B1N4,vec2(135,310))
+    EGP:egpAlign(27,1)
+    EGP:egpText(28,B1V4:toString(),vec2(135,330))
+    EGP:egpAlign(28,1)
+    
+    EGP:egpBoxOutline(31,vec2(135,390),vec2(200,50)) #Selector5
+    EGP:egpText(32,B1N5,vec2(135,370))
+    EGP:egpAlign(32,1)
+    EGP:egpText(33,B1V5:toString(),vec2(135,390))
+    EGP:egpAlign(33,1)
+    
+    EGP:egpBoxOutline(36,vec2(135,450),vec2(200,50)) #Selector6
+    EGP:egpText(37,B1N6,vec2(135,430))
+    EGP:egpAlign(37,1)
+    EGP:egpText(38,B1V6:toString(),vec2(135,450))
+    EGP:egpAlign(38,1)
+    
+    EGP:egpBoxOutline(41,vec2(375,150),vec2(200,50)) #Selector7
+    EGP:egpText(42,B1N7,vec2(375,130))
+    EGP:egpAlign(42,1)
+    EGP:egpText(43,B1V7:toString(),vec2(375,150))
+    EGP:egpAlign(43,1)
+    
+    EGP:egpBoxOutline(46,vec2(375,210),vec2(200,50)) #Selector8
+    EGP:egpText(47,B1N8,vec2(375,190))
+    EGP:egpAlign(47,1)
+    EGP:egpText(48,B1V8:toString(),vec2(375,210))
+    EGP:egpAlign(48,1)
+    
+    EGP:egpBoxOutline(51,vec2(375,270),vec2(200,50)) #Selector9
+    EGP:egpText(52,B1N9,vec2(375,250))
+    EGP:egpAlign(52,1)
+    EGP:egpText(53,B1V9:toString(),vec2(375,270))
+    EGP:egpAlign(53,1)
+    
+    EGP:egpBoxOutline(56,vec2(375,330),vec2(200,50)) #Selector10
+    EGP:egpText(57,B1N10,vec2(375,310))
+    EGP:egpAlign(57,1)
+    EGP:egpText(58,B1V10:toString(),vec2(375,330))
+    EGP:egpAlign(58,1)
+    
+    EGP:egpBoxOutline(61,vec2(375,390),vec2(200,50)) #Selector11
+    EGP:egpText(62,B1N11,vec2(375,370))
+    EGP:egpAlign(62,1)
+    EGP:egpText(63,B1V11:toString(),vec2(375,390))
+    EGP:egpAlign(63,1)
+    
+    EGP:egpBoxOutline(66,vec2(375,450),vec2(200,50)) #Selector12
+    EGP:egpText(67,B1N12,vec2(375,430))
+    EGP:egpAlign(67,1)
+    EGP:egpText(68,B1V12:toString(),vec2(375,450))
+    EGP:egpAlign(68,1)
+}
+
+if(~User & User){
+    local Cursor = EGP:egpCursor(User)
+    timer("soundpurge",500)
+    
+    if(inrange(Cursor,vec2(),vec2())){ #Selector 1
+        
+    }
+    
+    if(inrange(Cursor,vec2(305,30),vec2(365,90))){ #Switch Banks
+        EGP:egpColor(5,vec(0,255,0))
+        EGP:egpColor(6,vec(0,255,0))
+        timer("colorreset",1000)
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        if(Bank == 1){
+            Bank = 2
+            EGP:egpSetText(9,"2")
+            timer("bank2",10)
+        }
+        else{
+            Bank = 1
+            EGP:egpSetText(9,"1")
+            timer("bank1",10)
+        }
+    }
+    
+    if(inrange(Cursor,vec2(35,125),vec2(235,175))){ #Selector 1
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(11,vec(0,255,0))
+        EGP:egpColor(12,vec(0,255,0))
+        EGP:egpColor(13,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N1
+            Vector = B1V1
+        }
+        else{
+            LocName = B2N1
+            Vector = B2V1
+        }
+    }
+    
+    if(inrange(Cursor,vec2(35,185),vec2(235,235))){ #Selector 2
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(16,vec(0,255,0))
+        EGP:egpColor(17,vec(0,255,0))
+        EGP:egpColor(18,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N2
+            Vector = B1V2
+        }
+        else{
+            LocName = B2N2
+            Vector = B2V2
+        }
+    }
+    
+    if(inrange(Cursor,vec2(35,245),vec2(235,295))){ #Selector 3
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(21,vec(0,255,0))
+        EGP:egpColor(22,vec(0,255,0))
+        EGP:egpColor(23,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N3
+            Vector = B1V3
+        }
+        else{
+            LocName = B2N3
+            Vector = B2V3
+        }
+    }
+    
+    if(inrange(Cursor,vec2(35,305),vec2(235,355))){ #Selector 4
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(26,vec(0,255,0))
+        EGP:egpColor(27,vec(0,255,0))
+        EGP:egpColor(28,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N4
+            Vector = B1V4
+        }
+        else{
+            LocName = B2N4
+            Vector = B2V4
+        }
+    }
+    
+    if(inrange(Cursor,vec2(35,365),vec2(235,415))){ #Selector 5
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(31,vec(0,255,0))
+        EGP:egpColor(32,vec(0,255,0))
+        EGP:egpColor(33,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N5
+            Vector = B1V5
+        }
+        else{
+            LocName = B2N5
+            Vector = B2V5
+        }
+    }
+    
+    if(inrange(Cursor,vec2(35,425),vec2(235,475))){ #Selector 6
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(36,vec(0,255,0))
+        EGP:egpColor(37,vec(0,255,0))
+        EGP:egpColor(38,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N6
+            Vector = B1V6
+        }
+        else{
+            LocName = B2N6
+            Vector = B2V6
+        }
+    }
+    
+    if(inrange(Cursor,vec2(275,125),vec2(475,175))){ #Selector 7
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(41,vec(0,255,0))
+        EGP:egpColor(42,vec(0,255,0))
+        EGP:egpColor(43,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N7
+            Vector = B1V7
+        }
+        else{
+            LocName = B2N7
+            Vector = B2V7
+        }
+    }
+    
+    if(inrange(Cursor,vec2(275,185),vec2(475,235))){ #Selector 8
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(46,vec(0,255,0))
+        EGP:egpColor(47,vec(0,255,0))
+        EGP:egpColor(48,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N8
+            Vector = B1V8
+        }
+        else{
+            LocName = B2N8
+            Vector = B2V8
+        }
+    }
+    
+    if(inrange(Cursor,vec2(275,245),vec2(475,295))){ #Selector 9
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(51,vec(0,255,0))
+        EGP:egpColor(52,vec(0,255,0))
+        EGP:egpColor(53,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N9
+            Vector = B1V9
+        }
+        else{
+            LocName = B2N9
+            Vector = B2V9
+        }
+    }
+    
+    if(inrange(Cursor,vec2(275,305),vec2(475,355))){ #Selector 10
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(56,vec(0,255,0))
+        EGP:egpColor(57,vec(0,255,0))
+        EGP:egpColor(58,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N10
+            Vector = B1V10
+        }
+        else{
+            LocName = B2N10
+            Vector = B2V10
+        }
+    }
+    
+    if(inrange(Cursor,vec2(275,365),vec2(475,415))){ #Selector 11
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(61,vec(0,255,0))
+        EGP:egpColor(62,vec(0,255,0))
+        EGP:egpColor(63,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N11
+            Vector = B1V11
+        }
+        else{
+            LocName = B2N11
+            Vector = B2V11
+        }
+    }
+    
+    if(inrange(Cursor,vec2(275,425),vec2(475,475))){ #Selector 12
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        EGP:egpColor(66,vec(0,255,0))
+        EGP:egpColor(67,vec(0,255,0))
+        EGP:egpColor(68,vec(0,255,0))
+        timer("colorreset",1000)
+        
+        if(Bank == 1){
+            LocName = B1N12
+            Vector = B1V12
+        }
+        else{
+            LocName = B2N12
+            Vector = B2V12
+        }
+    }
+    
+}
+
+if(clk("colorreset")){
+    EGP:egpColor(5,vec(255)) #Bank Selector
+    EGP:egpColor(6,vec(255))
+    
+    EGP:egpColor(11,vec(255)) #Selector 1
+    EGP:egpColor(12,vec(255))
+    EGP:egpColor(13,vec(255))
+    
+    EGP:egpColor(16,vec(255)) #Selector 2
+    EGP:egpColor(17,vec(255))
+    EGP:egpColor(18,vec(255))
+    
+    EGP:egpColor(21,vec(255)) #Selector 3
+    EGP:egpColor(22,vec(255))
+    EGP:egpColor(23,vec(255))
+    
+    EGP:egpColor(26,vec(255)) #Selector 4
+    EGP:egpColor(27,vec(255))
+    EGP:egpColor(28,vec(255))
+    
+    EGP:egpColor(31,vec(255)) #Selector 5
+    EGP:egpColor(32,vec(255))
+    EGP:egpColor(33,vec(255))
+    
+    EGP:egpColor(36,vec(255)) #Selector 6
+    EGP:egpColor(37,vec(255))
+    EGP:egpColor(38,vec(255))
+    
+    EGP:egpColor(41,vec(255)) #Selector 7
+    EGP:egpColor(42,vec(255))
+    EGP:egpColor(43,vec(255))
+    
+    EGP:egpColor(46,vec(255)) #Selector 8
+    EGP:egpColor(47,vec(255))
+    EGP:egpColor(48,vec(255))
+    
+    EGP:egpColor(51,vec(255)) #Selector 9
+    EGP:egpColor(52,vec(255))
+    EGP:egpColor(53,vec(255))
+    
+    EGP:egpColor(56,vec(255)) #Selector 10
+    EGP:egpColor(57,vec(255))
+    EGP:egpColor(58,vec(255))
+    
+    EGP:egpColor(61,vec(255)) #Selector 11
+    EGP:egpColor(62,vec(255))
+    EGP:egpColor(63,vec(255))
+    
+    EGP:egpColor(66,vec(255)) #Selector 12
+    EGP:egpColor(67,vec(255))
+    EGP:egpColor(68,vec(255))
+}
+
+if(clk("soundpurge")){
+    soundPurge()
+}
+
+if(clk("bank1")){
+    EGP:egpSetText(12,B1N1)
+    EGP:egpSetText(13,B1V1:toString())
+    
+    EGP:egpSetText(17,B1N2)
+    EGP:egpSetText(18,B1V2:toString())
+    
+    EGP:egpSetText(22,B1N3)
+    EGP:egpSetText(23,B1V3:toString())
+    
+    EGP:egpSetText(27,B1N4)
+    EGP:egpSetText(28,B1V4:toString())
+    
+    EGP:egpSetText(32,B1N5)
+    EGP:egpSetText(33,B1V5:toString())
+    
+    EGP:egpSetText(37,B1N6)
+    EGP:egpSetText(38,B1V6:toString())
+    
+    EGP:egpSetText(42,B1N7)
+    EGP:egpSetText(43,B1V7:toString())
+    
+    EGP:egpSetText(47,B1N8)
+    EGP:egpSetText(48,B1V8:toString())
+    
+    EGP:egpSetText(52,B1N9)
+    EGP:egpSetText(53,B1V9:toString())
+    
+    EGP:egpSetText(57,B1N10)
+    EGP:egpSetText(58,B1V10:toString())
+    
+    EGP:egpSetText(62,B1N11)
+    EGP:egpSetText(63,B1V10:toString())
+    
+    EGP:egpSetText(67,B1N12)
+    EGP:egpSetText(68,B1V12:toString())
+}
+
+if(clk("bank2")){
+    EGP:egpSetText(12,B2N1)
+    EGP:egpSetText(13,B2V1:toString())
+    
+    EGP:egpSetText(17,B2N2)
+    EGP:egpSetText(18,B2V2:toString())
+    
+    EGP:egpSetText(22,B2N3)
+    EGP:egpSetText(23,B2V3:toString())
+    
+    EGP:egpSetText(27,B2N4)
+    EGP:egpSetText(28,B2V4:toString())
+    
+    EGP:egpSetText(32,B2N5)
+    EGP:egpSetText(33,B2V5:toString())
+    
+    EGP:egpSetText(37,B2N6)
+    EGP:egpSetText(38,B2V6:toString())
+    
+    EGP:egpSetText(42,B2N7)
+    EGP:egpSetText(43,B2V7:toString())
+    
+    EGP:egpSetText(47,B2N8)
+    EGP:egpSetText(48,B2V8:toString())
+    
+    EGP:egpSetText(52,B2N9)
+    EGP:egpSetText(53,B2V9:toString())
+    
+    EGP:egpSetText(57,B2N10)
+    EGP:egpSetText(58,B2V10:toString())
+    
+    EGP:egpSetText(62,B2N11)
+    EGP:egpSetText(63,B2V11:toString())
+    
+    EGP:egpSetText(67,B2N12)
+    EGP:egpSetText(68,B2V12:toString())
+}

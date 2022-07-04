@@ -1,0 +1,15 @@
+@name Connected Ents Material
+#This seems to not work
+Ents = entity():getConnectedEntities()
+
+for(I = 1,Ents:count()){
+    E = Ents:popEntity()
+    
+    if(E:getMaterial() == "veegi/metal_light"){
+        E:setMaterial("veegi/metal_medium")
+    }
+    
+    if(E:getMaterial() == "veegi/metal_medium"){
+        E:setMaterial("veegi/metal_light")
+    }
+}

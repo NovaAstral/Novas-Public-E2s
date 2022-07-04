@@ -1,0 +1,39 @@
+@name Holo Hat
+@inputs 
+@outputs 
+@persist 
+
+#models/micropro/asuragun/w_asugun/w_asugun.mdl
+#models/markjaw/lsd/lsd_w.mdl
+
+#attachments for my normal model
+#eyes, mouth, chest, forward, anim_attachment_RH, anim_attachment_LH, anim_attachment_head
+
+#I hate e2 holos so much when you're trying to put them on the player
+
+if(first() | dupefinished()){
+    #print(owner():attachments())
+    
+    #hat parent
+    holoCreate(0)
+    holoPos(0,owner():attachmentPos("eyes"))
+    holoAng(0,owner():attachmentAng("eyes"))
+    holoParentAttachment(0,owner(),"eyes")
+    holoAlpha(0,0)
+    
+    #hat
+    holoCreate(1)
+    holoPos(1,holoEntity(0):pos() + vec(0,-10,0))
+    holoAng(1,holoEntity(0):angles())
+    holoModel(1,"models/player/items/all_class/oh_xmas_tree_engineer.mdl")
+    #holoScale(1,vec(0.1,0.2,0.2))
+    holoParent(1,0)
+    
+    #timer("invis",2000)
+}
+
+if(clk("invis")){
+    holoVisible(1,owner(),0)
+}
+
+

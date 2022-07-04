@@ -1,0 +1,15 @@
+@name Ring Platform
+@inputs 
+@outputs 
+@persist [R1 R2 R3 R4 R5]:entity
+@model models/Madman07/ancient_rings/cover.mdl
+
+#models/Madman07/ancient_rings/ring.mdl
+
+if(first() | dupefinished()){
+    R1 = holoCreate(1,entity():pos(),vec(1),entity():angles(),vec(255),"models/Madman07/ancient_rings/ring.mdl")
+    R2 = holoCreate(2,entity():pos(),vec(1),entity():angles(),vec(255),"models/Madman07/ancient_rings/ring.mdl")
+    R3 = holoCreate(3,entity():pos(),vec(1),entity():angles(),vec(255),"models/Madman07/ancient_rings/ring.mdl")
+    R4 = holoCreate(4,entity():pos(),vec(1),entity():angles(),vec(255),"models/Madman07/ancient_rings/ring.mdl")
+    R5 = holoCreate(5,entity():pos(),vec(1),entity():angles(),vec(255),"models/Madman07/ancient_rings/ring.mdl")
+}

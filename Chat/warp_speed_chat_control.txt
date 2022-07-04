@@ -1,0 +1,33 @@
+@name Warp Speed Chat Control
+@inputs 
+@outputs WarpFactor
+
+#The command to use this is /wspeed <1-10>
+#If you try to go above 10, it will get set to 10
+#If you try to go to 0 or below (or put nothing in) It will output your current warpfactor
+
+runOnChat(1)
+
+if(first()){
+    WarpFactor = 10
+}
+
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+
+if(chatClk(O)){
+    if(OLS[1,string] == "/wspeed"){
+        if(OLS[2,string]:toNumber() <= 0){
+            printColor(vec(255,95,215)," [WarpFactor] ",vec(230,110,0),"Invalid number specified. Current Warp Factor is: "+WarpFactor)
+        }
+        elseif(OLS[2,string]:toNumber() >= 11){
+            printColor(vec(255,95,215)," [WarpFactor] ",vec(230,110,0),"Warp Factor cannot go above 9.975. Setting Warp Factor to max.")
+            WarpFactor = 10
+        }
+        else{
+            printColor(vec(255,95,215)," [WarpFactor] ",vec(230,110,0),"Warp Factor changed to: "+OLS[2,string]:toNumber())
+            WarpFactor = OLS[2,string]:toNumber()
+        }
+    }
+}    
+

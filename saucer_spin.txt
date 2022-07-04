@@ -1,0 +1,88 @@
+@name Saucer Spin
+
+@inputs Activate DriveIn:string DestIn:vector ORing:entity IRing:entity Core:wirelink
+@inputs [E1,E2,E3,E4,E5,E6,E7,E8,E9,E10,E11,E12,E13,E14,E15,E16,E17]:entity
+@inputs [EI1,EI2,EI3,EI4,EI5,EI6,EI7,EI8,EI9,EI10,EI11]:entity
+
+@outputs Warp Destination:vector Alert:string NameInvis Move Speed Acceleration Direction Reset
+
+#include "Novas-Public-E2s/library/nova_lib"
+
+#This links to Quiru's Motor SF
+
+if(first() | dupefinished()){
+    
+    Speed = 30
+    Acceleration = 0.2
+    Direction = 1
+    Move = 0
+    
+    E1:parentTo(ORing)
+    E2:parentTo(ORing)
+    E3:parentTo(ORing)
+    E4:parentTo(ORing)
+    E5:parentTo(ORing)
+    E6:parentTo(ORing)
+    E7:parentTo(ORing)
+    E8:parentTo(ORing)
+    E9:parentTo(ORing)
+    E10:parentTo(ORing)
+    E11:parentTo(ORing)
+    E12:parentTo(ORing)
+    E13:parentTo(ORing)
+    E14:parentTo(ORing)
+    E15:parentTo(ORing)
+    E16:parentTo(ORing)
+    E17:parentTo(ORing)
+    
+    EI1:parentTo(IRing)
+    EI2:parentTo(IRing)
+    EI3:parentTo(IRing)
+    EI4:parentTo(IRing)
+    EI5:parentTo(IRing)
+    EI6:parentTo(IRing)
+    EI7:parentTo(IRing)
+    EI8:parentTo(IRing)
+    EI9:parentTo(IRing)
+    EI10:parentTo(IRing)
+    EI11:parentTo(IRing)
+}
+
+if(changed(Activate) & Activate == 1){
+    if(DriveIn == "gmod_wire_expression2"){
+        Destination = DestIn
+        Move = 1
+        
+        timer("alertend",8500)
+        
+        Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",0.5,100)
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Black. Spore Drive Activating.")
+        Alert = "Black"
+    }
+}
+
+if(clk("alertend")){
+    Warp = 1
+    NameInvis = 1
+    timer("warpout",6000)
+}
+
+if(clk("warpout")){
+    Move = 0
+    NameInvis = 0
+    Acceleration = 0.5
+    timer("reset",4000)
+}
+
+if(clk("reset")){
+    Reset = 1
+    timer("unalert",10)
+}
+
+if(clk("unalert")){
+    Core:entity():stopCoreEnvironmentSound()
+    Alert = "Green"
+    Reset = 0
+    Warp = 0
+    Acceleration = 0.2
+}

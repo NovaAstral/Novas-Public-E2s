@@ -1,4 +1,4 @@
-@name Vethian AI 1.4
+@name Vethian AI 1.41
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 
@@ -195,38 +195,43 @@ if(clk("setclct")){
 }
 
 if(clk("placeclct")){
-    WaterCE:propFreeze(1)
-    findIncludeEntity(WCore:entity())
-    
-    if(findInBox(vec(15837,-9,15839),vec(-15836,-15836,32)) == 1){ #pegasus
-        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Shakuras")
-        WaterCE:setPos(vec(-6818,-7200,6730))
-        WPlaced = 1
+    if(entity():parent():isValid()){
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot place water collector. The ship is parented.")
     }
+    else{
+        WaterCE:propFreeze(1)
+        findIncludeEntity(WCore:entity())
     
-    if(findInBox(vec(15839,15835,15834),vec(-15839,35,33)) == 1){ #milkyway
-        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Earth")
-        WaterCE:setPos(vec(-1260,7982,7942))
-        WPlaced = 1
+        if(findInBox(vec(15837,-9,15839),vec(-15836,-15836,32)) == 1){ #pegasus
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Shakuras")
+            WaterCE:setPos(vec(-6818,-7200,6730))
+            WPlaced = 1
+        }
+    
+        if(findInBox(vec(15839,15835,15834),vec(-15839,35,33)) == 1){ #milkyway
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Earth")
+            WaterCE:setPos(vec(-1260,7982,7942))
+            WPlaced = 1
+        }
+    
+        if(findInBox(vec(15831,-15835,0),vec(-15837,-2269,-14015)) == 1){ #desert
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Desert")
+            WaterCE:setPos(vec(11350,-9220,-9360))
+            WPlaced = 1
+        }
+    
+        if(findInBox(vec(-15837,-2269,-14015),vec(15837,15838,0)) == 1){ #hiigara
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Hiigara")
+            WaterCE:setPos(vec(5654,6201,-6194))
+            WPlaced = 1
+        }
+    
+        elseif(WPlaced == 0){ #This only triggers if you're in build/members/admin, or if your ship is parented
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot place water collector here.")
+        }
+    
+        WPlaced = 0
     }
-    
-    if(findInBox(vec(15831,-15835,0),vec(-15837,-2269,-14015)) == 1){ #desert
-        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Desert")
-        WaterCE:setPos(vec(11350,-9220,-9360))
-        WPlaced = 1
-    }
-    
-    if(findInBox(vec(-15837,-2269,-14015),vec(15837,15838,0)) == 1){ #hiigara
-        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Water Collector placed on: Hiigara")
-        WaterCE:setPos(vec(5654,6201,-6194))
-        WPlaced = 1
-    }
-    
-    elseif(WPlaced == 0){ #This should only trigger if you're in build/member/admin
-        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Why are you trying to use a water collector here?")
-    }
-    
-    WPlaced = 0
 }
 
 
