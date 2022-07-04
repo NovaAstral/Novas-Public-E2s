@@ -1,16 +1,12 @@
 @name Vector Bank Selector
 @inputs EGP:wirelink User:entity
-@outputs CursorOut:vector2 LocName:string Vector:vector Bank
+@outputs LocName:string Vector:vector Bank
 @persist Bank
 @persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string
 @persist [B2N1,B2N2,B2N3,B2N4,B2N5,B2N6,B2N7,B2N8,B2N9,B2N10,B2N11,B2N12]:string
 @persist [B1V1,B1V2,B1V3,B1V4,B1V5,B1V6,B1V7,B1V8,B1V9,B1V10,B1V11,B1V12]:vector
 @persist [B2V1,B2V2,B2V3,B2V4,B2V5,B2V6,B2V7,B2V8,B2V9,B2V10,B2V11,B2V12]:vector
 #@model models/Madman07/com_device/stone.mdl
-
-interval(200)
-
-CursorOut = EGP:egpCursor(owner())
 
 if(first() | duped()){
     LocName = "Earth"
