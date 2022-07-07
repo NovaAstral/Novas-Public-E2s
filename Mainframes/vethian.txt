@@ -68,9 +68,9 @@ if(first() | dupefinished()){
     Shutters = 1 #This opens the shutters when the AI is spawned
     
     GateCol = 1 #Set this to 0 if you don't want your gate event horizon to change colors on alert
-    
-    timer("aprint",1000) #Disable this if you don't want the AI to print to faction on start
-    
+
+    PrintOnSpawn = 1 #Set this to 0 to stop printing to faction on e2 spawn
+
     Shipname = "Shipname" #Change this to the name of your ship
     LS["Name",string] = Shipname
 
@@ -81,10 +81,16 @@ if(first() | dupefinished()){
 
     WepStrength = 10 #I would set these lower if you dont have alot of resources
     WepRate = 10
+
+    timer("spawnprint",1000)
 }
 
-if(clk("aprint")){
-    botSay("AI"," [Vethian] ",ColPink,"Vethian AI active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
+if(clk("spawnprint")){
+    if(PrintOnSpawn == 1){
+        botSay("AI"," [Vethian] ",ColPink,"Vethian AI active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
+    }
+    else{
+    }
 }
 
 #################

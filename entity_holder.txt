@@ -1,0 +1,53 @@
+@name Entity Holder
+@inputs EntIn:entity B1 B2 B3 B4 B5 B6 Reset
+@outputs [Ent1,Ent2,Ent3,Ent4,Ent5,Ent6]:entity
+@outputs [EntS1,EntS2,EntS3,EntS4,EntS5,EntS6]:string
+
+if(changed(EntIn)){
+    
+    if(B1 == 1){
+        Ent1 = EntIn
+        EntS1 = EntIn:toString()
+    }
+    
+    if(B2 == 1){
+        Ent2 = EntIn
+        EntS2 = EntIn:toString()
+    }
+    
+    if(B3 == 1){
+        Ent3 = EntIn
+        EntS3 = EntIn:toString()
+    }
+    
+    if(B4 == 1){
+        Ent4 = EntIn
+        EntS4 = EntIn:toString()
+    }
+    
+    if(B5 == 1){
+        Ent5 = EntIn
+        EntS5 = EntIn:toString()
+    }
+    
+    if(B6 == 1){
+        Ent6 = EntIn
+        EntS6 = EntIn:toString()
+    }
+}
+
+if(changed(Reset) & Reset == 1){
+    Ent1 = world()
+    Ent2 = world()
+    Ent3 = world()
+    Ent4 = world()
+    Ent5 = world()
+    Ent6 = world()
+    
+    EntS1 = EntIn:toString()
+    EntS2 = EntIn:toString()
+    EntS3 = EntIn:toString()
+    EntS4 = EntIn:toString()
+    EntS5 = EntIn:toString()
+    EntS6 = EntIn:toString()
+}
