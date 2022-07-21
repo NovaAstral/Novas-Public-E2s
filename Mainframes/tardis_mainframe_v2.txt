@@ -1,0 +1,51 @@
+@name TARDIS Mainframe v2
+@inputs
+@outputs [O, T, Pilot]:entity
+@persist TW:wirelink [ShieldTop, ShieldBottom, ShieldVis]:entity
+
+function vector vector:round(D:number) { return vec(round(This:x(), D), round(This:y(), D), round(This:z(), D)) }
+function angle angle:round(D:number) { return ang(round(This:pitch(), D), round(This:yaw(), D), round(This:roll(), D)) }
+#vector and angle functions made by Quiru
+
+#Made by Nova Astral
+#Discord: Nova Astral#2079
+#Steam: http://steamcommunity.com/profiles/76561198068127098
+
+#You need the map sb_discovery to see the tardis shield (I will see about making a check for this)
+
+#include "Novas-Public-E2s/library/nova_lib"
+
+runOnChat(1)
+OLS = owner():lastSaid():lower():explode(" ")
+
+if(first() | dupefinished()){
+    T = entity():isWeldedTo():tardisGet()
+    O = owner()
+    timer("tget",1000)
+}
+
+if(clk("tget")){
+    if(!T:isValid()){
+        printColor(ColPink," [TARDIS] ",ColOng,"TARDIS not found. Mainframe Offline.")
+        exit()
+        stopAllTimers()
+    }
+    else{
+        printColor(ColPink," [TARDIS] ",ColOng,"TARDIS Mainframe Online")
+        TW = T:wirelink()
+        timer("shield",10)
+    }
+}
+
+if(clk("shield")){
+    ShieldTop = propSpawn("models/props_phx/construct/windows/window_dome360.mdl",T:pos()+vec(0,0,50),T:angles(),1)
+    #ShieldBottom = propSpawn("models/props_phx/construct/windows/window_dome360.mdl",1)
+    ShieldVis = propSpawn("models/cubic/effects/core.mdl",T:pos()+vec(0,0,50),T:angles(),1)
+    
+    ShieldTop:parentTo(T)
+    #ShieldBottom:parentTo(T)
+    ShieldVis:parentTo(T)
+    
+    ShieldTop:resizeEntPhys(vec(4.5))
+    
+}

@@ -22,7 +22,7 @@ if(clk("rvec")){
     timer("rvec",1000)
     timer("unmine",900)
     timer("pause",6000)
-    print("mine")
+    #print("mine")
 }
 
 if(clk("unmine")){
@@ -32,12 +32,12 @@ if(clk("unmine")){
 if(clk("pause")){
     stoptimer("rvec")
     timer("unpause",1000)
-    print("pause")
+    #print("pause")
     Mine = 0
 }
 
 if(clk("unpause")){
     stoptimer("pause")
     timer("rvec",10)
-    print("unpause")
+    #print("unpause")
 }

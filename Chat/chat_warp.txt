@@ -1,7 +1,7 @@
 @name Chat Warp
 @inputs Drive:wirelink
 @outputs Warp Destination:vector AngleOffset:angle PrevPos:vector
-@persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput]:string
+@persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput,Prefix]:string
 
 #include "Novas-Public-E2s/library/nova_lib"
 
@@ -9,6 +9,8 @@
 
 if(first() | dupefinished()){
     LocList = WarpLoc:keys():concat(", ")
+    
+    Prefix = "/warp" #Warp Prefix
     
     function void warp(WarpVec:vector,Ang:angle){
         if(WarpVec == vec(0,0,0)){
@@ -25,6 +27,7 @@ if(first() | dupefinished()){
             Drive[AngInput,angle] = Ang
             Destination = WarpVec
             Angle = ang()
+            
 
             timer("reset",1000)
             timer("warp",100)
@@ -37,7 +40,7 @@ OLS = owner():lastSaid():lower():explode(" ")
 O = owner()
 
 if(chatClk(O)){
-    if(OLS[1,string] == "/warp"){
+    if(OLS[1,string] == Prefix){
         if(OLS[2,string] == "vec"){
             WarpF = 1
             local V = OLS[3,string]:explode(",")
@@ -81,7 +84,7 @@ if(chatClk(O)){
         }
     }
     
-    if(OLS[1,string] == "/warp" & WarpF == 0){
+    if(OLS[1,string] == Prefix & WarpF == 0){
         Ply = findPlayerByName(OLS[2,string])
         
         if(Ply:isPlayer()){

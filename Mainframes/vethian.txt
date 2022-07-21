@@ -1,4 +1,4 @@
-@name Vethian AI 1.41
+@name Vethian AI 1.42
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 

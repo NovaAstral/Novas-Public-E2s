@@ -1,0 +1,49 @@
+@name Stargates HUD
+@inputs EGP:wirelink
+@persist Gates:array
+
+#This isn't done and is also a tiny bit broken
+
+interval(75)
+
+if(first()|duped()){
+    EGP:egpClear()
+    timer("find",1000)
+}
+
+for(Tracker=1,Gates:count()){
+    Gate = Gates[Tracker,entity]
+    X = Tracker+Gates:count()
+    
+    Dist = Gate:pos():distance(owner():pos())
+    
+    EGP:egpSize(X, vec2(40,50))
+    EGP:egpPos(Tracker,Gate:pos())    
+}
+
+if(clk("find")){
+    timer("find",10000)
+    findByClass("stargate*")
+    findSortByDistance(owner():pos())
+    
+    Gates = findToArray()
+    
+        for(Tracker=1,Gates:count()){
+        Core = Gates[Tracker,entity]
+        
+        Rect = Tracker+Gates:count()
+        Name = Tracker+Gates:count()*2
+        
+        EGP:egp3DTracker(Tracker,Gate:pos())
+        
+        
+        EGP:egpBoxOutline(Rect,vec2(0),vec2(0))
+        EGP:egpColor(Rect,vec(0,255,0))
+        
+        EGP:egpText(Name,Gate:stargateName(),vec2(0))
+        EGP:egpSize(Name,15)
+        
+        EGP:egpParent(Name,Rect)
+        EGP:egpParent(Rect,Tracker)
+    }
+}

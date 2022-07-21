@@ -1,0 +1,26 @@
+@name Mine Layer V2
+@inputs FieldPos:vector Active
+@persist MineEnt:entity
+
+#It will teleport to a random position within a large area around 'FieldPos' and place a mine, and then keep doing that
+#Until Active is set to 0
+
+#You need AdminCore for this to work
+
+if(changed(Active) & Active == 1){
+    timer("rvec",10)
+    print("start")
+}
+
+if(changed(Active) & Active == 0 & !first()){
+    stopAllTimers()
+    print("stop")
+}
+
+if(clk("rvec")){
+    MinePos = FieldPos+vec(randint(-5000,5000),randint(-5000,5000),randint(-5000,5000))
+    MineEnt = entSpawn("sf-spacemine",MinePos,owner())
+    MineWL = MineEnt:wirelink()
+    MineWL["Arm",number] = 1
+    timer("rvec",100)
+}
