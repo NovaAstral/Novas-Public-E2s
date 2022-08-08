@@ -2,37 +2,41 @@
 @inputs Input Gate:wirelink
 @persist DHD:entity
 
-#This only works on Atlantis gates
+#This only works on Atlantis and Universe gates
+#virgo
 
-#Place this on a DHD near an atlantis gate,
-#then wire 'Gate' to an atlantis gate that isn't linked to the DHD
+#Place this on a DHD near a gate,
+#then wire 'Gate' to a gate that isn't linked to the DHD
 #Then Activate the Input with a Toggle button
 
-Address = "MEOW02#" #Set this to the address of the gate the DHD is linked to
+Address = "HECK01#" #Set this to the address of the gate the DHD is linked to
 
 Gate["Dial Mode",number] = 1
 Gate["Dial String",string] = Address
 DHD = entity():isWeldedTo()
 DHDW = DHD:wirelink()
 
-if(Input == 1){
+if(changed(Input) & Input == 1){
     Gate["Start String Dial",number] = 1
-    timer("FUCK",1)
+    if(Gate:entity():type() == "stargate_atlantis"){ #Atlantis gate
+        timer("AtlGate",1)
+    }
+    else{
+        DHDW["Press Button",number] = 97 #Universe Gate
+    }
 }
 
-if(clk("FUCK")){
-    
+if(clk("AtlGate")){
     DHDW["Press Button",number] = 97
-    stoptimer("FUCK")
 }
 
-if(Input == 0){
+if(changed(Input) & Input == 0){
     Gate["Start String Dial",number] = 0 
     Gate["Close",number] = 1
     DHDW["Press Button",number] = 0
-    timer("FUCK1",100)
+    timer("CloseOff",100)
 }
 
-if(clk("FUCK1")){
+if(clk("CloseOff")){
     Gate["Close",number] = 0
 }

@@ -2,48 +2,78 @@
 @inputs EGP:wirelink
 @persist Gates:array
 
-#This isn't done and is also a tiny bit broken
-
-interval(75)
-
 if(first()|duped()){
     EGP:egpClear()
-    timer("find",1000)
-}
-
-for(Tracker=1,Gates:count()){
-    Gate = Gates[Tracker,entity]
-    X = Tracker+Gates:count()
-    
-    Dist = Gate:pos():distance(owner():pos())
-    
-    EGP:egpSize(X, vec2(40,50))
-    EGP:egpPos(Tracker,Gate:pos())    
+    timer("find",100)
 }
 
 if(clk("find")){
-    timer("find",10000)
+    timer("find",1000)
     findByClass("stargate*")
-    findSortByDistance(owner():pos())
+    findClipToSphere(owner():pos(),1000)
+    
+    EGP:egpClear()
     
     Gates = findToArray()
     
-        for(Tracker=1,Gates:count()){
-        Core = Gates[Tracker,entity]
+    for(I = 1,Gates:count()){
+        Gate = Gates[I,entity]
         
-        Rect = Tracker+Gates:count()
-        Name = Tracker+Gates:count()*2
+        GateCount = I+Gates:count()
+        Name = GateCount*3
+        Circle = GateCount*7
+        Address = GateCount*11
         
-        EGP:egp3DTracker(Tracker,Gate:pos())
+        EGP:egp3DTracker(I,Gate:pos())
+        
+        EGP:egpCircleOutline(Circle,vec2(0),vec2(0))
+        EGP:egpColor(Circle,vec(0,255,0))
+        
+        #[ #This looks good with a single gate, but looks bad with multiple
+        #and is a pain in the ass to work with when doing extra info
+
+        if(Gate:stargateName():length() > Gate:stargateAddress():length()+Gate:stargateGroup():length()){
+            EGP:egpSize(Circle,vec2(Gate:stargateName():length()*4+2))
+        }
+        elseif(Gate:stargateName():length() < Gate:stargateAddress():length()){
+            EGP:egpSize(Circle,vec2(Gate:stargateAddress():length()+3*12))
+        }
+        elseif(Gate:stargateName():length() == 0 & Gate:stargateAddress():length() == 0){
+            EGP:egpSize(Circle,vec2(20))
+        }
+        else{
+            EGP:egpSize(Circle,vec2(Gate:stargateAddress():length()+3*12))
+        }
+        ]#
+        
+        EGP:egpSize(Circle,vec2(80))
+        
+        if(Gate:stargateAddress() == ""){
+            EGP:egpText(Address,"N/A",vec2(0))
+        }
+        else{
+            EGP:egpText(Address,Gate:stargateAddress()+" "+Gate:stargateGroup(),vec2(0))
+        }
+        
+        if(Gate:stargateName() == ""){
+            EGP:egpText(Name,"N/A",vec2(0,-10))
+        }
+        else{
+            EGP:egpText(Name,Gate:stargateName(),vec2(0,-10))
+        }
         
         
-        EGP:egpBoxOutline(Rect,vec2(0),vec2(0))
-        EGP:egpColor(Rect,vec(0,255,0))
         
-        EGP:egpText(Name,Gate:stargateName(),vec2(0))
-        EGP:egpSize(Name,15)
+        EGP:egpPos(Circle,Gate:pos())
         
-        EGP:egpParent(Name,Rect)
-        EGP:egpParent(Rect,Tracker)
+        EGP:egpAlign(Name,1)
+        EGP:egpSize(Name,12)
+        
+        EGP:egpAlign(Address,1)
+        EGP:egpSize(Address,12)
+        
+        EGP:egpParent(Name,I)
+        EGP:egpParent(Circle,I)
+        EGP:egpParent(Address,I)
     }
 }

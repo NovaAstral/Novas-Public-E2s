@@ -1,14 +1,14 @@
-@name Vethian AI 1.42
+@name Vethian AI 1.5
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 
 @outputs Active WarpFactor Tractor Lockdown Alert:string SDTimeLeft SDActive DistressCall DistressLocation:string Jam
 @outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
-@outputs BridgeDoor EngDoor GateDoor TransDoor HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
-@outputs Fire WepStrength WepRate WepType  ##Weapon Control
+@outputs HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
+@outputs Fire WepStrength WepRate BeamWepType TorpWepType TurretWepType ##Weapon Control
 
 @persist WaterCW:wirelink WaterCE:entity AimEF:entity AimEFW:wirelink AimE:entity AimEW:wirelink Shipname:string DistressLocation:string
-@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam
+@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam PrintOnSpawn
 @persist SH CP HP Prefix:string
 
 #Made by Nova Astral
@@ -21,38 +21,36 @@
 #https://docs.google.com/document/d/1O2u7H4LFrC73PP-RpSY7yRGR4XEydbntwioRyLWV7Gk/
 
 
-#If you want to make a suggestion/bug report
+#If you want to make a suggestion/bug report,
 #either use the TSA channel for Vethian, or the github issues page
 
 
 #Todo:
-#Documentation on all functions of this mainframe and not just commands   
 #E:addCoreTarget("string")
-#Give Vethian more personality in the prints
 #Merge Iris Computer
 #Merge Gate Functions
 #Merge Transporter Code 14
 #Make and Merge Transporter control
 #Make and Merge Targetting
-#Make and Merge Warp
+#Merge Warp
 #Make screens
 #Weapons control
 #Warnings for if you try to use a command but the thing isn't linked
-#Weapon Type Control
 #Change Distress find to normal find and incorporate that into both new distress and player/ship find
-#Make all the functions from v1.4 better
 #Remove all wire inputs by using autofind
 #[
 
-V1.4 Changes:
-- Added the Player's name to fsay/asay and sugged
-= Added '/v disable' which activates the 'Disable' input on whatever you're looking at for 5 seconds
-- Added a warning if you use '/v taim' and the entity you're aiming at doesn't have a fire input
-- Added '/v activate' and '/v deactivate' which activate and deactivate the entity you're looking at (You can also use '/v work' and '/v workn't'
-- Added '/v open' and '/v close' which opens and closes the SBEP door you're looking at (You must be looking at the doorframe) ('/v closen't' works to open doors too)
-- Fixed not being able to open doors when disabling lockdown
-- Added '/v sd this' which self destructs the aimed ship core
-- Added '/v lock' and '/v unlock' which locks/unlocks the door you're looking at.
+findbyclass sbep_door_controller
+
+V1.5 Changes:
+- Fixed fsay/asay not working correctly if you made the chat prefix larger than 2 characters
+- Added a Parent check for Distress Signal
+- Fixed PrintOnSpawn not working
+- Added a check to PrintOnSpawn for if you haven't changed the ship name
+- Added Beam weapon type control (/v btype <name>)
+- Added Torpedo weapon type control (/v ttype <name>)
+- Added Turret weapon type control (/v turtype <name>)
+- Removed door control because its meh and I'm working on a new system
 ]#
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -65,7 +63,7 @@ OLS = owner():lastSaid():lower():explode(" ")
 if(first() | dupefinished()){
     Active = 1 #This is just an active output to link things to
     WarpFactor = 10 #This is the starting warp factor
-    Shutters = 1 #This opens the shutters when the AI is spawned
+    Shutters = 1 #This opens the shutters when the mainframe is spawned
     
     GateCol = 1 #Set this to 0 if you don't want your gate event horizon to change colors on alert
 
@@ -87,9 +85,12 @@ if(first() | dupefinished()){
 
 if(clk("spawnprint")){
     if(PrintOnSpawn == 1){
-        botSay("AI"," [Vethian] ",ColPink,"Vethian AI active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
-    }
-    else{
+        if(Shipname != "Shipname"){
+            botSay("AI"," [Vethian] ",ColPink,"Vethian AI active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
+        }
+        else{
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on [Line 74] of the mainframe.")
+        }
     }
 }
 
@@ -235,7 +236,7 @@ if(clk("placeclct")){
         elseif(WPlaced == 0){ #This only triggers if you're in build/members/admin, or if your ship is parented
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot place water collector here.")
         }
-    
+        
         WPlaced = 0
     }
 }
@@ -408,7 +409,6 @@ if(clk("sdtime")){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
-        
         if(OLS[2,string] == "green"){
             Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",0.4,100)
             Core:entity():stopCoreEnvironmentSound()
@@ -468,10 +468,6 @@ if(chatClk(O)){
             TransFF = 1
             EngFF = 1
             Lockdown = 1
-            BridgeDoor = 0
-            EngDoor = 0
-            GateDoor = 0
-            TransDoor = 0
             HangarDoor = 0
             HangarDoorLeft = 0
             HangarDoorRight = 0
@@ -503,16 +499,6 @@ if(chatClk(O)){
 #########################
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
-        
-        if(OLS[2,string] == "ob"){
-            BridgeDoor = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Open")
-        }
-
-        if(OLS[2,string] == "cb"){
-            BridgeDoor = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Closed")
-        }
 
         if(OLS[2,string] == "obf"){
             BridgeFF = 0
@@ -522,16 +508,6 @@ if(chatClk(O)){
         if(OLS[2,string] == "cbf"){
             BridgeFF = 1
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Activated")
-        }
-        
-        if(OLS[2,string] == "og"){
-            GateDoor = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Door Open")
-        }
-
-        if(OLS[2,string] == "cg"){
-            GateDoor = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Door Closed")
         }
 
         if(OLS[2,string] == "ogrf"){
@@ -554,16 +530,6 @@ if(chatClk(O)){
             GateFF = 1
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate Forcefield Activated")
         }
-        
-        if(OLS[2,string] == "ot"){
-            TransDoor = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Door Open")
-        }
-
-        if(OLS[2,string] == "ct"){
-            TransDoor = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Door Closed")
-        }
 
         if(OLS[2,string] == "otf"){
             TransFF = 0
@@ -573,16 +539,6 @@ if(chatClk(O)){
         if(OLS[2,string] == "ctf"){
             TransFF = 1
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Forcefield Activated")
-        }
-        
-        if(OLS[2,string] == "oe"){
-            EngDoor = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Door Open")
-        }
-
-        if(OLS[2,string] == "ce"){
-            EngDoor = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Door Closed")
         }
     
         if(OLS[2,string] == "oef"){
@@ -648,11 +604,11 @@ if(chatClk(O)){
         }
         
         if(OLS[2,string] == "asay"){
-            botSayAlliance(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(8))
+            botSayAlliance(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(6+Prefix:length()))
         }
         
         if(OLS[2,string] == "fsay"){
-            botSay(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(8))
+            botSay(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(6+Prefix:length()))
         }
         
         if(OLS[2,string] == "o'neill"){
@@ -903,7 +859,7 @@ if(chatClk(O)){
                 }
             }
         
-            if(OLS[3,string]:length() >= 1){
+            if(OLS[3,string]:length() > 0){
                 if(Rings["Usable",number] == 0){
                     printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Rings Disabled, Cannot dial.")
                 }
@@ -961,7 +917,7 @@ if(chatClk(O)){
             if(OLS[3,string]:toNumber() < 0){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Weapon Strength is: "+WepStrength)
             }
-            elseif(OLS[3,string]:toNumber() >= 11){
+            elseif(OLS[3,string]:toNumber() > 10){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Weapon Strength cannot go above 10. Setting Weapon Strength to max.")
                 WepStrength = 10
             }
@@ -975,7 +931,7 @@ if(chatClk(O)){
             if(OLS[3,string]:toNumber() < 0){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Weapon Rate is: "+WepStrength)
             }
-            elseif(OLS[3,string]:toNumber() >= 11){
+            elseif(OLS[3,string]:toNumber() > 10){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Weapon Rate cannot go above 10. Setting Weapon Rate to max.")
                 WepRate = 10
             }
@@ -984,7 +940,37 @@ if(chatClk(O)){
                 WepRate = OLS[3,string]:toNumber()
             }
         }
-    }    
+    
+        if(OLS[2,string] == "btype"){
+            if(BeamType:exists(OLS[3,string])){
+                BeamWepType = BeamType[OLS[3,string],number]
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beam Weapon Type changed to: "+OLS[3,string])
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Unrecognized Beam Weapon Type: "+OLS[3,string])
+            }
+        }
+        
+        if(OLS[2,string] == "ttype"){
+            if(TorpType:exists(OLS[3,string])){
+                TorpWepType = TorpType[OLS[3,string],number]
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Torpedo Weapon Type changed to: "+OLS[3,string])
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Unrecognized Torpedo Weapon Type: "+OLS[3,string])
+            }
+        }
+        
+        if(OLS[2,string] == "turtype"){
+            if(TurretType:exists(OLS[3,string])){
+                TurretWepType = TurretType[OLS[3,string],number]
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Turret Weapon Type changed to: "+OLS[3,string])
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Unrecognized Turret Weapon Type: "+OLS[3,string])
+            }
+        }
+    }
 }
 
 ##########
@@ -1149,7 +1135,12 @@ if(chatClk(O)){
             }
             
             elseif(Found == 0){
-                print("You are in an unrecognized location. Cannot send Distress Call ")
+                if(entity():parent():isValid()){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot get ship Location. The ship is parented.")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You are in an unrecognized location. Cannot send Distress Call")
+                }
             }
             
             if(Shield:entity():type() == "atlantis_shield_emitter"){

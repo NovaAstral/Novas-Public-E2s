@@ -41,6 +41,7 @@ O = owner()
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "vec"){
             WarpF = 1
             local V = OLS[3,string]:explode(",")
@@ -85,6 +86,7 @@ if(chatClk(O)){
     }
     
     if(OLS[1,string] == Prefix & WarpF == 0){
+        hideChat(1)
         Ply = findPlayerByName(OLS[2,string])
         
         if(Ply:isPlayer()){

@@ -1,43 +1,149 @@
 @name Nova_Lib
-@persist ColPink:vector ColOng:vector ColTeam:vector WarpLoc:table
+@persist [ColPink,ColOng,ColTeam]:vector
+@persist [WarpLoc,FindPLoc,BeamType,TorpType,TurretType]:table
 
 #This e2 doesn't need to be placed anywhere
 
 #If you need to give this lib to someone, its better if they get the most recent version from:
 #https://github.com/NovaAstral/Novas-Public-E2s
 
+ColTeam = teamColor(owner():team())
 ColPink = vec(255,95,215)
 ColOng = vec(230,110,0)
-ColTeam = teamColor(owner():team())
+ColRed = vec(255,0,0)
+ColGrn = vec(0,255,0)
+ColBlue = vec(0,0,255)
 
-if(entity():getName() == "Nova_Lib"){
-    printColor(ColPink,"[NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. Removing.")
-    printColor(ColPink,"[NovaLib] ",ColOng,"If you're trying to give this to someone, send them to https://github.com/NovaAstral/Novas-Public-E2s")
-    selfDestruct()
+if(first() | dupefinished()){
+    if(entity():getName() == "Nova_Lib"){
+        printColor(ColPink,"[NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. Removing.")
+        printColor(ColPink,"[NovaLib] ",ColOng,"If you're trying to give this to someone, send them to https://github.com/NovaAstral/Novas-Public-E2s")
+        selfDestruct()
+    }
 }
 
 
-WarpLoc["earth",vector] = vec(-89.812,8258.625,10690.25) #These are copied from my PCPU, i'll probably change them later
-WarpLoc["shakur",vector] = vec(-7576.469,-7152.125,9060.281)
-WarpLoc["desert",vector] = vec(10813.469,-9631.781,-8541.219)
-WarpLoc["hiigara",vector] = vec(6144.75,9267.938,-4660.031)
-WarpLoc["lava",vector] = vec(-9891.5,167.563,-4283.75)
-WarpLoc["milk",vector] = vec(-7659.344,8215.219,8300.563)
-WarpLoc["pegasus",vector] = vec(1703.844,-8593.844,9143.375)
-WarpLoc["universe",vector] = vec(111.344,-2874.812,-3954.719)
-WarpLoc["unicorner",vector] = vec(-9001.88, -7556.98, -10626.96)
-WarpLoc["hangar",vector] = vec(-7576.469,-7152.125,5560.281)
+WarpLoc["earth",vector] = vec(-89,8258,10690) #These are copied from my PCPU, i'll probably change them later
+WarpLoc["shakur",vector] = vec(-7576,-7152,9060)
+WarpLoc["desert",vector] = vec(10813,-9631,-8541)
+WarpLoc["hiigara",vector] = vec(6144,9267,-4660)
+WarpLoc["lava",vector] = vec(-9891,167,-4283)
+WarpLoc["milk",vector] = vec(-7659,8215,8300)
+WarpLoc["pegasus",vector] = vec(1703,-8593,9143)
+WarpLoc["universe",vector] = vec(111,-2874,-3954)
+WarpLoc["unicorner",vector] = vec(-9001, -7556, -10626)
+WarpLoc["hangar",vector] = vec(-7576,-7152,5560)
 WarpLoc["moon",vector] = vec(-4938,13441,10444)
 WarpLoc["members",vector] = vec(13,-94,-15202)
 WarpLoc["secret",vector] = vec(-6797,-6485,-15328)
-WarpLoc["phoenix",vector] = vec(-7539.68,-6805.75,3581.61)
+WarpLoc["phoenix",vector] = vec(-7539,-6805,3581)
 WarpLoc["build",vector] = vec(10696,12179,-15484)
 WarpLoc["build2",vector] = vec(12820,4475,-15105)
 WarpLoc["build3",vector] = vec(12820,-4130,-15105)
 WarpLoc["build4",vector] = vec(12820,-12345,-15105)
 WarpLoc["hiigarabase",vector] = vec(7556,6805,-7450)
 
+#Location Find Planets
+FindPLoc["",number] = findInSphere(vec(0,0,0),0)
+FindPLoc["",number] = findInSphere(vec(0,0,0),0)
 
+#Beam Weapon Types
+BeamType["disruptor",number] = 1
+BeamType["disrupt",number] = 1
+BeamType["dis",number] = 1
+BeamType["tetryon",number] = 2
+BeamType["tet",number] = 2
+BeamType["antiproton",number] = 3
+BeamType["antip",number] = 3
+BeamType["plasma",number] = 4
+BeamType["plas",number] = 4
+BeamType["polaron",number] = 5
+BeamType["pol",number] = 5
+BeamType["phaser",number] = 6
+BeamType["phas",number] = 6
+BeamType["proton",number] = 7
+BeamType["prot",number] = 7
+BeamType["protonicpolaron",number] = 8
+BeamType["protpol",number] = 8
+BeamType["spiralwavedisruptor",number] = 9
+BeamType["spiral",number] = 9
+BeamType["cardie",number] = 9
+BeamType["vothantiproton",number] = 10
+BeamType["vothap",number] = 10
+BeamType["destabilizingtetryon",number] = 11
+BeamType["destet",number] = 11
+BeamType["phasertmp",number] = 12
+BeamType["phastmp",number] = 12
+BeamType["tmp",number] = 12
+BeamType["tmpphas",number] = 12
+BeamType["phasertos",number] = 13
+BeamType["phastos",number] = 13
+BeamType["tos",number] = 13
+BeamType["tosphas",number] = 13
+BeamType["chroniton",number] = 14
+BeamType["chron",number] = 14
+BeamType["gay",number] = 14
+BeamType["rainbow",number] = 14
+BeamType["phaserdsc",number] = 15
+BeamType["phasdsc",number] = 15
+BeamType["dsc",number] = 15
+BeamType["dscphas",number] = 15
+
+TorpType["photon",number] = 1
+TorpType["phot",number] = 1
+TorpType["quantum",number] = 2
+TorpType["quan",number] = 2
+TorpType["plasma",number] = 3
+TorpType["plas",number] = 3
+TorpType["transphasic",number] = 4
+TorpType["trans",number] = 4
+TorpType["chroniton",number] = 5
+TorpType["chron",number] = 5
+TorpType["transpahsicchroniton",number] = 6
+TorpType["transchron",number] = 6
+TorpType["tchron",number] = 6
+TorpType["biomolecular",number] = 7
+TorpType["bio",number] = 7
+TorpType["tricobalt",number] = 8
+TorpType["trico",number] = 8
+TorpType["photontmp",number] = 9
+TorpType["phottmp",number] = 9
+TorpType["tmp",number] = 9
+TorpType["tmpphot",number] = 9
+TorpType["photontos",number] = 10
+TorpType["phottos",number] = 10
+TorpType["tos",number] = 10
+TorpType["tosphot",number] = 10
+
+TurretType["ionlaser",number] = 1
+TurretType["ion",number] = 1
+TurretType["phaser",number] = 2
+TurretType["phas",number] = 2
+TurretType["antiproton",number] = 3
+TurretType["antip",number] = 3
+TurretType["ap",number] = 3
+TurretType["disruptor",number] = 4
+TurretType["dis",number] = 4
+TurretType["tetryon",number] = 5
+TurretType["tet",number] = 5
+TurretType["plasma",number] = 6
+TurretType["plas",number] = 6
+TurretType["polaron",number] = 7
+TurretType["pol",number] = 7
+TurretType["flak",number] = 8
+TurretType["kinetic",number] = 9
+TurretType["kin",number] = 9
+TurretType["proton",number] = 10
+TurretType["prot",number] = 10
+TurretType["protonicpolaron",number] = 11
+TurretType["protpol",number] = 11
+TurretType["vothantiproton",number] = 12
+TurretType["vothap",number] = 12
+TurretType["spiralwavedisruptor",number] = 13
+TurretType["spiral",number] = 13
+TurretType["cardie",number] = 13
+
+#o'neill command in vethian :)
 if(clk("whacko")){
     printColor(ColPink," [O'Neill] ",ColOng,"I'm telling you Teal'c, if we don't find a way out of this soon, I'm gonna lose it.")
     timer("whacko 2",6000)

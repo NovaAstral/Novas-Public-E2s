@@ -1,0 +1,29 @@
+@name Address Dial Energy
+@inputs Activate HubEnergy Address:string Gate:entity DM0 DM1 DM2
+@outputs DialMode NeededEnergy
+
+#include "Novas-Public-E2s/library/nova_lib"
+
+if(changed(Activate) & Activate == 1){
+    if(Gate:stargateGetEnergyFromAddress(Address) > HubEnergy){
+        printColor(ColPink," [Dialing Computer] ",ColOng,"Cannot dial. Not enough energy! We have: [",ColGrn,round(HubEnergy),ColOng,"] energy. We need: [",ColGrn,round(Gate:stargateGetEnergyFromAddress(Address) - HubEnergy),ColOng,"] more energy.")
+        NeededEnergy = round(Gate:stargateGetEnergyFromAddress(Address) - HubEnergy)
+    
+    }
+    else{
+        printColor(ColPink," [Dialing Computer] ",ColOng,"Dialing Gate to: ",ColGrn,Address)
+        Gate:stargateDial(Address,DialMode)
+    }
+}
+
+if(changed(DM0) & DM0){
+    DialMode = 0
+}
+
+if(changed(DM1) & DM1){
+    DialMode = 1
+}
+
+if(changed(DM2) & DM2){
+    DialMode = 2
+}

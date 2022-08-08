@@ -1,0 +1,17 @@
+@name Up/Down Counter
+@inputs Up Down Reset
+@outputs Out
+#I realize there is a wire gate of this but whatever
+
+if(changed(Up) & Up){
+    Out++
+}
+
+if(changed(Down) & Down){
+    Out--
+}
+
+if(changed(Reset) & Reset){
+    Out = 0
+}
+
