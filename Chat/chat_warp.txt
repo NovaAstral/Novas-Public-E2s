@@ -54,34 +54,34 @@ if(chatClk(O)){
             printColor(ColPink,"[Warp] ",ColOng,"Warping to Vector: "+Dest)
             warp(Dest,AngleOffset)
         }
-    }
-    if(OLS[2,string] == "back"){
-        WarpF = 1
-        printColor(ColPink,"[Warp] ",ColOng,"Warping to previous position")
-        warp(PrevPos,AngleOffset)
-    }
-        
-    if(OLS[2,string] == "ang"){
-        if(OLS[3,string] == "reset"){
+        if(OLS[2,string] == "back"){
             WarpF = 1
-            local AngOffset = DriveEnt:toLocal(ang(0,0,0)) + DriveOffset
-            local Dest = DriveEnt:pos()
-            
-            printColor(ColPink,"[Warp] ",ColOng,"Resetting ship angles: "+AngOffset)
-            warp(Dest,AngOffset)
+            printColor(ColPink,"[Warp] ",ColOng,"Warping to previous position")
+            warp(PrevPos,AngleOffset)
         }
-        elseif(OLS[3,string] != "reset"){
-            WarpF = 1
-            local V = OLS[3,string]:explode(",")
-            local X = V[1,string]:toNumber()
-            local Y = V[2,string]:toNumber()
-            local Z = V[3,string]:toNumber()
-    
-            local Ang = round(ang(X,Y,Z))
-            local Dest = DriveEnt:pos()
             
-            warp(Dest,Ang)
-            printColor(ColPink,"[Warp] ",ColOng,"Rotating to angle offset: "+Ang)
+        if(OLS[2,string] == "ang"){
+            if(OLS[3,string] == "reset"){
+                WarpF = 1
+                local AngOffset = DriveEnt:toLocal(ang(0,0,0)) + DriveOffset
+                local Dest = DriveEnt:pos()
+                
+                printColor(ColPink,"[Warp] ",ColOng,"Resetting ship angles: "+AngOffset)
+                warp(Dest,AngOffset)
+            }
+            elseif(OLS[3,string] != "reset"){
+                WarpF = 1
+                local V = OLS[3,string]:explode(",")
+                local X = V[1,string]:toNumber()
+                local Y = V[2,string]:toNumber()
+                local Z = V[3,string]:toNumber()
+        
+                local Ang = round(ang(X,Y,Z))
+                local Dest = DriveEnt:pos()
+                
+                warp(Dest,Ang)
+                printColor(ColPink,"[Warp] ",ColOng,"Rotating to angle offset: "+Ang)
+            }
         }
     }
     

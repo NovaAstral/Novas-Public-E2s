@@ -1,7 +1,7 @@
 @name Chathide
 
 #You need to enable concmd for this to work (This can be dangerous, do not leave it on.)
-#This doesn't work because hideChat() doesn't actually hide chat from e2 (probably not from sf either)
+#This doesn't work because hideChat() doesn't actually hide chat from e2 or sf
 
 
 concmd("say a")

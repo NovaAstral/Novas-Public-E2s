@@ -8,7 +8,7 @@ runOnChat(1)
 Pad = PadE:wirelink()
 
 #This links the same as my replicator
-
+#Use it with /bucket
 
 if(clk("Rep1")){
     Pad["Target1",entity] = Ent

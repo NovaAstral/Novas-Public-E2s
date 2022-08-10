@@ -1,4 +1,4 @@
-@name Vethian AI 1.5
+@name Vethian AI 1.51
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 
@@ -7,7 +7,7 @@
 @outputs HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
 @outputs Fire WepStrength WepRate BeamWepType TorpWepType TurretWepType ##Weapon Control
 
-@persist WaterCW:wirelink WaterCE:entity AimEF:entity AimEFW:wirelink AimE:entity AimEW:wirelink Shipname:string DistressLocation:string
+@persist [WaterCW,AimEFW,AimEW]:wirelink [WaterCE,AimEF,AimE]:entity [Shipname,DistressLocation]:string
 @persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam PrintOnSpawn
 @persist SH CP HP Prefix:string
 
@@ -42,15 +42,10 @@
 
 findbyclass sbep_door_controller
 
-V1.5 Changes:
-- Fixed fsay/asay not working correctly if you made the chat prefix larger than 2 characters
-- Added a Parent check for Distress Signal
-- Fixed PrintOnSpawn not working
-- Added a check to PrintOnSpawn for if you haven't changed the ship name
-- Added Beam weapon type control (/v btype <name>)
-- Added Torpedo weapon type control (/v ttype <name>)
-- Added Turret weapon type control (/v turtype <name>)
-- Removed door control because its meh and I'm working on a new system
+V1.51 Changes:
+- Fixed the line number of the namecheck print
+- Added the version number to the spawn print
+- Fixed the gate transmit not working properly if the chat prefix is more than 2 characters long
 ]#
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -86,10 +81,10 @@ if(first() | dupefinished()){
 if(clk("spawnprint")){
     if(PrintOnSpawn == 1){
         if(Shipname != "Shipname"){
-            botSay("AI"," [Vethian] ",ColPink,"Vethian AI active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
+            botSay("AI"," [Vethian] ",ColPink,"Vethian AI v1.51 active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
         }
         else{
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on [Line 74] of the mainframe.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on [Line 67] of the mainframe.")
         }
     }
 }
@@ -331,51 +326,51 @@ if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels bet
             LS["Activate",number] = 1
             Energy["Activate",number] = 1
         }
-    }
     
-    if(OLS[2,string] == "sd"){
-        if(OLS[3,string] == "this"){
-            AimE = owner():aimEntity()
-            if(AimE:isValid()){
-                AimEW = owner():aimEntity():wirelink()
-                if(AimEW:hasInput("Self Destruct")){
-                    AimEW["Self Destruct",number] = 1
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destructing aimed Ship Core.")
+        if(OLS[2,string] == "sd"){
+            if(OLS[3,string] == "this"){
+                AimE = owner():aimEntity()
+                if(AimE:isValid()){
+                    AimEW = owner():aimEntity():wirelink()
+                    if(AimEW:hasInput("Self Destruct")){
+                        AimEW["Self Destruct",number] = 1
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destructing aimed Ship Core.")
+                    }
+                    else{
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Self Destruct input.")
+                    }
                 }
                 else{
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Self Destruct input.")
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
                 }
             }
-            else{
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
-            }
-        }
 
         
-        if(OLS[3,string] == "stop"){
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aborting Self Destruct.")
-            Core:entity():stopCoreEnvironmentSound()
-            stoptimer("sdtime")
-            SDTimeLeft = 0
-            SDActive = 0
-        }
-        
-        if(OLS[3,string]:length() <= 0){
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"No time specified. Activating Destruction.")
-            Core["Self Destruct",number] = 1
-            SDActive = 1
-        }
-        
-        elseif(OLS[3,string] != "stop" & OLS[3,string] != "this"){
-            if(OLS[3,string]:toNumber() == 0){
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid time.")
+            if(OLS[3,string] == "stop"){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aborting Self Destruct.")
+                Core:entity():stopCoreEnvironmentSound()
+                stoptimer("sdtime")
+                SDTimeLeft = 0
+                SDActive = 0
             }
-            else{
-                SDTimeLeft = OLS[3,string]:toNumber()
+            
+            if(OLS[3,string]:length() <= 0){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"No time specified. Activating Destruction.")
+                Core["Self Destruct",number] = 1
                 SDActive = 1
-                Core:entity():setCoreEnvironmentSound("alarm/sga_midway_selfdestruct.wav",1,100)
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destruct activated for <"+ SDTimeLeft + "> seconds.")
-                timer("sdtime",10)
+            }
+            
+            elseif(OLS[3,string] != "stop" & OLS[3,string] != "this"){
+                if(OLS[3,string]:toNumber() == 0){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid time.")
+                }
+                else{
+                    SDTimeLeft = OLS[3,string]:toNumber()
+                    SDActive = 1
+                    Core:entity():setCoreEnvironmentSound("alarm/sga_midway_selfdestruct.wav",1,100)
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Self Destruct activated for <"+ SDTimeLeft + "> seconds.")
+                    timer("sdtime",10)
+                }
             }
         }
     }
@@ -499,7 +494,6 @@ if(chatClk(O)){
 #########################
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
-
         if(OLS[2,string] == "obf"){
             BridgeFF = 0
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Deactivated")
@@ -794,7 +788,6 @@ if(clk("unaim")){
 ######################
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
-        
         if(OLS[2,string] == "closeg"){
             Gate:stargateClose()
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Closing Gate.")
@@ -823,8 +816,8 @@ if(chatClk(O)){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate is offline, cannot send a message.")
             }
             else{
-                Gate:stargateTransmit(owner():lastSaid():sub(9))
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Message sent through gate: "+owner():lastSaid():sub(9))
+                Gate:stargateTransmit(owner():lastSaid():sub(7+Prefix:length()))
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Message sent through gate: "+owner():lastSaid():sub(7+Prefix:length()))
             }
         }
     }
@@ -846,7 +839,6 @@ if(clk("dialreset")){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
-        
         if(OLS[2,string] == "rdial"){
             if(OLS[3,string]:length() == 0){
                 if(Rings["Usable",number] == 0){

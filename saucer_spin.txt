@@ -1,8 +1,8 @@
 @name Saucer Spin
 
 @inputs Activate DriveIn:string DestIn:vector ORing:entity IRing:entity Core:wirelink
-@inputs [E1,E2,E3,E4,E5,E6,E7,E8,E9,E10,E11,E12,E13,E14,E15,E16,E17]:entity
-@inputs [EI1,EI2,EI3,EI4,EI5,EI6,EI7,EI8,EI9,EI10,EI11]:entity
+@inputs [E1,E2,E3,E4,E5,E6,E7,E8,E9,E10,E11,E12,E13,E14,E15,E16,E17,E18]:entity
+@inputs [EI1,EI2,EI3,EI4,EI5,EI6,EI7,EI8,EI10,EI11]:entity
 
 @outputs Warp Destination:vector Alert:string NameInvis Move Speed Acceleration Direction Reset
 
@@ -34,6 +34,7 @@ if(first() | dupefinished()){
     E15:parentTo(ORing)
     E16:parentTo(ORing)
     E17:parentTo(ORing)
+    E18:parentTo(ORing)
     
     EI1:parentTo(IRing)
     EI2:parentTo(IRing)
@@ -43,7 +44,7 @@ if(first() | dupefinished()){
     EI6:parentTo(IRing)
     EI7:parentTo(IRing)
     EI8:parentTo(IRing)
-    EI9:parentTo(IRing)
+    #EI9:parentTo(IRing) #this isn't welded to anything
     EI10:parentTo(IRing)
     EI11:parentTo(IRing)
 }
