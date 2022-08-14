@@ -547,7 +547,7 @@ if(chatClk(O)){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Closed")
             }
         }
-        if(OLS[2,string] == "bridgeff"){
+        if(OLS[2,string] == "bridgeff" | OLS[2,string] == "brff"){
             BridgeFF = !BridgeFF
             if(BridgeFF == 1){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Activated")
@@ -557,7 +557,7 @@ if(chatClk(O)){
             }
         }
         
-        if(OLS[2,string] == "gateroom"){
+        if(OLS[2,string] == "gateroom" | OLS[2,string] == "gr"){
             GateRDoor = !GateRDoor
             if(BridgeDoor == 1){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Opened")
@@ -566,7 +566,7 @@ if(chatClk(O)){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Closed")
             }
         }
-        if(OLS[2,string] == "gateroomff"){
+        if(OLS[2,string] == "gateroomff" | OLS[2,string] == "grff"){
             GateRFF = !GateRFF
             if(GateRFF == 1){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Forcefield Activated")
