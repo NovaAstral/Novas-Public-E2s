@@ -43,7 +43,7 @@ if(~EGP & EGP){
 if(first()){
     EGP:egpClear()
     
-    timer("cursor",1)
+    #timer("cursor",1)
     timer("egpcreate",1)
     
     MainMenu = 1

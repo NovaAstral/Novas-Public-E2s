@@ -1,5 +1,5 @@
 @name Chat Warp
-@inputs Drive:wirelink
+@inputs Drive:wirelink DriveEnt:entity
 @outputs Warp Destination:vector AngleOffset:angle PrevPos:vector
 @persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput,Prefix]:string
 
@@ -21,14 +21,14 @@ if(first() | dupefinished()){
                 printColor(ColPink,"[Warp] ",ColOng,"Destination jammed, cannot warp.")
                 return
             }
-            PrevPos = entity():pos()
+            PrevPos = DriveEnt:pos()
             PrevAng = DriveEnt:angles()
             Drive[DestInput,vector] = WarpVec
             Drive[AngInput,angle] = Ang
             Destination = WarpVec
+            AngleOffset = Ang
             Angle = ang()
             
-
             timer("reset",1000)
             timer("warp",100)
         }
@@ -114,6 +114,7 @@ if(chatClk(O)){
 if(clk("reset")){
     Destination = vec()
     Drive[DestInput,vector] = vec()
+    AngleOffset = ang()
     Warp = 0
     Drive[WarpInput,number] = 0
     WarpF = 0
@@ -167,9 +168,14 @@ if(changed(Drive)){
             WarpInput = "Demat" 
             printColor(ColPink,"[Warp] ",ColOng,"TARDIS Linked")
         }
+        elseif(DriveType == "gmod_wire_expression2"){
+            DestInput = "Destination"
+            WarpInput = "Warp"
+            AngInput = "Angle Offset"
+        }
         elseif(->Destination & ->Warp){
             printColor(ColPink,"[Warp] ",ColOng,"Manual Drive Linked")
-        }        
+        }
         elseif(->Drive){
             printColor(ColPink,"[Warp] ",ColOng,"Unable to link to: "+DriveType)
         }        

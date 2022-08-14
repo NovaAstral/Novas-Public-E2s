@@ -1,0 +1,93 @@
+@name FTL Spool
+@inputs Warp Destination:vector AngleOffset:angle Drive:wirelink FTLSpool ForceWarp
+@outputs RotorSpeed ChargeRequired
+@persist DT:string SpoolWait DriveType DriveCheck Dest:vector
+#include "Novas-Public-E2s/library/nova_lib"
+
+#To use this, wire Warp and Destination to the warp chip, and unwire the warp chip from any warp drives,
+#Wire Drive to either a drive, or a drive selector
+
+if(first() | dupefinished()){
+    RotorSpeed = 50
+}
+
+if(changed(Warp) & Warp == 1){
+    DT = Drive:entity():type()
+    
+    if(DT == "sg_hyperdrive" | DT == "quantum_slipstream_drive" | DT == "st_warp_drive"){
+        printColor(ZeiaOng,"[FTL] ",ZeiaWht,"Transit Drive ",ZeiaTBlu,"selected. Waiting for FTL to spool to ",ZeiaWht,"150%")
+        
+        Drive["Destination",vector] = Destination
+        Drive["Angle Offset",angle] = AngleOffset
+        
+        SpoolWait = 1
+        DriveType = 1
+        DriveCheck = 1
+        ChargeRequired = 150
+        
+        timer("dcreset",10)
+    }
+    
+    if(DT == "bsg_drive" | DT == "ship_drive" | DT == "spore_drive"){
+        printColor(ZeiaOng,"[FTL] ",ZeiaWht,"Jump Drive ",ZeiaTBlu,"selected. Waiting for FTL to spool to ",ZeiaWht,"250%")
+        
+        Drive["Destination",vector] = Destination
+        Drive["Angle Offset",angle] = AngleOffset
+        
+        SpoolWait = 1
+        DriveType = 2
+        DriveCheck = 1
+        ChargeRequired = 250
+        
+        timer("dcreset",10)
+    }
+    
+    if(DriveCheck == 0){
+        printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"Unrecognized Drive: [",ZeiaWht,DT,ZeiaTBlu,"] Cannot warp.")
+    }
+}
+
+if(clk("dcreset")){
+    DriveCheck = 0
+}
+
+if(changed(FTLSpool) & SpoolWait == 1){
+    if(DriveType == 1){
+        if(FTLSpool >= 148){
+            SpoolWait = 0
+            
+            printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"FTL Spooled to",ZeiaWht," 150% ",ZeiaTBlu,"Activating Drive")
+            timer("spooled",1)
+        }
+    }
+    
+    if(DriveType == 2){
+        if(FTLSpool >= 248){
+            SpoolWait = 0
+            
+            printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"FTL Spooled",ZeiaWht," 250% ",ZeiaTBlu,"Activating Drive")
+            timer("spooled",1)
+        }
+    }
+}
+
+if(clk("spooled")){
+    Drive["Activate",number] = 1
+    RotorSpeed = 49.9
+    timer("reset",1000)
+    timer("angreset",12000)
+}
+
+if(clk("reset")){
+    Drive["Destination",vector] = vec()
+    Drive["Activate",number] = 0
+    RotorSpeed = 50
+}
+
+if(clk("angreset")){
+    Drive["Angle Offset",angle] = ang()
+}
+
+if(changed(ForceWarp) & ForceWarp == 1){
+    timer("spooled",10)
+}

@@ -1,14 +1,14 @@
-@name Vethian AI 1.51
+@name Vethian AI 1.6
 
 @inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
 
-@outputs Active WarpFactor Tractor Lockdown Alert:string SDTimeLeft SDActive DistressCall DistressLocation:string Jam
-@outputs GateFF GateRFF BridgeFF TransFF EngFF  ##Forcefields
-@outputs HangarDoor HangarDoorLeft HangarDoorRight Shutters  ##Doors
+@outputs Active WarpFactor Tractor Lockdown Alert:string AlertCol:vector AlertLightBrightness SDTimeLeft SDActive DistressCall DistressLocation:string Jam
+@outputs GateFF GateRFF BridgeFF TransFF EngFF CoreFF ##Forcefields
+@outputs HangarDoor HangarDoorLeft HangarDoorRight Shutters BridgeDoor GateRDoor EngDoor TransDoor ##Doors
 @outputs Fire WepStrength WepRate BeamWepType TorpWepType TurretWepType ##Weapon Control
 
 @persist [WaterCW,AimEFW,AimEW]:wirelink [WaterCE,AimEF,AimE]:entity [Shipname,DistressLocation]:string
-@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam PrintOnSpawn
+@persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam PrintOnSpawn [OpenInput TOpenInput LockInput]:string DoorFound
 @persist SH CP HP Prefix:string
 
 #Made by Nova Astral
@@ -42,10 +42,15 @@
 
 findbyclass sbep_door_controller
 
-V1.51 Changes:
-- Fixed the line number of the namecheck print
-- Added the version number to the spawn print
-- Fixed the gate transmit not working properly if the chat prefix is more than 2 characters long
+V1.6 Changes:
+- Added Light Alert color outputs
+- Added Core Forcefield controls
+- Re-added and updated old door controls, check the docs to see how they work
+- Updated the open/close/lock/unlock door controls, you can now look at the door itself
+- Added the ability to open/close/lock/unlock extra doors on sbep doors, "/v open <doornumber>"
+- Added Alert Lights color/brightness outputs and color config
+- Made Alert Lights blink automatically using the brightness output
+- Added hideChat() to everything so that if someone forgets a ! or / in the prefix, they dont annoy people
 ]#
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -70,21 +75,26 @@ if(first() | dupefinished()){
     #AutoDistress = 1 #Disable this if you don't want your ship to send a distress call at 30% hull
     #This isn't implemented yet
     
-    Prefix = "/v" #If you don't use a / or ! in this, I will personally find you, and stab you.
+    Prefix = "/v" #Set this to the prefix you need to enter first in chat for any commands
 
     WepStrength = 10 #I would set these lower if you dont have alot of resources
     WepRate = 10
 
     timer("spawnprint",1000)
+    
+    AlertGreen = vec(0) #Alert colors for the lights
+    AlertBlue = vec(0,0,255)
+    AlertRed = vec(255,0,0)
+    AlertBlack = vec(255)
 }
 
 if(clk("spawnprint")){
     if(PrintOnSpawn == 1){
         if(Shipname != "Shipname"){
-            botSay("AI"," [Vethian] ",ColPink,"Vethian AI v1.51 active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
+            botSay("AI"," [Vethian] ",ColPink,"Vethian AI v1.6 active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
         }
         else{
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on [Line 67] of the mainframe.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on [Line 78] of the mainframe.")
         }
     }
 }
@@ -96,6 +106,7 @@ if(clk("spawnprint")){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "power"){
             if(Energy["Active",number] == 0){
                 Energy["Activate",number] = 1
@@ -103,7 +114,7 @@ if(chatClk(O)){
             }
             else{
                 Energy["Activate",number] = 0
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Energy Generation Offline. W-why would you turn the power off?")
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Energy Generation Offline.")
             }
         }
         
@@ -243,6 +254,7 @@ if(clk("placeclct")){
 
 if(chatClk(O)){ #Yes I know I don't need to do this every time, but it feels better to me
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "plating"){
             if(Core["Plating Enabled",number] == 0){
                 Core["Enable Plating",number] = 1
@@ -404,10 +416,15 @@ if(clk("sdtime")){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "green"){
             Core:entity():setCoreEnvironmentSound("st/shuttlecraft/computer_work2.mp3",0.4,100)
             Core:entity():stopCoreEnvironmentSound()
             Alert = "Green"
+            AlertCol = AlertGreen
+            stoptimer("alighton")
+            stoptimer("alightoff")
+            
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Green. Stand Down.")
 
             if(GateCol == 1){
@@ -418,6 +435,9 @@ if(chatClk(O)){
         if(OLS[2,string] == "blue"){
             Core:entity():setCoreEnvironmentSound("st/misc/bluealert.wav",0.4,100)
             Alert = "Blue"
+            AlertCol = AlertBlue
+            timer("alighton",1)
+            
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Blue. Prepare for Battle.")
             
             if(GateCol == 1){
@@ -428,6 +448,9 @@ if(chatClk(O)){
         if(OLS[2,string] == "red"){
             Core:entity():setCoreEnvironmentSound("st/misc/voy_redalert_loop.wav",0.4,100)
             Alert = "Red"
+            AlertCol = AlertRed
+            timer("alighton",1)
+            
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Red. Battle Stations.")
             
             if(GateCol == 1){
@@ -438,6 +461,9 @@ if(chatClk(O)){
         if(OLS[2,string] == "black"){
             Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",0.4,100)
             Alert = "Black"
+            AlertCol = AlertBlack
+            timer("alighton",1)
+
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Black. Shipwide Experiment.")
             
             if(GateCol == 1){
@@ -448,6 +474,9 @@ if(chatClk(O)){
         if(OLS[2,string] == "abandon"){
             Core:entity():setCoreEnvironmentSound("st/misc/abandon_ship.wav",0.4,100)
             Alert = "Abandon Ship"
+            AlertCol = AlertRed
+            timer("alighton",1)
+            
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Abandon Ship.")
 
             if(GateCol == 1){
@@ -457,10 +486,14 @@ if(chatClk(O)){
 
         if(OLS[2,string] == "ldon"){
             Core:entity():setCoreEnvironmentSound("st/misc/rom_redalert.wav",0.4,100)
+            BridgeDoor = 1
             BridgeFF = 1
             GateFF = 1
+            GateRDoor = 1
             GateRFF = 1
+            TransDoor = 1
             TransFF = 1
+            EngDoor = 1
             EngFF = 1
             Lockdown = 1
             HangarDoor = 0
@@ -489,100 +522,155 @@ if(chatClk(O)){
     }
 }
 
+if(clk("alighton")){
+    AlertLightBrightness = 5
+    timer("alightoff",1000)
+}
+
+if(clk("alightoff")){
+    AlertLightBrightness = 0
+    timer("alighton",1000)
+}
+
 #########################
 ####Doors/Forcefields####
 #########################
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
-        if(OLS[2,string] == "obf"){
-            BridgeFF = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Deactivated")
+        hideChat(1)
+        if(OLS[2,string] == "bridge"){
+            BridgeDoor = !BridgeDoor
+            if(BridgeDoor == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Closed")
+            }
         }
-
-        if(OLS[2,string] == "cbf"){
-            BridgeFF = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Activated")
-        }
-
-        if(OLS[2,string] == "ogrf"){
-            GateRFF = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Forcefield Deactivated")
-        }
-
-        if(OLS[2,string] == "cgrf"){
-            GateRFF = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Forcefield Activated")
-        }
-        
-        #This is meant for a forcefield that encompasses the area around the gate as a security thing
-        if(OLS[2,string] == "ogf"){
-            GateFF = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate Forcefield Deactivated")
-        }
-
-        if(OLS[2,string] == "cgf"){
-            GateFF = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate Forcefield Activated")
-        }
-
-        if(OLS[2,string] == "otf"){
-            TransFF = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Forcefield Deactivated")
-        }
-
-        if(OLS[2,string] == "ctf"){
-            TransFF = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Forcefield Activated")
-        }
-    
-        if(OLS[2,string] == "oef"){
-            EngFF = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Forcefield Deactivated")
-        }
-
-        if(OLS[2,string] == "cef"){
-            EngFF = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Forcefield Activated")
-        }
-
-        if(OLS[2,string] == "ohl"){
-            HangarDoorLeft = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Left Hangar Opened.")
-        }
-
-        if(OLS[2,string] == "chl"){
-            HangarDoorLeft = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Left Hangar Closed.")
+        if(OLS[2,string] == "bridgeff"){
+            BridgeFF = !BridgeFF
+            if(BridgeFF == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Activated")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Forcefield Deactivated")
+            }
         }
         
-        if(OLS[2,string] == "ohr"){
-            HangarDoorRight = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Right Hangar Opened.")
+        if(OLS[2,string] == "gateroom"){
+            GateRDoor = !GateRDoor
+            if(BridgeDoor == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Closed")
+            }
         }
-
-        if(OLS[2,string] == "chr"){
-            HangarDoorRight = 0
-        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Right Hangar Closed.")
+        if(OLS[2,string] == "gateroomff"){
+            GateRFF = !GateRFF
+            if(GateRFF == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Forcefield Activated")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gateroom Forcefield Deactivated")
+            }
         }
-
-        if(OLS[2,string] == "oh"){
-            HangarDoor = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Hangar Opened")
-        }
-
-        if(OLS[2,string] == "ch"){
-            HangarDoor = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Hangar Closed")
+        if(OLS[2,string] == "gateff"){
+            GateFF = !GateFF
+            if(GateFF == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate Forcefield Activated")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Gate Forcefield Deactivated")
+            }
         }
         
-        if(OLS[2,string] == "os"){
-            Shutters = 1
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shutters Open")
+        if(OLS[2,string] == "trans" | OLS[2,string] == "transporter"){
+            TransDoor = !TransDoor
+            if(TransDoor == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Door Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Door Closed")
+            }
         }
-
-        if(OLS[2,string] == "cs"){
-            Shutters = 0
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shutters Closed")
+        if(OLS[2,string] == "transff"){
+            TransFF = !TransFF
+            if(TransFF == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Forcefield Activated")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Transporter Room Forcefield Deactivated")
+            }
+        }
+        
+        if(OLS[2,string] == "eng" | OLS[2,string] == "engineering"){
+            EngDoor = !EngDoor
+            if(EngDoor == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Door Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Door Closed")
+            }
+        }
+        if(OLS[2,string] == "engff" | OLS[2,string] == "engineeringff"){
+            EngFF = !EngFF
+            if(EngFF == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Forcefield Activated")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Engineering Forcefield Deactivated")
+            }
+        }
+        
+        if(OLS[2,string] == "coreff"){
+            CoreFF = !CoreFF
+            if(CoreFF == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Core Forcefield Activated")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Core Forcefield Deactivated")
+            }
+        }
+        
+        if(OLS[2,string] == "lh" | OLS[2,string] == "lhangar" | OLS[2,string] == "lefthangar"){
+            HangarDoorLeft = !HangarDoorLeft
+            if(HangarDoorLeft == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Left Hangar Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Left Hangar Closed")
+            }
+        }
+        
+        if(OLS[2,string] == "rh" | OLS[2,string] == "rhangar" | OLS[2,string] == "righthangar"){
+            HangarDoorRight = !HangarDoorRight
+            if(HangarDoorRight == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Right Hangar Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Right Hangar Closed")
+            }
+        }
+        
+        if(OLS[2,string] == "h" | OLS[2,string] == "hang" | OLS[2,string] == "hangar"){
+            HangarDoor = !HangarDoor
+            if(HangarDoor == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Hangar Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Hangar Closed")
+            }
+        }
+        
+        if(OLS[2,string] == "shut" | OLS[2,string] == "shutters"){
+            Shutters = !Shutters
+            if(Shutters == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shutters Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shutters Closed")
+            }
         }
     }
 }
@@ -593,6 +681,7 @@ if(chatClk(O)){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "sugged"){
             botSayAlliance(owner():name(),"Vethian",ColPink,"sugged xd")
         }
@@ -609,11 +698,12 @@ if(chatClk(O)){
             timer("whacko",1) # :)
         }
 
-#[ #ship/player location  THIS DOESNT WORK BECAUSE E2 HAS NO STARGAZER FUNCTIONS DAMNIT
-    if(OLS[2,string] == "sloc"){
-        Env = Core:getEnvironmentData()
-        printColor(ColTeam,"[AI]",ColPink," [Vethian]",ColOng,"The ship is located at: " +Env)
-    }
+#[      
+        #ship/player location  THIS DOESNT WORK BECAUSE E2 HAS NO STARGAZER FUNCTIONS DAMNIT
+        if(OLS[2,string] == "sloc"){
+            Env = Core:getEnvironmentData()
+            printColor(ColTeam,"[AI]",ColPink," [Vethian]",ColOng,"The ship is located at: " +Env)
+        }
 ]#
 
         if(OLS[2,string] == "reset"){
@@ -704,78 +794,108 @@ if(chatClk(O)){
             }
         }
         
-        if(OLS[2,string] == "open" | OLS[2,string] == "closen't"){
+        if(OLS[2,string] == "open" | OLS[2,string] == "close" | OLS[2,string] == "lock" | OLS[2,string] == "unlock"){
             AimE = owner():aimEntity()
             if(AimE:isValid()){
                 AimEW = owner():aimEntity():wirelink()
-                if(AimEW:hasInput("Open") | AimEW:hasInput("Open_1")){
-                    AimEW["Open",number] = 1
-                    AimEW["Open_1",number] = 1
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Opening aimed Door.")
+                
+                if(AimE:type() == "sbep_base_door_controller"){
+                    DoorFound = 1
+                    DoorFrame = AimEW
+                    if(OLS[3,string]:length() == 0){
+                        OpenInput = "Open_1"
+                        LockInput = "Lock_1"
+                    }
+                    else{
+                        OpenInput = "Open_"+OLS[3,string]
+                        LockInput = "Lock_"+OLS[3,string]
+                    }
                 }
-                else{
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have an Open or Open_1 input.")
+                if(AimE:type() == "sbep_base_door"){
+                    DoorFound = 1
+                    DoorFrame = AimE:parent():wirelink()
+                    
+                    if(OLS[3,string]:length() == 0){
+                        OpenInput = "Open_1"
+                        LockInput = "Lock_1"
+                    }
+                    else{
+                        OpenInput = "Open_"+OLS[3,string]
+                        LockInput = "Lock_"+OLS[3,string]
+                    }
                 }
-            }
-            else{
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
-            }
-        }
-        
-        if(OLS[2,string] == "close"){
-            AimE = owner():aimEntity()
-            if(AimE:isValid()){
-                AimEW = owner():aimEntity():wirelink()
-                if(AimEW:hasInput("Open") | AimEW:hasInput("Open_1")){
-                    AimEW["Open",number] = 0
-                    AimEW["Open_1",number] = 0
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Closing aimed Door.")
+                if(AimE:type() == "cap_doors_frame"){
+                    DoorFound = 1
+                    DoorFrame = AimEW
+                    TOpenInput = "Toggle"
+                    LockInput = "Lockdown"
+                    timer("ToggleDoorReset",1)
                 }
-                else{
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have an Open or Open_1 input.")
+                if(AimE:type() == "cap_doors"){
+                    DoorFound = 1
+                    DoorFrame = AimE:parent():wirelink()
+                    TOpenInput = "Toggle"
+                    LockInput = "Lockdown"
                 }
-            }
-            else{
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
-            }
-        }
-        
-        if(OLS[2,string] == "lock"){
-            if(AimE:isValid()){
-                AimEW = owner():aimEntity():wirelink()
-                if(AimEW:hasInput("Lock") | AimEW:hasInput("Lock_1")){
-                    AimEW["Lock",number] = 1
-                    AimEW["Lock_1",number] = 1
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Locking aimed Door.")
+                if(AimE:type() == "sci_fi_door"){
+                    DoorFound = 1
+                    DoorFrame = AimEW
+                    OpenInput = "Open"
+                    LockInput = "Lock"
                 }
-                else{
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Lock or Lock_1 input.")
+                if(AimE:type() == "sci_fi_door_anim"){
+                    DoorFound = 1
+                    DoorFrame = AimE:parent():wirelink()
+                    OpenInput = "Open"
+                    LockInput = "Lock"
                 }
-            }
-            else{
-                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
-            }
-        }
-        
-        if(OLS[2,string] == "unlock"){
-            if(AimE:isValid()){
-                AimEW = owner():aimEntity():wirelink()
-                if(AimEW:hasInput("Lock") | AimEW:hasInput("Lock_1")){
-                    AimEW["Lock",number] = 0
-                    AimEW["Lock_1",number] = 0
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Unlocking aimed Door.")
-                }
-                else{
-                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity does not have a Lock or Lock_1 input.")
+                if(DoorFound == 0){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Aimed entity is not a door or is not supported.")
                 }
             }
             else{
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"You're not aiming at anything.")
             }
-        }
+            
+            if(OLS[2,string] == "open"){                
+                if(DoorFound == 1){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Opening Aimed Door.")
+                    DoorFound = 0
+                    DoorFrame[OpenInput,number] = 1
+                    DoorFrame[TOpenInput,number] = 1
+                    timer("ToggleDoorReset",10)
+                }
+            }
+            if(OLS[2,string] == "close"){
+                if(DoorFound == 1){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Closing Aimed Door")
+                    DoorFound = 0
+                    DoorFrame[OpenInput,number] = 0
+                    DoorFrame[TOpenInput,number] = 1
+                    timer("ToggleDoorReset",100)
+                }
+            }
+            if(OLS[2,string] == "lock"){
+                if(DoorFound == 1){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Locking Aimed Door")
+                    DoorFound = 0
+                    DoorFrame[LockInput,number] = 1
+                }
+            }
+            if(OLS[2,string] == "unlock"){
+                if(DoorFound == 1){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Unlocking Aimed Door")
+                    DoorFound = 0
+                    DoorFrame[LockInput,number] = 0
+                }
+            }
+        }        
     }
 }
 
+if(clk("ToggleDoorReset")){
+    AimEW[TOpenInput,number] = 0
+}
 
 if(clk("unaim")){
     AimEFW["Fire",number] = 0
@@ -788,6 +908,7 @@ if(clk("unaim")){
 ######################
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "closeg"){
             Gate:stargateClose()
             printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Closing Gate.")
@@ -839,6 +960,7 @@ if(clk("dialreset")){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "rdial"){
             if(OLS[3,string]:length() == 0){
                 if(Rings["Usable",number] == 0){
@@ -886,6 +1008,7 @@ if(clk("ringreset")){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "jam"){
             if(Jam == 0){
                 Jam = 1
@@ -905,6 +1028,7 @@ if(chatClk(O)){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "wstrength"){
             if(OLS[3,string]:toNumber() < 0){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Weapon Strength is: "+WepStrength)
@@ -971,6 +1095,7 @@ if(chatClk(O)){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "wspeed"){
             if(OLS[3,string]:toNumber() <= 0){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Warp Factor is: "+WarpFactor)
@@ -993,6 +1118,7 @@ if(chatClk(O)){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "cspeed"){
             if(OLS[3,string]:toNumber() < 0){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Drive Core Speed is: "+DCoreSpeed)
@@ -1014,6 +1140,7 @@ if(chatClk(O)){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "ctspeed"){
             if(OLS[3,string]:toNumber() < 0.5){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Invalid number specified. Current Drive core Turnspeed is: "+DCoreTurnSpeed)
@@ -1037,6 +1164,7 @@ if(chatClk(O)){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "calc"){
             if(OLS[3,string]:toNumber() == 0 | OLS[5,string]:toNumber() == 0){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"NaN or 0 Used as Input, Cannot Calculate.")
@@ -1071,6 +1199,7 @@ if(chatClk(O)){
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
+        hideChat(1)
         if(OLS[2,string] == "distress"){
             findIncludeEntity(Core:entity())
             

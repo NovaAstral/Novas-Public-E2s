@@ -1,6 +1,6 @@
 @name Nova_Lib
-@persist [ColPink,ColOng,ColTeam]:vector
-@persist [WarpLoc,FindPLoc,BeamType,TorpType,TurretType]:table
+@persist [ColTeam,ColPink,ColOng,ColRed,ColGrn,ColBlu,ColWht,ZeiaOng,ZeiaTBlu,ZeiaMBlu,ZeiaWht,ZeiaBlk]:vector
+@persist [DriveName,WarpLoc,FindPLoc,BeamType,TorpType,TurretType]:table
 
 #This e2 doesn't need to be placed anywhere
 
@@ -12,7 +12,15 @@ ColPink = vec(255,95,215)
 ColOng = vec(230,110,0)
 ColRed = vec(255,0,0)
 ColGrn = vec(0,255,0)
-ColBlue = vec(0,0,255)
+ColBlu = vec(0,0,255)
+ColWht = vec(255)
+ColBlk = vec(0)
+
+ZeiaOng = vec(255,90,0)
+ZeiaTBlu = vec(200,255,255)
+ZeiaMBlu = vec(0,255,255)
+ZeiaWht = vec(230,230,230)
+ZeiaBlk = vec(99,99,99)
 
 if(first() | dupefinished()){
     if(entity():getName() == "Nova_Lib"){
@@ -22,8 +30,22 @@ if(first() | dupefinished()){
     }
 }
 
+#Drive Selector types
+DriveName["ship",string] = "ship_drive"
+DriveName["bsg",string] = "bsg_drive"
+DriveName["ftl",string] = "bsg_drive"
+DriveName["warp",string] = "st_warp_drive"
+DriveName["sg",string] = "sg_hyperdrive"
+DriveName["hyper",string] = "sg_hyperdrive"
+DriveName["spore",string] =  "spore_drive"
+DriveName["wiretp",string] = "gmod_wire_teleporter"
+DriveName["sbep",string] = "warpdrive"
+DriveName["qsd",string] = "quantum_slipstream_drive"
+DriveName["slipstream",string] = "quantum_slipstream_drive"
+DriveName["e2",string] = "gmod_wire_expression2"
 
-WarpLoc["earth",vector] = vec(-89,8258,10690) #These are copied from my PCPU, i'll probably change them later
+#Warp Locations, These are copied from my PCPU, i'll probably change them later
+WarpLoc["earth",vector] = vec(-89,8258,10690)
 WarpLoc["shakur",vector] = vec(-7576,-7152,9060)
 WarpLoc["desert",vector] = vec(10813,-9631,-8541)
 WarpLoc["hiigara",vector] = vec(6144,9267,-4660)

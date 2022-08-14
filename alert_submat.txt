@@ -1,75 +1,72 @@
 @name Alert Submat
-@inputs Alert:string [E1,E2,E3,E4,E5,E6,E7,E8,E9,E10]:entity
-@outputs 
+@inputs Alert:string [E1,E2,E3,E4,E5,E6,E7,E8,E9,E10,E11,E12]:entity
+@persist [Light,Red,Blue,Black]:string
 
-#You probably wont find this useful, this was made for my crossfield
+if(first() | dupefinished()){
+    Light = "cmats/light"
+    Red = "cmats/flash_red"
+    Blue = "glow/flash_blue"
+    Black = "glow/flash_white"
+}
 
 if(changed(Alert)){
     if(Alert == "Green"){
-        E1:setSubMaterial(4,"cmats/light") #
-        E2:setSubMaterial(4,"cmats/light") #
-        E3:setSubMaterial(6,"cmats/light") #
-        E4:setSubMaterial(4,"cmats/light") #
-        E5:setSubMaterial(4,"cmats/light") #
-        E6:setSubMaterial(6,"cmats/light") #
-        E7:setMaterial("cmats/light")
-        E8:setMaterial("cmats/light")
-        E9:setMaterial("cmats/light")
-        E10:setMaterial("cmats/light")
-        E7:setColor(0,255,255)
-        E8:setColor(0,255,255)
-        E9:setColor(0,255,255)
-        E10:setColor(0,255,255)
+        E1:setSubMaterial(6,Light)
+        E2:setSubMaterial(2,Light)
+        E3:setSubMaterial(6,Light)
+        E4:setSubMaterial(5,Light)
+        E5:setSubMaterial(6,Light)
+        E6:setSubMaterial(6,Light)
+        E7:setSubMaterial(6,Light)
+        E8:setSubMaterial(6,Light)
+        E9:setSubMaterial(6,Light)
+        E10:setSubMaterial(6,Light)
+        E11:setSubMaterial(6,Light)
+        E12:setSubMaterial(7,Light)
     }
     
     if(Alert == "Blue"){
-        E1:setSubMaterial(4,"glow/flash_blue")
-        E2:setSubMaterial(4,"glow/flash_blue")
-        E3:setSubMaterial(6,"glow/flash_blue")
-        E4:setSubMaterial(4,"glow/flash_blue")
-        E5:setSubMaterial(4,"glow/flash_blue")
-        E6:setSubMaterial(6,"glow/flash_blue")
-        E7:setMaterial("glow/flash_blue")
-        E8:setMaterial("glow/flash_blue")
-        E9:setMaterial("glow/flash_blue")
-        E10:setMaterial("glow/flash_blue")
-        E7:setColor(255,255,255)
-        E8:setColor(255,255,255)
-        E9:setColor(255,255,255)
-        E10:setColor(255,255,255)
+        E1:setSubMaterial(6,Blue)
+        E2:setSubMaterial(2,Blue)
+        E3:setSubMaterial(6,Blue)
+        E4:setSubMaterial(5,Blue)
+        E5:setSubMaterial(6,Blue)
+        E6:setSubMaterial(6,Blue)
+        E7:setSubMaterial(6,Blue)
+        E8:setSubMaterial(6,Blue)
+        E9:setSubMaterial(6,Blue)
+        E10:setSubMaterial(6,Blue)
+        E11:setSubMaterial(6,Blue)
+        E12:setSubMaterial(7,Blue)
     }
-    
+    #cmats/flash_red
     if(Alert == "Red" | Alert == "Abandon Ship" | Alert == "Lockdown"){
-        E1:setSubMaterial(4,"cmats/flash_red")
-        E2:setSubMaterial(4,"cmats/flash_red")
-        E3:setSubMaterial(6,"cmats/flash_red")
-        E4:setSubMaterial(4,"cmats/flash_red")
-        E5:setSubMaterial(4,"cmats/flash_red")
-        E6:setSubMaterial(6,"cmats/flash_red")
-        E7:setMaterial("cmats/flash_red")
-        E8:setMaterial("cmats/flash_red")
-        E9:setMaterial("cmats/flash_red")
-        E10:setMaterial("cmats/flash_red")
-        E7:setColor(255,255,255)
-        E8:setColor(255,255,255)
-        E9:setColor(255,255,255)
-        E10:setColor(255,255,255)
+        E1:setSubMaterial(6,Red)
+        E2:setSubMaterial(2,Red)
+        E3:setSubMaterial(6,Red)
+        E4:setSubMaterial(5,Red)
+        E5:setSubMaterial(6,Red)
+        E6:setSubMaterial(6,Red)
+        E7:setSubMaterial(6,Red)
+        E8:setSubMaterial(6,Red)
+        E9:setSubMaterial(6,Red)
+        E10:setSubMaterial(6,Red)
+        E11:setSubMaterial(6,Red)
+        E12:setSubMaterial(7,Red)
     }
     
     if(Alert == "Black"){
-        E1:setSubMaterial(4,"glow/flash_white")
-        E2:setSubMaterial(4,"glow/flash_white")
-        E3:setSubMaterial(6,"glow/flash_white")
-        E4:setSubMaterial(4,"glow/flash_white")
-        E5:setSubMaterial(4,"glow/flash_white")
-        E6:setSubMaterial(6,"glow/flash_white")
-        E7:setMaterial("glow/flash_white")
-        E8:setMaterial("glow/flash_white")
-        E9:setMaterial("glow/flash_white")
-        E10:setMaterial("glow/flash_white")
-        E7:setColor(255,255,255)
-        E8:setColor(255,255,255)
-        E9:setColor(255,255,255)
-        E10:setColor(255,255,255)
+        E1:setSubMaterial(6,Black)
+        E2:setSubMaterial(2,Black)
+        E3:setSubMaterial(6,Black)
+        E4:setSubMaterial(5,Black)
+        E5:setSubMaterial(6,Black)
+        E6:setSubMaterial(6,Black)
+        E7:setSubMaterial(6,Black)
+        E8:setSubMaterial(6,Black)
+        E9:setSubMaterial(6,Black)
+        E10:setSubMaterial(6,Black)
+        E11:setSubMaterial(6,Black)
+        E12:setSubMaterial(7,Black)
     }
 }

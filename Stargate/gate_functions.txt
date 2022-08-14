@@ -1,7 +1,9 @@
 @name Gate Functions
-@inputs Gate:wirelink AsgardTP:wirelink TButton ShipCore:wirelink
-@outputs Address:string Name:string Owner:string GateTE:entity Message:string
-@persist Dest:vector InboundAlarmS:string
+@inputs [Gate,ShipCore,AsgardTP]:wirelink TButton
+@outputs [Address,Name,Owner,Message]:string GateTE:entity
+@persist [Dest,OwnerCol,GateCol]:vector InboundAlarmS:string
+
+#include "Novas-Public-E2s/library/nova_lib"
 
 interval(500)
 
@@ -21,7 +23,7 @@ AutoIris = 0 #Enables the AutoIris feature that opens the iris of the linked gat
 
 
 if(changed(Gate["Inbound",number]) & Gate["Inbound",number] == 1 ){
-    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Incoming Wormhole")
+    printColor(ColPink," [Stargate] ",ColOng,"Incoming Wormhole")
     
     if(InboundAlarm == 1){
         ShipCore:entity():setCoreEnvironmentSound(InboundAlarmS,0.2,100)
@@ -36,7 +38,7 @@ if(changed(Gate["Open",number]) & Gate["Open",number] == 1 & Gate["Inbound",numb
 }
 
 if(clk("waitin")){
-    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Gate Active from: < " +Name+ " > with address < " +Address+ " > owned by: <" +Owner+ " >")
+    printColor(ColPink," [Stargate] ",ColOng,"Gate Active from: < ",GateCol,Name,ColOng," > with address < ",GateCol,Address,ColOng," > owned by: <",OwnerCol,Owner,ColOng," >")
 }
 
 if(changed(Gate["Open",number]) & Gate["Open",number] == 1 & Gate["Inbound",number] == 0){
@@ -45,11 +47,11 @@ if(changed(Gate["Open",number]) & Gate["Open",number] == 1 & Gate["Inbound",numb
 }
 
 if(clk("waitout")){
-    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Outgoing wormhole to: < " +Name+ " > with address < " +Address+ " > owned by: < " +Owner+ " >")
+    printColor(ColPink," [Stargate] ",ColOng,"Outgoing wormhole to: < ",GateCol,Name,ColOng," > with address < ",GateCol,Address,ColOng," > owned by: < ",OwnerCol,Owner,ColOng," >")
 }
 
 if(changed(Gate["Active",number]) & Gate["Active",number] == 0){
-    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Gate Offline")
+    printColor(ColPink," [Stargate] ",ColOng,"Gate Offline")
     stoptimer("autoiris")
     Address = ""
     Name = ""
@@ -61,8 +63,26 @@ if(clk("update")){
     Address = Gate["Dialing Address",string]
     Name = Gateg:target():name()
     Owner = Gateg:target():entity():owner():name()
+    OwnerCol = teamColor(Gateg:target():entity():owner():team())
     GateTE = Gateg:target():entity()
     Dest = GateTE:pos()+GateTE:forward()*100
+    
+    if(GateTE:type() == "stargate_sg1" | GateTE:type() == "stargate_movie" | GateTE:type() == "stargate_infinity"){
+        GateCol = vec(255,150,0)
+    }
+    
+    if(GateTE:type() == "stargate_orlin"){
+        GateCol = vec(250,0,50)
+    }
+    
+    if(GateTE:type() == "stargate_tollan" | GateTE:type() == "stargate_atlantis"){
+        GateCol = vec(0,225,255)
+    }
+    
+    if(GateTE:type() == "stargate_universe"){
+        GateCol = vec(150,150,150)
+    }
+    
     timer("world",5)
     stoptimer("update")
 }
@@ -75,11 +95,11 @@ if(clk("world")){
 
 if(changed(TButton) & TButton == 1){
     if(isJammed(GateTE:pos()+GateTE:forward()*100)){
-    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Destination Jammed. Transport Aborted.")
+    printColor(ColPink," [Stargate] ",ColOng,"Destination Jammed. Transport Aborted.")
     owner():soundPlay(1,2000,"st/shuttlecraft/computer_deny.wav")
 }
     if((isJammed(owner():pos()))){
-        printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Origin Jammed. Transport Aborted.")
+        printColor(ColPink," [Stargate] ",ColOng,"Origin Jammed. Transport Aborted.")
         owner():soundPlay(2,2000,"st/shuttlecraft/computer_deny.wav")
 }
     else{
@@ -89,7 +109,7 @@ if(changed(TButton) & TButton == 1){
 
 
 if(changed(Gate["Received",string]) & Gate["Received",string]:length() > 0){
-    printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Message received through gate: "+Gate["Received",string])
+    printColor(ColPink," [Stargate] ",ColOng,"Message received through gate: "+Gate["Received",string])
     Message = Gate["Received",string]
 }
 
@@ -102,11 +122,11 @@ if(AutoIris == 1){
         if(find():isValid() == 1){
             if(Gate:stargateIrisActive() == 1){
                 Gate:stargateIrisToggle()
-                printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Owner near dialing gate. Opening iris.")
+                printColor(ColPink," [Stargate] ",ColOng,"Owner near dialing gate. Opening iris.")
                 stoptimer("autoiris")
             }
             elseif(Gate:stargateIrisActive() == 0){
-                printColor(vec(255,95,215)," [Stargate] ",vec(230,110,0),"Owner near dialing gate. Iris already open.")
+                printColor(ColPink," [Stargate] ",ColOng,"Owner near dialing gate. Iris already open.")
                 stoptimer("autoiris")
             }
         }

@@ -1,46 +1,58 @@
 @name Warp Buttons
-@inputs L1 L2 L3 L4 L5 L6 L7 L8 L9 L10
-@outputs Location:vector Dest:string
+@inputs Activate L1 L2 L3 L4 L5 L6 L7 L8 L9 L10
+@outputs Destination:vector LocationString:string Warp
+@persist Location:vector
 
 #This uses buttons to set the destination of a warp drive
 
+if(changed(Activate) & Activate == 1){
+    Warp = 1
+    Destination = Location
+    timer("warpreset",1000)
+}
+
+if(clk("warpreset")){
+    Warp = 0
+    Destination = vec()
+}
+
 if(L1 == 1){ #Shakur
     Location = vec(-7547,-6651,7409)
-    Dest = "Shakuras"
+    LocationString = "Shakuras"
 }
 if(L2 == 1){ #Station
     Location = vec(7488,-9403,9515)
-    Dest = "Station"
+    LocationString = "Station"
 }
 if(L3 == 1){ #Earth
     Location = vec(675,8044,8825)
-    Dest = "Earth"
+    LocationString = "Earth"
 }
 if(L4 == 1){ #Moon
     Location = vec(-4447,13512,10476)
-    Dest = "Moon"
+    LocationString = "Moon"
 }
 if(L5 == 1){ #Hiigara
     Location = vec(7227,7923,-4968)
-    Dest = "Hiigara"
+    LocationString = "Hiigara"
 }
 if(L6 == 1){ #Desert
     Location = vec(9633,-10443,-7958)
-    Dest = "Desert"
+    LocationString = "Desert"
 }
 if(L7 == 1){ #Lava
     Location = vec(-9716,9,-3800)
-    Dest = "Lava"    
+    LocationString = "Lava"    
 }
 if(L8 == 1){ #Universe
     Location = vec(-404,-1277,-2686)
-    Dest = "Universe"
+    LocationString = "Universe"
 }
 if(L9 == 1){ #Pegasus
     Location = vec(6919,-5863,12372)
-    Dest = "Pegasus"
+    LocationString = "Pegasus"
 }
 if(L10 == 1){ #Milkyway
     Location = vec(-2977,5054,14021)
-    Dest = "Milkyway"
+    LocationString = "Milkyway"
 }
