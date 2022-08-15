@@ -1,15 +1,18 @@
-@name Vethian AI 1.6
+@name Vethian AI 1.8
 
-@inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore]:wirelink
+@inputs [Energy,Refinery,LS,WCore,Core,Shield,Cloak,Gate,Rings,DriveCore,Drive,Transporter]:wirelink [DriveEnt,BrigEnt]:entity
 
 @outputs Active WarpFactor Tractor Lockdown Alert:string AlertCol:vector AlertLightBrightness SDTimeLeft SDActive DistressCall DistressLocation:string Jam
 @outputs GateFF GateRFF BridgeFF TransFF EngFF CoreFF ##Forcefields
-@outputs HangarDoor HangarDoorLeft HangarDoorRight Shutters BridgeDoor GateRDoor EngDoor TransDoor ##Doors
+@outputs HangarDoor HangarDoorLeft HangarDoorRight Shutters BlastDoors BridgeDoor GateRDoor EngDoor TransDoor ##Doors
 @outputs Fire WepStrength WepRate BeamWepType TorpWepType TurretWepType ##Weapon Control
+@outputs Warp [Destination,PrevPos]:vector AngleOffset:angle ##Warp Control
 
 @persist [WaterCW,AimEFW,AimEW]:wirelink [WaterCE,AimEF,AimE]:entity [Shipname,DistressLocation]:string
 @persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Jam PrintOnSpawn [OpenInput TOpenInput LockInput]:string DoorFound
-@persist SH CP HP Prefix:string
+@persist SH CP HP [Prefix,WarpPrefix]:string
+@persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput]:string
+@persist [PadTarget,PadDest,PadBeam,TransBeamType]:string BrigName:array
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
@@ -22,19 +25,17 @@
 
 
 #If you want to make a suggestion/bug report,
-#either use the TSA channel for Vethian, or the github issues page
+#either use The Spartan Alliance discord channel for Vethian, or the github issues page
 
 
 #Todo:
 #E:addCoreTarget("string")
-#Merge Iris Computer
+#Merge Iris Computer?
 #Merge Gate Functions
-#Merge Transporter Code 14
 #Make and Merge Transporter control
 #Make and Merge Targetting
-#Merge Warp
 #Make screens
-#Weapons control
+#Full Weapons control
 #Warnings for if you try to use a command but the thing isn't linked
 #Change Distress find to normal find and incorporate that into both new distress and player/ship find
 #Remove all wire inputs by using autofind
@@ -42,15 +43,11 @@
 
 findbyclass sbep_door_controller
 
-V1.6 Changes:
-- Added Light Alert color outputs
-- Added Core Forcefield controls
-- Re-added and updated old door controls, check the docs to see how they work
-- Updated the open/close/lock/unlock door controls, you can now look at the door itself
-- Added the ability to open/close/lock/unlock extra doors on sbep doors, "/v open <doornumber>"
-- Added Alert Lights color/brightness outputs and color config
-- Made Alert Lights blink automatically using the brightness output
-- Added hideChat() to everything so that if someone forgets a ! or / in the prefix, they dont annoy people
+V1.8 Changes:
+- Added a directional warp command: eg "/v warp forward 158" or "/v warp back 1742" etc
+- Added a 'brig' transport command: eg "/v brig <player>" or </v jail <player>"
+- Changed asay/fsay so the playername is more easily visible since the botSay function is limited
+- Added a BlastDoors wire output, controlled with '/v blast' or '/v bulk'
 ]#
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -76,7 +73,8 @@ if(first() | dupefinished()){
     #This isn't implemented yet
     
     Prefix = "/v" #Set this to the prefix you need to enter first in chat for any commands
-
+    WarpPrefix = "/warp" #This is the Warp Prefix for using the warp drive
+    
     WepStrength = 10 #I would set these lower if you dont have alot of resources
     WepRate = 10
 
@@ -91,10 +89,10 @@ if(first() | dupefinished()){
 if(clk("spawnprint")){
     if(PrintOnSpawn == 1){
         if(Shipname != "Shipname"){
-            botSay("AI"," [Vethian] ",ColPink,"Vethian AI v1.6 active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
+            botSay("AI"," [Vethian] ",ColPink,"Vethian AI v1.8 active from: <" +owner():name()+ "> on ship: <" +Shipname+ ">")
         }
         else{
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on [Line 78] of the mainframe.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on",ColRed," [Line 69] ",ColOng,"of the mainframe.")
         }
     }
 }
@@ -538,7 +536,7 @@ if(clk("alightoff")){
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
         hideChat(1)
-        if(OLS[2,string] == "bridge"){
+        if(OLS[2,string] == "bridge" | OLS[2,string] == "br"){1
             BridgeDoor = !BridgeDoor
             if(BridgeDoor == 1){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door Opened")
@@ -672,6 +670,16 @@ if(chatClk(O)){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shutters Closed")
             }
         }
+        
+        if(OLS[2,string] == "bulk" | OLS[2,string] == "blast"){
+            BlastDoors = !BlastDoors
+            if(BlastDoors == 1){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Blast Doors Opened")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Blast Doors Closed")
+            }
+        }
     }
 }
 
@@ -687,11 +695,11 @@ if(chatClk(O)){
         }
         
         if(OLS[2,string] == "asay"){
-            botSayAlliance(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(6+Prefix:length()))
+            botSayAlliance("Vethian",owner():name(),ColPink,owner():lastSaid():sub(6+Prefix:length()))
         }
         
         if(OLS[2,string] == "fsay"){
-            botSay(owner():name(),"Vethian",ColPink,owner():lastSaid():sub(6+Prefix:length()))
+            botSay("Vethian",owner():name(),ColPink,owner():lastSaid():sub(6+Prefix:length()))
         }
         
         if(OLS[2,string] == "o'neill"){
@@ -1092,6 +1100,230 @@ if(chatClk(O)){
 ##########
 ###Warp###
 ##########
+if(first() | dupefinished()){
+    LocList = WarpLoc:keys():concat(", ")
+    
+    function void warp(WarpVec:vector,Ang:angle){
+        if(WarpVec == vec(0,0,0)){
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot warp to 0,0,0")
+        }
+        else{
+            if(isJammed(WarpVec)){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Destination jammed, cannot warp.")
+                return
+            }
+            PrevPos = DriveEnt:pos()
+            PrevAng = DriveEnt:angles()
+            Drive[DestInput,vector] = WarpVec
+            Drive[AngInput,angle] = Ang
+            Destination = WarpVec
+            AngleOffset = Ang
+            Angle = ang()
+            
+            timer("resetwarp",1000)
+            timer("warp",100)
+        }
+    }
+}
+
+if(chatClk(O)){
+    if(OLS[1,string] == WarpPrefix){
+        hideChat(1)
+        if(OLS[2,string] == "vec"){
+            WarpF = 1
+            local V = OLS[3,string]:explode(",")
+            local X = V[1,string]:toNumber()
+            local Y = V[2,string]:toNumber()
+            local Z = V[3,string]:toNumber()
+            
+            local Dest = round(vec(X,Y,Z))
+            
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping to Vector: ",ColGrn,Dest)
+            warp(Dest,AngleOffset)
+        }
+            
+        if(OLS[2,string] == "ang" | OLS[2,string] == "angle"){
+            if(OLS[3,string] == "reset"){
+                WarpF = 1
+                local AngOffset = DriveEnt:toLocal(ang(0,0,0)) + DriveOffset
+                local Dest = DriveEnt:pos()
+                
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Resetting ship angles: ",ColGrn,AngOffset)
+                warp(Dest,AngOffset)
+            }
+            elseif(OLS[3,string] != "reset"){
+                WarpF = 1
+                local V = OLS[3,string]:explode(",")
+                local X = V[1,string]:toNumber()
+                local Y = V[2,string]:toNumber()
+                local Z = V[3,string]:toNumber()
+        
+                local Ang = round(ang(X,Y,Z))
+                local Dest = DriveEnt:pos()
+                
+                warp(Dest,Ang)
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Rotating to angle offset: ",ColGrn,Ang)
+            }
+        }
+        
+        if(OLS[2,string] == "forward" | OLS[2,string] == "back" | OLS[2,string] == "left" | OLS[2,string] == "right" | OLS[2,string] == "up" | OLS[2,string] == "down"){
+            WarpF = 1
+        
+            if(OLS[3,string]:toNumber() == 0 & OLS[2,string] != "back"){
+                LWarp = 1
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot warp nowhere")
+                timer("reset",1000)
+            }
+            
+            if(OLS[2,string] == "forward" & LWarp != 1){
+                WarpF = 1
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping forward by: ",ColGrn,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() + vec(OLS[3,string]:toNumber(),0,0)
+            }
+            
+            if(OLS[2,string] == "back" & LWarp != 1){
+                if(OLS[3,string]:toNumber() == 0){
+                    WarpF = 1
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping to previous position")
+                    Dest = PrevPos
+                }
+                else{
+                    WarpF = 1
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping back by: ",ColGrn,OLS[3,string]:toNumber())
+                    Dest = DriveEnt:pos() - vec(OLS[3,string]:toNumber(),0,0)
+                }
+            }
+            
+            if(OLS[2,string] == "left" & LWarp != 1){
+                WarpF = 1
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping left by: ",ColGrn,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() + vec(0,OLS[3,string]:toNumber(),0)
+            }
+            
+            if(OLS[2,string] == "right" & LWarp != 1){
+                WarpF = 1
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping right by: ",ColGrn,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() - vec(0,OLS[3,string]:toNumber(),0)
+            }
+            
+            if(OLS[2,string] == "up" & LWarp != 1){
+                WarpF = 1
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping up by: ",ColGrn,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() + vec(0,0,OLS[3,string]:toNumber())
+            }
+            
+            if(OLS[2,string] == "down" & LWarp != 1){
+                WarpF = 1
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping down by: ",ColGrn,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() - vec(0,0,OLS[3,string]:toNumber())
+            }
+            
+            if(LWarp != 1){
+                warp(Dest,AngleOffset)
+            }
+        }
+
+    
+        if(OLS[1,string] == WarpPrefix & WarpF == 0){
+            hideChat(1)
+            Ply = findPlayerByName(OLS[2,string])
+            
+            if(Ply:isPlayer()){
+                WarpF = 1
+                PlyCol = teamColor(Ply:team())
+                local Dest = Ply:pos()
+            
+                warp(Dest,AngleOffset)
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping to Player: <",PlyCol,Ply:name(),ColOng,">")
+            }
+            elseif(WarpLoc:exists(OLS[2,string])){
+                WarpF = 1
+                local Dest = round(WarpLoc[OLS[2,string],vector])
+                
+                warp(Dest,AngleOffset)
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Warping to location: ",ColGrn,OLS[2,string])
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot warp to: ",ColRed,OLS[2,string])
+            }
+        }
+    }
+}
+
+
+if(clk("resetwarp")){
+    Destination = vec()
+    Drive[DestInput,vector] = vec()
+    AngleOffset = ang()
+    Warp = 0
+    Drive[WarpInput,number] = 0
+    WarpF = 0
+}
+
+if(clk("warp")){
+    Warp = 1
+    Drive[WarpInput,number] = 1
+}
+
+if(changed(Drive)){
+    if(->Drive){
+        DriveEnt = Drive:entity()
+        DriveOffset = DriveEnt:angles()
+        DriveType = DriveEnt:type()
+        
+        if(DriveType == "ship_drive" | DriveType == "bsg_drive" | DriveType == "st_warp_drive" | DriveType == "sg_hyperdrive" | DriveType == "spore_drive" | DriveType == "quantum_slipstream_drive"){
+            DestInput = "Destination"
+            WarpInput = "Activate"
+            AngInput = "Angle Offset"
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"TSCM Drive Linked.")
+        }
+        elseif(DriveType == "gmod_wire_hoverdrivecontroler" | DriveType == "gmod_wire_teleporter"){
+            DestInput = "TargetPos"
+            WarpInput = "Jump"
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Wire Drive Linked")
+        }
+        elseif(DriveType == "warpdrive"){ #SBEP Warp Drive
+            DestInput = "Destination"
+            WarpInput = "Warp"
+            AngInput = ""
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"SBEPDrive Linked")
+        }
+        elseif(DriveType == "st_shuttle_type11"){
+            DestInput = "Transwarp Destination"
+            WarpInput = "Transwarp"
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Type 11 Shuttle Linked")
+        }
+        elseif(DriveType == "st_shuttle_type9" | DriveType == "st_Shuttle_type6"){
+            DestInput = "Warp Destination"
+            WarpInput = "Engage Warp"
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Shuttle Linked")
+        }
+        elseif(DriveType == "sci_fi_shuttle"){
+            DestInput = "FTL Co-ordinates"
+            WarpInput = "FTL Jump"
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Sci-fi Shuttle Linked")
+        }
+        elseif(DriveType == "sent_tardis_interior" | DriveType == "sent_tardis"){
+            DestInput = "XYZ"
+            WarpInput = "Demat" 
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"TARDIS Linked")
+        }
+        elseif(DriveType == "gmod_wire_expression2"){
+            DestInput = "Destination"
+            WarpInput = "Warp"
+            AngInput = "Angle Offset"
+        }
+        elseif(->Destination & ->Warp){
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Manual Drive Linked")
+        }
+        elseif(->Drive){
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Unable to link to: "+DriveType)
+        }        
+        else{
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Drive Unlinked")
+        }
+    }
+}
 
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
@@ -1286,4 +1518,89 @@ if(chatClk(O)){
 
 if(clk("distresswait")){ #Distress Info
     botSayAlliance("AI"," [Vethian] ",ColPink,"Distress Location: [" +DistressLocation+ "] Shields at: [" +SH+ "%] Plating at: [" +CP+ "%] Hull at: [" +HP+ "%]")
+}
+
+
+#################
+###Transporter###
+#################
+
+if(first() | dupefinished()){
+    function void transport(Ent:entity,Pos:vector,BeamType:string){
+        if(Transporter:entity():type() == "transporter_pad"){
+            PadTarget = "Target1"
+            PadDest = "TargetLocation"
+            
+            if(BeamType == "vector"){
+                PadBeam = "Beam to vector"
+            }
+            
+            if(BeamType == "beamup"){
+                PadBeam = "Energise pad"
+            }
+            
+            if(BeamType == "beamdown"){
+                PadBeam = "Beam from pads"
+            }
+        }
+        
+        if(Transporter:entity():type() == "asgard_transporter"){
+            PadTarget = "Target"
+            PadDest = "Destination"
+            
+            if(BeamType == "vector"){
+                PadBeam = "Send"
+            }
+            
+            if(BeamType == "beamup"){
+                PadBeam = "Retrieve"
+            }
+            
+            if(BeamType == "beamdown"){
+                PadBeam = "Send"
+            }
+        }
+        
+        TransBeamType = BeamType
+        
+        Transporter[PadTarget,entity] = Ent
+        Transporter[PadDest,vector] = Pos
+        
+        timer("beam",10)
+        timer("resetbeam",1000)
+    }
+}
+
+if(clk("beam")){
+    Transporter[PadBeam,number] = 1
+}
+
+if(clk("resetbeam")){
+    Transporter[PadTarget,entity] = noentity()
+    Transporter[PadDest,vector] = vec()
+    Transporter[PadBeam,number] = 0
+}
+
+if(chatClk(O)){
+    if(OLS[1,string] == Prefix){
+        hideChat(1)
+        
+        if(OLS[2,string] == "brig" | OLS[2,string] == "jail" | OLS[2,string] == "babyjail"){
+            local Ply = findPlayerByName(OLS[3,string])
+            
+            if(Ply:isPlayer()){
+                transport(Ply,BrigEnt:pos(),"vector")
+                
+                if(OLS[2,string] == "brig"){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming Player: <",teamColor(Ply:team()),Ply:name(),ColOng,"> to the brig")
+                }
+                if(OLS[2,string] == "jail"){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming Player: <",teamColor(Ply:team()),Ply:name(),ColOng,"> to the jail")
+                }
+                if(OLS[2,string] == "babyjail"){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming Player: <",teamColor(Ply:team()),Ply:name(),ColOng,"> to the ",vec(255,0,0),"g",vec(255,139,0),"a",vec(232,255,0),"y ",vec(93,255,0),"b",vec(0,255,46),"a",vec(0,255,185),"b",vec(0,185,255),"y ",vec(0,46,255),"j",vec(93,0,255),"a",vec(232,0,255),"i",vec(255,0,139),"l")
+                }
+            }
+        }
+    }
 }

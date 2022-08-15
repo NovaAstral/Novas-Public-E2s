@@ -1,17 +1,49 @@
 @name Chat Target
-@inputs
-@outputs Vec:vector
-@persist
+@inputs [Core,Sensor]:entity
+@outputs TargetPos:vector TargetEnt:entity TargetOwner:string TargetLocked
+@persist TargetName:string
 
+#include "Novas-Public-E2s/library/nova_lib"
+
+O = owner()
 OLS = owner():lastSaid():lower():explode(" ")
 
 runOnChat(1)
 
-if(chatClk(owner())){
-    if(OLS[1,string] == "/tvec"){
-        hideChat(1)
+if(first()){
+    TarList = TarType:keys():concat(", ")
+    
+    Prefix = "/t" #Target Prefix
+    
+    function void targetEntity(TarEnt:entity){
+        if(TarEnt:isPlayer()){
+            TargetEnt = TarEnt
+            TarName = TarEnt:name()
+            TargetLocked = 1
+            printColor(ColPink," [Target] ",ColOng,"Player Target: ",teamColor(TarEnt:team()),TarName,ColOng," Locked.")
+        }
+        if(TarEnt:isValid() & !TarEnt:isPlayer()){
+            TargetEnt = TarEnt
+            TargetOwner = TargetEnt:owner():name() != "" ? TargetEnt:owner():name():left(18) : "world"
+            local TarType = TargetEnt:type()
+            TarInfo = TargetOwner + "'s " + TarType
+            TargetLocked = 1
+        }
         
-        if(OLS[2,string]:length() < 1 & OLS[3,string]:length() < 1 & OLS[4,string]:length() < 1){
+        if(TargetLocked == 0){
+            printColor(ColPink," [Target] ",ColOng,"Invalid Target, Cannot Lock.")
+        }
+    }
+}
+
+if(chatClk(O)){
+    if(OLS[1,string] == Prefix){
+        hideChat(1)
+        if(OLS[2,string] == "this"){
+            targetEntity(owner():aimEntity())
+        }
+        
+        if(OLS[2,string]:length() == 0 & OLS[3,string]:length() == 0 & OLS[4,string]:length() == 0){
             printColor(vec(255,95,215)," [Target] ",vec(230,110,0),"Cannot target nothing.")
         }
         else{

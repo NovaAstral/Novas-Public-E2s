@@ -1,6 +1,6 @@
 @name Nova_Lib
 @persist [ColTeam,ColPink,ColOng,ColRed,ColGrn,ColBlu,ColWht,ZeiaOng,ZeiaTBlu,ZeiaMBlu,ZeiaWht,ZeiaBlk]:vector
-@persist [DriveName,WarpLoc,FindPLoc,BeamType,TorpType,TurretType]:table
+@persist [DriveName,WarpLoc,TarType,FindPLoc,BeamType,TorpType,TurretType]:table
 
 #This e2 doesn't need to be placed anywhere
 
@@ -64,6 +64,45 @@ WarpLoc["build2",vector] = vec(12820,4475,-15105)
 WarpLoc["build3",vector] = vec(12820,-4130,-15105)
 WarpLoc["build4",vector] = vec(12820,-12345,-15105)
 WarpLoc["hiigarabase",vector] = vec(7556,6805,-7450)
+
+TarType["glider",string] = "sg_vehicle_glider"
+TarType["f302",string] = "sg_vehicle_f302"
+TarType["dest",string] = "sg_vehicle_shuttle"
+TarType["gateg",string] = "sg_vehicle_gate_glider"
+TarType["teltac",string] = "sg_vehicle_teltac"
+TarType["jumper",string] = "*puddle_jumper"
+TarType["core",string] = "ship_core"
+TarType["node",string] = "stargazer_node"
+TarType["sbnode",string] = "resource_node"
+TarType["gyro",string] = "gyropod_advanced"
+TarType["sgshield",string] = "shield_generator"
+TarType["shield",string] = "st_shield_emitter"
+TarType["zpm",string] = "zpm_mk3"
+TarType["ag3",string] = "ag_3"
+TarType["drive",string] = "ship_drive"
+TarType["sbepdrive",string] = "warpdrive"
+TarType["turret",string] = "gmod_wire_turret"
+TarType["ring",string] = "ring_base_ancient"
+TarType["sat",string] = "stargate_asuran"
+TarType["rotaty",string] = "sf-rotatybase"
+TarType["prop",string] = "prop_physics"
+TarType["npc",string] = "npc_*"
+TarType["ragdoll",string] = "prop_ragdoll"
+TarType["grenade",string] = "grenade_ar2"
+TarType["stargate",string] = "stargate_*"
+TarType["jamming",string] = "jamming_device"
+TarType["ball",string] = "sent_ball"
+TarType["shuttle",string] = "*shuttle*"
+TarType["e2",string] = "gmod_wire_expression2"
+TarType["collector",string] = "stargazer_water_core_collector"
+TarType["cube",string] = "box_cube"
+TarType["sphere",string] = "box_sphere"
+TarType["cubetac",string] = "box_cube_tactical"
+TarType["kino",string] = "kino_ball"
+TarType["forcefield",string] = "st_forcefield"
+TarType["button",string] = "func_button"
+TarType["spacemine",string] = "sf-spacemine"
+TarType["drivecore",string] = "drive_core"
 
 #Location Find Planets
 FindPLoc["",number] = findInSphere(vec(0,0,0),0)

@@ -1,11 +1,9 @@
 @name Chat Warp
 @inputs Drive:wirelink DriveEnt:entity
 @outputs Warp Destination:vector AngleOffset:angle PrevPos:vector
-@persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput,Prefix]:string
+@persist [PrevPos,Dest]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput,Prefix]:string
 
 #include "Novas-Public-E2s/library/nova_lib"
-
-#warp back warps to the wrong place
 
 if(first() | dupefinished()){
     LocList = WarpLoc:keys():concat(", ")
@@ -42,6 +40,7 @@ O = owner()
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
         hideChat(1)
+        
         if(OLS[2,string] == "vec"){
             WarpF = 1
             local V = OLS[3,string]:explode(",")
@@ -54,12 +53,7 @@ if(chatClk(O)){
             printColor(ColPink,"[Warp] ",ColOng,"Warping to Vector: "+Dest)
             warp(Dest,AngleOffset)
         }
-        if(OLS[2,string] == "back"){
-            WarpF = 1
-            printColor(ColPink,"[Warp] ",ColOng,"Warping to previous position")
-            warp(PrevPos,AngleOffset)
-        }
-            
+        
         if(OLS[2,string] == "ang"){
             if(OLS[3,string] == "reset"){
                 WarpF = 1
@@ -83,10 +77,68 @@ if(chatClk(O)){
                 printColor(ColPink,"[Warp] ",ColOng,"Rotating to angle offset: "+Ang)
             }
         }
+        
+        if(OLS[2,string] == "forward" | OLS[2,string] == "back" | OLS[2,string] == "left" | OLS[2,string] == "right" | OLS[2,string] == "up" | OLS[2,string] == "down"){
+            WarpF = 1
+            
+            if(OLS[3,string]:toNumber() == 0 & OLS[2,string] != "back"){
+                LWarp = 1
+                printColor(ColPink,"[Warp] ",ColOng,"Cannot warp nowhere")
+                timer("reset",1000)
+            }
+            
+            if(OLS[2,string] == "forward" & LWarp != 1){
+                WarpF = 1
+                printColor(ColPink,"[Warp] ",ColOng,"Warping forward by: ",ColRed,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() + vec(OLS[3,string]:toNumber(),0,0)
+            }
+            
+            if(OLS[2,string] == "back" & LWarp != 1){
+                if(OLS[3,string]:toNumber() == 0){
+                    WarpF = 1
+                    printColor(ColPink,"[Warp] ",ColOng,"Warping to previous position")
+                    Dest = PrevPos
+                }
+                else{
+                    WarpF = 1
+                    printColor(ColPink,"[Warp] ",ColOng,"Warping back by: ",ColRed,OLS[3,string]:toNumber())
+                    Dest = DriveEnt:pos() - vec(OLS[3,string]:toNumber(),0,0)
+                }
+            }
+            
+            if(OLS[2,string] == "left" & LWarp != 1){
+                WarpF = 1
+                printColor(ColPink,"[Warp] ",ColOng,"Warping left by: ",ColRed,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() + vec(0,OLS[3,string]:toNumber(),0)
+            }
+            
+            if(OLS[2,string] == "right" & LWarp != 1){
+                WarpF = 1
+                printColor(ColPink,"[Warp] ",ColOng,"Warping right by: ",ColRed,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() - vec(0,OLS[3,string]:toNumber(),0)
+            }
+            
+            if(OLS[2,string] == "up" & LWarp != 1){
+                WarpF = 1
+                printColor(ColPink,"[Warp] ",ColOng,"Warping up by: ",ColRed,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() + vec(0,0,OLS[3,string]:toNumber())
+            }
+            
+            if(OLS[2,string] == "down" & LWarp != 1){
+                WarpF = 1
+                printColor(ColPink,"[Warp] ",ColOng,"Warping down by: ",ColRed,OLS[3,string]:toNumber())
+                Dest = DriveEnt:pos() - vec(0,0,OLS[3,string]:toNumber())
+            }
+            
+            if(LWarp != 1){
+                warp(Dest,AngleOffset)
+            }
+        }
     }
     
     if(OLS[1,string] == Prefix & WarpF == 0){
         hideChat(1)
+        
         Ply = findPlayerByName(OLS[2,string])
         
         if(Ply:isPlayer()){
@@ -118,6 +170,7 @@ if(clk("reset")){
     Warp = 0
     Drive[WarpInput,number] = 0
     WarpF = 0
+    LWarp = 0
 }
 
 if(clk("warp")){
