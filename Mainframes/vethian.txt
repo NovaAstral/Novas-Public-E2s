@@ -41,9 +41,8 @@
 #Remove all wire inputs by using autofind
 #[
 
-findbyclass sbep_door_controller
-
 V1.8 Changes:
+- Added a WarpPrefix so warp commands are now just '/warp' instead of '/v warp'
 - Added a directional warp command: eg "/v warp forward 158" or "/v warp back 1742" etc
 - Added a 'brig' transport command: eg "/v brig <player>" or </v jail <player>"
 - Changed asay/fsay so the playername is more easily visible since the botSay function is limited
