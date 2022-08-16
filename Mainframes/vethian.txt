@@ -101,7 +101,7 @@ if(clk("spawnprint")){
             LS["Name",string] = Shipname
         }
         else{
-            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on",ColRed," [Line 73] ",ColOng,"of the mainframe.")
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Ship name not set. Set it on",ColRed," [Line 80] ",ColOng,"of the mainframe.")
         }
     }
 }
