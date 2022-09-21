@@ -28,6 +28,16 @@ if(changed(EGP)){
     timer("setup",10)
 }
 
+if(Shield:entity():type() == "atlantis_shield"){
+    CurEng = "Current Energy"
+    MaxEng = "Max Energy"
+}
+
+if(Shield:entity():type() == "st_shield_emitter"){
+    CurEng = "Total Charge"
+    MaxEng = "Max Charge"
+}
+
 if(changed(Core["Health",number])){
     HP = round(Core["Health",number] / Core["Max Health",number] * 100)
     
@@ -43,9 +53,9 @@ if(changed(Core["Plating",number])){
     EGP:egpSize(39,25)
 }
 
-if(changed(Shield["Current Energy",number])){
+if(changed(Shield[CurEng,number])){
     
-    SH = round(Shield["Current Energy",number] / Shield["Max Energy",number] * 100)
+    SH = round(Shield[CurEng,number] / Shield[MaxEng,number] * 100)
     
     EGP:egpText(40,SH + "%",vec2(125,225))
     EGP:egpSize(40,25)

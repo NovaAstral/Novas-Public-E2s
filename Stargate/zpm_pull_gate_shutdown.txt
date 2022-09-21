@@ -1,0 +1,37 @@
+@name ZPM Pull Gate Shutdown
+@inputs State #Wire to 'EntMove ZPM' STATE output
+@inputs Stargate:wirelink #Wire to Stargate
+@persist Shutdown
+
+interval(100)
+
+if(Stargate["Open",number] == 1 & Stargate["Inbound",number] == 0 & State == 1 & Stargate["Dialing Address",string]:length() > 7 & Shutdown == 0){
+    Shutdown = 1
+    timer("gateclose",2000)
+}
+
+if(clk("gateclose")){
+    Stargate:stargateClose()
+    timer("errorstart",1)
+}
+
+if(Stargate["Chevron",number] == 7 & Stargate["Chevron Locked",number] == 0 & State == 1 & Shutdown == 0 & Stargate["Inbound",number] == 0){
+    Shutdown = 1
+    Stargate:stargateClose()
+    timer("errorstart",1)
+}
+
+if(clk("errorstart")){
+    entity():soundPlay(1,1600,"glebqip/error_start.wav")
+    timer("errormid",1600)
+}
+
+if(clk("errormid")){
+    entity():soundPlay(1,1900,"glebqip/error_end.wav")
+    timer("errorend",2000)
+}
+
+if(clk("errorend")){
+    soundPurge()
+    Shutdown = 0
+}

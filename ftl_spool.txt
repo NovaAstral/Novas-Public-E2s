@@ -7,6 +7,11 @@
 #To use this, wire Warp and Destination to the warp chip, and unwire the warp chip from any warp drives,
 #Wire Drive to either a drive, or a drive selector
 
+runOnChat(1)
+
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+
 if(first() | dupefinished()){
     RotorSpeed = 50
 }
@@ -90,4 +95,13 @@ if(clk("angreset")){
 
 if(changed(ForceWarp) & ForceWarp == 1){
     timer("spooled",10)
+}
+
+if(chatClk(O)){
+    if(OLS[1,string] == "/forcewarp"){
+        hideChat(1)
+        timer("spooled",10)
+        printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"Force-Warp initated, Activating Wave Motion Core")
+        
+    }
 }

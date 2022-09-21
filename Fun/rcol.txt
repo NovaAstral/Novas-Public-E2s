@@ -7,6 +7,11 @@ if(In == 1){
 }
 else{
     stopAllTimers()
+    
+    N1:setColor(vec(255))
+    N2:setColor(vec(255))
+    N3:setColor(vec(255))
+    N4:setColor(vec(255))
 }
 
 if(clk("col")){

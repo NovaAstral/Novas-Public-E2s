@@ -1,0 +1,340 @@
+@name Chat Transporter
+@inputs Transporter:wirelink BrigEnt:entity
+@persist [PadTarget,PadDest,PadBeam,TransBeamType,BeamName]:string BrigName:array [BeamFrom,BeamTo,AimET]:entity
+
+#include "Novas-Public-E2s/library/nova_lib"
+
+runOnChat(1)
+
+O = owner()
+OLS = owner():lastSaid():lower():explode(" ")
+
+if(first() | dupefinished()){
+    TPPrefix = "/pad" #This is what you put in chat to use the transporter
+    
+    function void transport(Ent:entity,Pos:vector,BeamType:string){
+        if(Transporter:entity():type() == "transporter_pad"){
+            PadTarget = "Target1"
+            PadDest = "TargetLocation"
+            
+            if(BeamType == "vector"){
+                PadBeam = "Beam to vector"
+            }
+            
+            if(BeamType == "beamup"){
+                PadBeam = "Energise pad"
+            }
+            
+            if(BeamType == "beamdown"){
+                PadBeam = "Beam from pads"
+            }
+        }
+        
+        if(Transporter:entity():type() == "asgard_transporter"){
+            PadTarget = "Target"
+            PadDest = "Destination"
+            
+            if(BeamType == "vector"){
+                PadBeam = "Send"
+            }
+            
+            if(BeamType == "beamup"){
+                PadBeam = "Retrieve"
+            }
+            
+            if(BeamType == "beamdown"){
+                PadBeam = "Send"
+            }
+        }
+        
+        TransBeamType = BeamType
+        
+        Transporter[PadTarget,entity] = Ent
+        Transporter[PadDest,vector] = Pos
+        
+        timer("beam",10)
+        timer("resetbeam",1000)
+    }
+    
+    function number jamCheck(Ent:entity,Pos:vector,PadCheck:number){
+        local JamYes = 1
+        local JamNo = 0
+        
+        if(isJammed(Pos)){
+            if(Ent:isPlayer()){
+                if(Ent == owner()){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",teamColor(Ent:team()),"You",ColOng," are ",ColRed,"Jammed!")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",teamColor(Ent:team()),Ent:name(),ColOng," is ",ColRed,"Jammed!")
+                }
+            }
+            else{
+                if(Ent == BrigEnt){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"The ",ColGrn,"Brig",ColOng," is ",ColRed,"Jammed!")
+                }
+                else{
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"That ",ColGrn,Ent:getName(),ColOng," is ",ColRed,"Jammed!")
+                }
+            }
+            return JamYes
+        }
+        else{
+            return JamNo
+        }
+        
+        if(PadCheck == 1){
+            if(isJammed(Transporter:entity():pos())){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"The ",ColGrn,"Transporter",ColOng," is ",ColRed,"Jammed!")
+                
+                return JamYes
+            }
+            else{
+                return JamNo
+            }
+        }
+    }
+}
+
+if(chatClk(O)){
+    if(OLS[1,string] == TPPrefix){
+        hideChat(1)
+        
+        if(!Transporter:entity():isValid()){
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColRed,"Transporter not linked!")
+        }
+        else{
+            if(OLS[2,string] == "beamup"){
+                if(OLS[3,string]:length() == 0 | OLS[3,string] == "me"){
+                    if(jamCheck(owner(),owner():pos(),1) == 0){
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming",ColTeam," You ",ColOng,"to the pad")
+                        transport(owner(),vec(),"beamup")
+                    }
+                }
+                
+                if(OLS[3,string] == "this" | OLS[3,string] == "that"){
+                    if(owner():aimEntity():isValid()){
+                        if(owner():aimEntity():isPlayer()){
+                            BeamName = owner():aimEntity():name()
+                        }
+                        else{
+                            if(owner():aimEntity():getName() == ""){
+                                BeamName = owner():aimEntity():type()
+                            }
+                            else{
+                                BeamName = owner():aimEntity():getName()
+                            }
+                        }
+                        
+                        if(jamCheck(owner():aimEntity(),owner():aimEntity():pos(),1) == 0){
+                            transport(owner():aimEntity(),vec(),"beamup")
+                            
+                            timer("testbeam",10)
+                        }
+                    }
+                    else{
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColRed,"You're not aiming at anything.")
+                    }
+                }
+                
+                if(OLS[3,string]:length() > 0 & OLS[3,string] != "this" & OLS[3,string] != "that" & OLS[3,string] != "me"){
+                    local Ply = findPlayerByName(OLS[3,string])
+                    
+                    if(Ply:isPlayer()){
+                        if(jamCheck(Ply,Ply:pos(),1) == 0){
+                            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(Ply:team()),Ply:name()," to the pad")
+                                    
+                            transport(Ply,vec(),"beamup")
+                        }
+                    }
+                    else{
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"There is no player with the name: ",ColRed,OLS[3,string])
+                    }
+                }
+            }
+            
+            if(OLS[2,string] == "beamdown"){
+                if(OLS[3,string]:length() == 0 | OLS[3,string] == "me"){
+                    if(jamCheck(owner(),owner():pos(),1) == 0){
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming down to",ColTeam," You")
+                        transport(noentity(),owner():pos(),"beamdown")
+                    }
+                }
+                
+                if(OLS[3,string] == "core"){
+                    if(OLS[4,string]:length() == 0){
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColRed,"You need to put a player's core to target.")
+                    }
+                    else{
+                        local Ply = findPlayerByName(OLS[4,string])
+                        
+                        if(Ply:isPlayer()){
+                            findByClass("ship_core")
+                            findClipToPlayerProps(Ply)
+                                
+                            local Core = find()
+                                
+                            if(Core:isValid()){
+                                if(jamCheck(Core,Core:pos(),1) == 0){
+                                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming to ",teamColor(Ply:team()),Ply:name(),"'s ",ColGrn,"Ship Core")
+                                    transport(noentity(),Core:pos()+vec(100,0,0),"beamdown")
+                                }
+                            }
+                            else{
+                                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",teamColor(Ply:team()),Ply:name(),ColOng," does not have a ",ColRed,"Ship Core!")
+                            }
+                        }
+                        else{
+                            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"There is no player with the name ",ColRed,OLS[4,string])
+                        }
+                    }
+                }
+                
+                if(OLS[3,string] == "pad"){
+                    if(OLS[4,string]:length() == 0){
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColRed,"You need to put a player's pad to target.")
+                    }
+                    else{
+                        local Ply = findPlayerByName(OLS[4,string])
+                        
+                        if(Ply:isPlayer()){
+                            findByClass("transporter_pad")
+                            findClipToPlayerProps(Ply)
+                                
+                            local Pad = find()
+                                
+                            if(Pad:isValid()){
+                                if(jamCheck(Pad,Pad:pos(),1) == 0){
+                                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming to ",teamColor(Ply:team()),Ply:name(),"'s ",ColGrn,"Transporter Pad")
+                                    transport(noentity(),Pad:pos()+vec(0,0,10),"beamdown")
+                                }
+                            }
+                            else{
+                                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",teamColor(Ply:team()),Ply:name(),ColOng," does not have a ",ColRed,"Transporter Pad!")
+                            }
+                        }
+                        else{
+                            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"There is no player with the name ",ColRed,OLS[4,string])
+                        }
+                    }
+                }
+                
+                if(OLS[3,string]:length() > 0 & OLS[3,string] != "me" & OLS[3,string] != "core" & OLS[3,string] != "pad"){
+                    local Ply = findPlayerByName(OLS[3,string])
+                    
+                    if(Ply:isValid()){
+                        if(jamCheck(Ply,Ply:pos(),1) == 0){
+                            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming down to ",teamColor(Ply:team()),Ply:name())
+                            transport(noentity(),Ply:pos(),"beamdown")
+                        }
+                    }
+                    elseif(TransportLoc:exists(OLS[3,string])){
+                        if(jamCheck(Ply,Ply:pos(),0) == 0 & jamCheck(noentity(),TransportLoc[OLS[3,string],vector],0) == 0){
+                            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming down to ",ColGrn,OLS[3,string])
+                            transport(noentity(),TransportLoc[OLS[3,string],vector],"beamdown")
+                        }
+                    }
+                    else{
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"There is no player or location with the name ",ColRed,OLS[3,string])
+                    }
+                }
+            }
+            
+            if(OLS[2,string] == "beam"){
+                if(OLS[3,string] == "me"){
+                    BeamFrom = owner()
+                    BeamName = "You"
+                }
+                
+                if(findPlayerByName(OLS[3,string]):isPlayer() & OLS[3,string] != "me"){
+                    BeamFrom = findPlayerByName(OLS[3,string])
+                    BeamName = findPlayerByName(OLS[3,string]):name()
+                }
+                
+                if(OLS[4,string]:length() == 0){
+                    printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColRed,"Cannot beam nowhere")
+                }
+                
+                if(findPlayerByName(OLS[4,string]):isPlayer()){
+                    BeamTo = findPlayerByName(OLS[4,string])
+                    
+                    if(jamCheck(BeamFrom,BeamFrom:pos(),0) == 0 & jamCheck(BeamTo,BeamTo:pos(),0) == 0){
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(BeamFrom:team()),BeamName," to ",teamColor(BeamTo:team()),BeamTo:name())
+                        
+                        transport(BeamFrom,BeamTo:pos()+vec(100,0,0),"vector")
+                    }
+                }
+                
+                if(OLS[4,string] == "brig" | OLS[4,string] == "jail" | OLS[4,string] == "babyjail"){
+                    local Ply = findPlayerByName(OLS[3,string])
+                    
+                    if(Ply:isPlayer()){
+                        if(jamCheck(BeamFrom,BeamFrom:pos(),0) == 0 & jamCheck(BrigEnt,BrigEnt:pos(),0) == 0){
+                            transport(BeamFrom,BrigEnt:pos()+vec(0,0,-50),"vector")
+                            
+                            if(OLS[4,string] == "brig"){
+                                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(BeamFrom:team()),BeamName,ColOng," to the brig")
+                            }
+                            if(OLS[4,string] == "jail"){
+                                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(BeamFrom:team()),BeamName,ColOng," to the jail")
+                            }   
+                            if(OLS[4,string] == "babyjail"){
+                                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(BeamFrom:team()),BeamName,ColOng," to the ",vec(255,0,0),"g",vec(255,139,0),"a",vec(232,255,0),"y ",vec(93,255,0),"b",vec(0,255,46),"a",vec(0,255,185),"b",vec(0,185,255),"y ",vec(0,46,255),"j",vec(93,0,255),"a",vec(232,0,255),"i",vec(255,0,139),"l")
+                            }
+                        }
+                    }
+                    else{
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"There is no player with the name ",ColRed,OLS[3,string])
+                    }
+                }
+                
+                if(TransportLoc:exists(OLS[4,string])){
+                    if(jamCheck(BeamFrom,BeamFrom:pos(),0) == 0 & jamCheck(noentity(),TransportLoc[OLS[4,string],vector],0) == 0){
+                        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(BeamFrom:team()),BeamName," to ",ColGrn,OLS[4,string])
+                        transport(BeamFrom,TransportLoc[OLS[4,string],vector],"vector")
+                    }
+                }
+            }
+        }
+    }
+}
+
+if(clk("testbeam")){
+    if(Transporter:entity():type() == "transporter_pad"){
+        if(Transporter["Energising",number] == 0){
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot beam that ",ColRed,BeamName,ColOng," to the pad. It is likely too large.")
+        }
+        else{
+            if(AimET:isPlayer()){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(owner():aimEntity():team()),BeamName,ColOng," to the pad.")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming that ",ColGrn,BeamName,ColOng," to the pad.")
+            }
+        }
+    }
+    
+    if(Transporter:entity():type() == "asgard_transporter"){
+        if(Transporter["Transporting",number] == 0){
+            printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Cannot beam that ",ColRed,BeamName,ColOng," to the transporter. It is likely too large.")
+        }
+        else{
+            if(AimET:isPlayer()){
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming ",teamColor(owner():aimEntity():team()),BeamName,ColOng," to the transporter.")
+            }
+            else{
+                printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Beaming that ",ColGrn,BeamName,ColOng," to the transporter.")
+            }
+        }
+    }
+}
+
+if(clk("beam")){
+    Transporter[PadBeam,number] = 1
+}
+
+if(clk("resetbeam")){
+    Transporter[PadTarget,entity] = noentity()
+    Transporter[PadDest,vector] = vec()
+    Transporter[PadBeam,number] = 0
+}

@@ -1,6 +1,6 @@
 @name Nova_Lib
 @persist [ColTeam,ColPink,ColOng,ColRed,ColGrn,ColBlu,ColWht,ZeiaOng,ZeiaTBlu,ZeiaMBlu,ZeiaWht,ZeiaBlk]:vector
-@persist [DriveName,WarpLoc,TarType,FindPLoc,BeamType,TorpType,TurretType]:table
+@persist [DriveName,WarpLoc,TransportLoc,TarType,FindPLoc,BeamType,TorpType,TurretType]:table
 
 #This e2 doesn't need to be placed anywhere
 
@@ -44,26 +44,41 @@ DriveName["qsd",string] = "quantum_slipstream_drive"
 DriveName["slipstream",string] = "quantum_slipstream_drive"
 DriveName["e2",string] = "gmod_wire_expression2"
 
-#Warp Locations, These are copied from my PCPU, i'll probably change them later
-WarpLoc["earth",vector] = vec(-89,8258,10690)
-WarpLoc["shakur",vector] = vec(-7576,-7152,9060)
-WarpLoc["desert",vector] = vec(10813,-9631,-8541)
-WarpLoc["hiigara",vector] = vec(6144,9267,-4660)
-WarpLoc["lava",vector] = vec(-9891,167,-4283)
+#Warp Locations
 WarpLoc["milk",vector] = vec(-7659,8215,8300)
-WarpLoc["pegasus",vector] = vec(1703,-8593,9143)
-WarpLoc["universe",vector] = vec(111,-2874,-3954)
-WarpLoc["unicorner",vector] = vec(-9001, -7556, -10626)
-WarpLoc["hangar",vector] = vec(-7576,-7152,5560)
+WarpLoc["earth",vector] = vec(-89,8258,10690)
 WarpLoc["moon",vector] = vec(-4938,13441,10444)
+WarpLoc["pegasus",vector] = vec(1703,-8593,9143)
+WarpLoc["shakur",vector] = vec(-7576,-7152,9060)
+WarpLoc["shakurbase",vector] = vec(-7576,-7152,5560)
+WarpLoc["universe",vector] = vec(111,-2874,-3954)
+WarpLoc["unicorner",vector] = vec(-7179,-7562,-10663)
+WarpLoc["hiigara",vector] = vec(6144,9267,-4660)
+WarpLoc["hiibase",vector] = vec(7556,6805,-7450)
+WarpLoc["desert",vector] = vec(10813,-9631,-8541)
+WarpLoc["lava",vector] = vec(-9891,167,-4283)
 WarpLoc["members",vector] = vec(13,-94,-15202)
-WarpLoc["secret",vector] = vec(-6797,-6485,-15328)
-WarpLoc["phoenix",vector] = vec(-7539,-6805,3581)
 WarpLoc["build",vector] = vec(10696,12179,-15484)
 WarpLoc["build2",vector] = vec(12820,4475,-15105)
 WarpLoc["build3",vector] = vec(12820,-4130,-15105)
 WarpLoc["build4",vector] = vec(12820,-12345,-15105)
-WarpLoc["hiigarabase",vector] = vec(7556,6805,-7450)
+
+TransportLoc["earth",vector] = vec(2982,8034,7944)
+TransportLoc["sgc",vector] = vec(2263,8033,6736)
+TransportLoc["moon",vector] = vec(-3411,13023,9952)
+TransportLoc["shakur",vector] = vec(-7725,-3554,6889)
+TransportLoc["shakbase",vector] = vec(-7540,-7063,5040)
+TransportLoc["station",vector] = vec(7823,-5866,9408)
+TransportLoc["hangar",vector] = vec(9156,-7225,9392)
+TransportLoc["hiigara",vector] = vec(7167,11826,-5856)
+TransportLoc["hiibase",vector] = vec(7128,9616,-8191)
+TransportLoc["desert",vector] = vec(11643,-10660,-9184)
+TransportLoc["pyramid",vector] = vec(12920,-10097,-9120)
+TransportLoc["pyramidbase",vector] = vec(10753,-12992,-10224)
+TransportLoc["lava",vector] = vec(-11241,753,-4656)
+TransportLoc["lavabase",vector] = vec(-9416,-1104,-5376)
+TransportLoc["hell",vector] = vec(-8235,-970,-4815)
+TransportLoc["space",vector] = vec(-707,-2889,-5946)
 
 TarType["glider",string] = "sg_vehicle_glider"
 TarType["f302",string] = "sg_vehicle_f302"

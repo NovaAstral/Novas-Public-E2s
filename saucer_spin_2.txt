@@ -1,6 +1,6 @@
 @name Saucer Spin
 
-@inputs Activate Holos RHolos DriveIn:string DestIn:vector ORing:entity IRing:entity Core:wirelink
+@inputs Activate VisProps RVisProps DriveIn:string DestIn:vector Core:wirelink [ORing,IRing,ORingP,IRingP]:entity
 @outputs Warp Destination:vector Alert:string NameInvis Move Speed Acceleration Direction Reset
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -9,18 +9,15 @@
 
 if(first() | dupefinished()){
     
-    Speed = 30
-    Acceleration = 0.2
+    Speed = 600
+    Acceleration = 80
     Direction = -1
     Move = 0
-
-    holoCreate(1,ORing:toWorld(ORing:toLocal(ORing:pos()) + vec(1684.6,0,10.5)),vec(4.55,2.989,1),ORing:angles(),vec4(255,255,255,0),"models/Cerus/Modbridge/Plate/Flat/b111.mdl")
-    holoMaterial(1,"veegi/metal_dark")
-    holoParent(1,ORing)
     
-    holoCreate(2,IRing:toWorld(IRing:toLocal(IRing:pos()) + vec(668.52,0,16.9)),vec(3.356,2.974,1),IRing:angles(),vec4(255,255,255,0),"models/Cerus/Modbridge/Plate/Flat/b111.mdl")
-    holoMaterial(2,"veegi/metal_dark")
-    holoParent(2,IRing)
+    ORingP:setAlpha(0)
+    IRingP:setAlpha(0)
+    noCollideAll(ORingP,1)
+    noCollideAll(IRingP,1)
 }
 
 if(changed(Activate) & Activate == 1){
@@ -28,8 +25,10 @@ if(changed(Activate) & Activate == 1){
         Destination = DestIn
         Move = 1
         
-        holoAlpha(1,255)
-        holoAlpha(2,255)
+        ORingP:setAlpha(255)
+        IRingP:setAlpha(255)
+        noCollideAll(ORingP,0)
+        noCollideAll(IRingP,0)
         
         timer("alertend",8500)
         
@@ -39,14 +38,22 @@ if(changed(Activate) & Activate == 1){
     }
 }
 
-if(changed(Holos) & Holos == 1){
-    holoAlpha(1,255)
-    holoAlpha(2,255)
+if(changed(VisProps) & VisProps == 1){
+    ORingP:setAlpha(255)
+    IRingP:setAlpha(255)
+    noCollideAll(ORingP,0)
+    noCollideAll(IRingP,0)
 }
 
-if(changed(RHolos) & RHolos == 1){
-    holoAlpha(1,0)
-    holoAlpha(2,0)
+if(changed(RVisProps) & RVisProps == 1){
+    timer("resetvis",500)
+}
+
+if(clk("resetvis")){
+    ORingP:setAlpha(0)
+    IRingP:setAlpha(0)
+    noCollideAll(ORingP,1)
+    noCollideAll(IRingP,1)
 }
 
 if(clk("alertend")){
@@ -58,7 +65,7 @@ if(clk("alertend")){
 if(clk("warpout")){
     Move = 0
     NameInvis = 0
-    Acceleration = 0.5
+    Acceleration = 162.6
     timer("reset",4000)
 }
 
@@ -76,5 +83,5 @@ if(clk("unalert")){
     Alert = "Green"
     Reset = 0
     Warp = 0
-    Acceleration = 0.2
+    Acceleration = 80
 }
