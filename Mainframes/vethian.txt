@@ -13,7 +13,7 @@
 @persist SH CP HP AllFFs AllDoors [Prefix,WarpPrefix,TPPrefix]:string
 @persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput]:string
 @persist [PadTarget,PadDest,PadBeam,TransBeamType,BeamName]:string BrigName:array [BeamFrom,BeamTo,AimET]:entity
- 
+
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
@@ -76,7 +76,7 @@ if(clk("config")){ #Main Config
     #AutoDistress = 1 #Disable this if you don't want your ship to send a distress call at 30% hull
     #This isn't implemented yet
     
-    Prefix = "/vs" #Set this to the prefix you need to enter first in chat for any commands
+    Prefix = "/v" #Set this to the prefix you need to enter first in chat for any commands
     WarpPrefix = "/warp" #This is the Warp Prefix for using the warp drive
     TPPrefix = "/pad" #This is the Transport Prefix for using the Transporter Pad
     
@@ -92,7 +92,7 @@ if(clk("config")){ #Main Config
 if(clk("spawnprint")){
     if(PrintOnSpawn == 1){
         if(Shipname != "Shipname"){
-            botSay("AI"," [Vethian] ",ColPink,"Vethian AI v2.0 WIP active from: <" +owner():name()+ "> on: <" +Shipname+ ">")
+            botSay("AI"," [Vethian] ",ColPink,"Vethian AI v2.0 active from: <" +owner():name()+ "> on: <" +Shipname+ ">")
             LSCore["Name",string] = Shipname
         }
         else{
