@@ -2,10 +2,12 @@
 @inputs EGP:wirelink User:entity
 @outputs LocName:string Vector:vector Bank
 @persist Bank
-@persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string
-@persist [B2N1,B2N2,B2N3,B2N4,B2N5,B2N6,B2N7,B2N8,B2N9,B2N10,B2N11,B2N12]:string
-@persist [B1V1,B1V2,B1V3,B1V4,B1V5,B1V6,B1V7,B1V8,B1V9,B1V10,B1V11,B1V12]:vector
-@persist [B2V1,B2V2,B2V3,B2V4,B2V5,B2V6,B2V7,B2V8,B2V9,B2V10,B2V11,B2V12]:vector
+@persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string #Bank 1 Names
+@persist [B2N1,B2N2,B2N3,B2N4,B2N5,B2N6,B2N7,B2N8,B2N9,B2N10,B2N11,B2N12]:string #Bank 2 Names
+@persist [B3N1,B3N2,B3N3,B3N4,B3N5,B3N6,B3N7,B3N8,B3N9,B3N10,B3N11,B3N12]:string #Bank 3 Names
+@persist [B1V1,B1V2,B1V3,B1V4,B1V5,B1V6,B1V7,B1V8,B1V9,B1V10,B1V11,B1V12]:vector #Bank 1 Vectors
+@persist [B2V1,B2V2,B2V3,B2V4,B2V5,B2V6,B2V7,B2V8,B2V9,B2V10,B2V11,B2V12]:vector #Bank 2 Vectors
+@persist [B3V1,B3V2,B3V3,B3V4,B3V5,B3V6,B3V7,B3V8,B3V9,B3V10,B3V11,B3V12]:vector #Bank 3 Vectors
 #@model models/Madman07/com_device/stone.mdl
 
 if(first() | duped()){
@@ -16,6 +18,7 @@ if(first() | duped()){
     timer("update",100)
     timer("egpcreate",10)
     
+    #Vector Bank 1
     B1N1 = "Earth"
     B1V1 = vec(-1886,9554,8080)
     
@@ -49,7 +52,7 @@ if(first() | duped()){
     B1N11 = "???"
     B1V12 = vec(0)
     
-    
+    #Vector Bank 2
     B2N1 = "Build 1"
     B2V1 = vec(10496,12288,-16156)
     
@@ -84,7 +87,45 @@ if(first() | duped()){
     B2V11 = vec(0)
     
     B2N12 = "???"
-    B2V12 = vec()
+    B2V12 = vec(0)
+    
+    #Vector Bank 3
+
+    B3N1 = "???"
+    B3V1 = vec(0)
+    
+    B3N2 = "???"
+    B3V2 = vec(0)
+    
+    B3N3 = "???"
+    B3V3 = vec(0)
+    
+    B3N4 = "???"
+    B3V4 = vec(0)
+    
+    B3N5 = "???"
+    B3V5 = vec(0)
+    
+    B3N6 = "???"
+    B3V6 = vec(0)
+    
+    B3N7 = "???"
+    B3V7 = vec(0)
+    
+    B3N8 = "???"
+    B3V8 = vec(0)
+    
+    B3N9 = "???"
+    B3V9 = vec(0)
+    
+    B3N10 = "???"
+    B3V10 = vec(0)
+    
+    B3N11 = "???"
+    B3V11 = vec(0)
+    
+    B3N12 = "???"
+    B3V12 = vec(0)
 }
 
 if(~EGP & EGP){
@@ -198,10 +239,6 @@ if(~User & User){
     local Cursor = EGP:egpCursor(User)
     timer("soundpurge",500)
     
-    if(inrange(Cursor,vec2(),vec2())){ #Selector 1
-        
-    }
-    
     if(inrange(Cursor,vec2(305,30),vec2(365,90))){ #Switch Banks
         EGP:egpColor(5,vec(0,255,0))
         EGP:egpColor(6,vec(0,255,0))
@@ -212,7 +249,12 @@ if(~User & User){
             EGP:egpSetText(9,"2")
             timer("bank2",10)
         }
-        else{
+        elseif(Bank == 2){
+            Bank = 3
+            EGP:egpSetText(9,"3")
+            timer("bank3",10)
+        }
+        elseif(Bank == 3){
             Bank = 1
             EGP:egpSetText(9,"1")
             timer("bank1",10)
@@ -230,9 +272,13 @@ if(~User & User){
             LocName = B1N1
             Vector = B1V1
         }
-        else{
+        elseif(Bank == 2){
             LocName = B2N1
             Vector = B2V1
+        }
+        elseif(Bank == 3){
+            LocName = B3N1
+            Vector = B3V1
         }
     }
     
@@ -247,9 +293,13 @@ if(~User & User){
             LocName = B1N2
             Vector = B1V2
         }
-        else{
+        if(Bank == 2){
             LocName = B2N2
             Vector = B2V2
+        }
+        if(Bank == 3){
+            LocName = B3N2
+            Vector = B3V2
         }
     }
     
@@ -264,9 +314,13 @@ if(~User & User){
             LocName = B1N3
             Vector = B1V3
         }
-        else{
+        if(Bank == 2){
             LocName = B2N3
             Vector = B2V3
+        }
+        if(Bank == 3){
+            LocName = B3N3
+            Vector = B3V3
         }
     }
     
@@ -281,9 +335,13 @@ if(~User & User){
             LocName = B1N4
             Vector = B1V4
         }
-        else{
+        if(Bank == 2){
             LocName = B2N4
             Vector = B2V4
+        }
+        if(Bank == 3){
+            LocName = B3N4
+            Vector = B3V4
         }
     }
     
@@ -298,9 +356,13 @@ if(~User & User){
             LocName = B1N5
             Vector = B1V5
         }
-        else{
+        if(Bank == 2){
             LocName = B2N5
             Vector = B2V5
+        }
+        if(Bank == 3){
+            LocName = B3N5
+            Vector = B3V5
         }
     }
     
@@ -315,9 +377,13 @@ if(~User & User){
             LocName = B1N6
             Vector = B1V6
         }
-        else{
+        if(Bank == 2){
             LocName = B2N6
             Vector = B2V6
+        }
+        if(Bank == 3){
+            LocName = B3N6
+            Vector = B3V6
         }
     }
     
@@ -332,9 +398,13 @@ if(~User & User){
             LocName = B1N7
             Vector = B1V7
         }
-        else{
+        if(Bank == 2){
             LocName = B2N7
             Vector = B2V7
+        }
+        if(Bank == 3){
+            LocName = B3N7
+            Vector = B3V7
         }
     }
     
@@ -349,9 +419,13 @@ if(~User & User){
             LocName = B1N8
             Vector = B1V8
         }
-        else{
+        if(Bank == 2){
             LocName = B2N8
             Vector = B2V8
+        }
+        if(Bank == 3){
+            LocName = B3N8
+            Vector = B3V8
         }
     }
     
@@ -366,9 +440,13 @@ if(~User & User){
             LocName = B1N9
             Vector = B1V9
         }
-        else{
+        if(Bank == 2){
             LocName = B2N9
             Vector = B2V9
+        }
+        if(Bank == 3){
+            LocName = B3N9
+            Vector = B3V9
         }
     }
     
@@ -383,9 +461,13 @@ if(~User & User){
             LocName = B1N10
             Vector = B1V10
         }
-        else{
+        if(Bank == 2){
             LocName = B2N10
             Vector = B2V10
+        }
+        if(Bank == 3){
+            LocName = B3N10
+            Vector = B3V10
         }
     }
     
@@ -400,9 +482,13 @@ if(~User & User){
             LocName = B1N11
             Vector = B1V11
         }
-        else{
+        if(Bank == 2){
             LocName = B2N11
             Vector = B2V11
+        }
+        if(Bank == 3){
+            LocName = B3N11
+            Vector = B3V11
         }
     }
     
@@ -417,9 +503,13 @@ if(~User & User){
             LocName = B1N12
             Vector = B1V12
         }
-        else{
+        if(Bank == 2){
             LocName = B2N12
             Vector = B2V12
+        }
+        if(Bank == 3){
+            LocName = B3N12
+            Vector = B3V12
         }
     }
     
@@ -556,4 +646,42 @@ if(clk("bank2")){
     
     EGP:egpSetText(67,B2N12)
     EGP:egpSetText(68,B2V12:toString())
+}
+
+if(clk("bank3")){
+    EGP:egpSetText(12,B3N1)
+    EGP:egpSetText(13,B3V1:toString())
+    
+    EGP:egpSetText(17,B3N2)
+    EGP:egpSetText(18,B3V2:toString())
+    
+    EGP:egpSetText(22,B3N3)
+    EGP:egpSetText(23,B3V3:toString())
+    
+    EGP:egpSetText(27,B3N4)
+    EGP:egpSetText(28,B3V4:toString())
+    
+    EGP:egpSetText(32,B3N5)
+    EGP:egpSetText(33,B3V5:toString())
+    
+    EGP:egpSetText(37,B3N6)
+    EGP:egpSetText(38,B3V6:toString())
+    
+    EGP:egpSetText(42,B3N7)
+    EGP:egpSetText(43,B3V7:toString())
+    
+    EGP:egpSetText(47,B3N8)
+    EGP:egpSetText(48,B3V8:toString())
+    
+    EGP:egpSetText(52,B3N9)
+    EGP:egpSetText(53,B3V9:toString())
+    
+    EGP:egpSetText(57,B3N10)
+    EGP:egpSetText(58,B3V10:toString())
+    
+    EGP:egpSetText(62,B3N11)
+    EGP:egpSetText(63,B3V11:toString())
+    
+    EGP:egpSetText(67,B3N12)
+    EGP:egpSetText(68,B3V12:toString())
 }
