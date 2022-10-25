@@ -1,224 +1,240 @@
 @name Nova_Lib
 @persist [ColTeam,ColPink,ColOng,ColRed,ColGrn,ColBlu,ColWht,ZeiaOng,ZeiaTBlu,ZeiaMBlu,ZeiaWht,ZeiaBlk]:vector
-@persist [DriveName,WarpLoc,TransportLoc,TarType,FindPLoc,BeamType,TorpType,TurretType]:table
+@persist [DriveName,WarpLoc,TransportLoc,TarType,BeamType,TorpType,TurretType]:table
 
 #This e2 doesn't need to be placed anywhere
 
 #If you need to give this lib to someone, its better if they get the most recent version from:
 #https://github.com/NovaAstral/Novas-Public-E2s
 
-ColTeam = teamColor(owner():team())
-ColPink = vec(255,95,215)
-ColOng = vec(230,110,0)
-ColRed = vec(255,0,0)
-ColGrn = vec(0,255,0)
-ColBlu = vec(0,0,255)
-ColWht = vec(255)
-ColBlk = vec(0)
-
-ZeiaOng = vec(255,90,0)
-ZeiaTBlu = vec(200,255,255)
-ZeiaMBlu = vec(0,255,255)
-ZeiaWht = vec(230,230,230)
-ZeiaBlk = vec(99,99,99)
-
 if(first() | dupefinished()){
+    ColTeam = teamColor(owner():team())
+    ColPink = vec(255,95,215)
+    ColOng = vec(230,110,0)
+    ColRed = vec(255,0,0)
+    ColGrn = vec(0,255,0)
+    ColBlu = vec(0,0,255)
+    ColWht = vec(255)
+    ColBlk = vec(0)
+    
+    ZeiaOng = vec(255,90,0)
+    ZeiaTBlu = vec(200,255,255)
+    ZeiaMBlu = vec(0,255,255)
+    ZeiaWht = vec(230,230,230)
+    ZeiaBlk = vec(99,99,99)
+    
     if(entity():getName() == "Nova_Lib"){
-        printColor(ColPink,"[NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. Removing.")
-        printColor(ColPink,"[NovaLib] ",ColOng,"If you're trying to give this to someone, send them to https://github.com/NovaAstral/Novas-Public-E2s")
+        printColor(ColPink,"[NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. ",ColRed,"Removing.")
+        printColor(ColPink,"[NovaLib] ",ColOng,"If you're trying to give this to someone, send them to ",ColGrn,"https://github.com/NovaAstral/Novas-Public-E2s")
         selfDestruct()
     }
+    
+    #This is to get rid of the annoying warnings of "Unused global variable"
+    holoCreate(1,vec(0,0,0))
+    holoColor(1,ColTeam)
+    holoColor(1,ColBlu)
+    holoColor(1,ColWht)
+    holoColor(1,ColBlk)
+    holoColor(1,ZeiaOng)
+    holoColor(1,ZeiaTBlu)
+    holoColor(1,ZeiaMBlu)
+    holoColor(1,ZeiaWht)
+    holoColor(1,ZeiaBlk)
+    holoDelete(1)
+    
+    #Drive Selector types
+    DriveName = table()
+    DriveName["ship",string] = "ship_drive"
+    DriveName["bsg",string] = "bsg_drive"
+    DriveName["ftl",string] = "bsg_drive"
+    DriveName["warp",string] = "st_warp_drive"
+    DriveName["sg",string] = "sg_hyperdrive"
+    DriveName["hyper",string] = "sg_hyperdrive"
+    DriveName["spore",string] =  "spore_drive"
+    DriveName["wiretp",string] = "gmod_wire_teleporter"
+    DriveName["sbep",string] = "warpdrive"
+    DriveName["qsd",string] = "quantum_slipstream_drive"
+    DriveName["slipstream",string] = "quantum_slipstream_drive"
+    DriveName["e2",string] = "gmod_wire_expression2"
+    
+    #Warp Locations
+    WarpLoc = table()
+    WarpLoc["milk",vector] = vec(-7659,8215,8300)
+    WarpLoc["earth",vector] = vec(-89,8258,10690)
+    WarpLoc["moon",vector] = vec(-4938,13441,10444)
+    WarpLoc["pegasus",vector] = vec(1703,-8593,9143)
+    WarpLoc["shakur",vector] = vec(-7576,-7152,9060)
+    WarpLoc["shakurbase",vector] = vec(-7576,-7152,5560)
+    WarpLoc["universe",vector] = vec(111,-2874,-3954)
+    WarpLoc["unicorner",vector] = vec(-7179,-7562,-10663)
+    WarpLoc["hiigara",vector] = vec(6144,9267,-4660)
+    WarpLoc["hiibase",vector] = vec(7556,6805,-7450)
+    WarpLoc["desert",vector] = vec(10813,-9631,-8541)
+    WarpLoc["lava",vector] = vec(-9891,167,-4283)
+    WarpLoc["members",vector] = vec(13,-94,-15202)
+    WarpLoc["build",vector] = vec(10696,12179,-15484)
+    WarpLoc["build2",vector] = vec(12820,4475,-15105)
+    WarpLoc["build3",vector] = vec(12820,-4130,-15105)
+    WarpLoc["build4",vector] = vec(12820,-12345,-15105)
+    
+    TransportLoc = table()
+    TransportLoc["earth",vector] = vec(2982,8034,7944)
+    TransportLoc["sgc",vector] = vec(2263,8033,6736)
+    TransportLoc["moon",vector] = vec(-3411,13023,9952)
+    TransportLoc["shakur",vector] = vec(-7725,-3554,6889)
+    TransportLoc["shakbase",vector] = vec(-7540,-7063,5040)
+    TransportLoc["station",vector] = vec(7823,-5866,9408)
+    TransportLoc["hangar",vector] = vec(9156,-7225,9392)
+    TransportLoc["hiigara",vector] = vec(7167,11826,-5856)
+    TransportLoc["hiibase",vector] = vec(7128,9616,-8191)
+    TransportLoc["desert",vector] = vec(11643,-10660,-9184)
+    TransportLoc["pyramid",vector] = vec(12920,-10097,-9120)
+    TransportLoc["pyramidbase",vector] = vec(10753,-12992,-10224)
+    TransportLoc["lava",vector] = vec(-11241,753,-4656)
+    TransportLoc["lavabase",vector] = vec(-9416,-1104,-5376)
+    TransportLoc["hell",vector] = vec(-8235,-970,-4815)
+    TransportLoc["space",vector] = vec(-707,-2889,-5946)
+    
+    TarType = table()
+    TarType["glider",string] = "sg_vehicle_glider"
+    TarType["f302",string] = "sg_vehicle_f302"
+    TarType["dest",string] = "sg_vehicle_shuttle"
+    TarType["gateg",string] = "sg_vehicle_gate_glider"
+    TarType["teltac",string] = "sg_vehicle_teltac"
+    TarType["jumper",string] = "*puddle_jumper"
+    TarType["core",string] = "ship_core"
+    TarType["node",string] = "stargazer_node"
+    TarType["sbnode",string] = "resource_node"
+    TarType["gyro",string] = "gyropod_advanced"
+    TarType["sgshield",string] = "shield_generator"
+    TarType["shield",string] = "st_shield_emitter"
+    TarType["zpm",string] = "zpm_mk3"
+    TarType["ag3",string] = "ag_3"
+    TarType["drive",string] = "ship_drive"
+    TarType["sbepdrive",string] = "warpdrive"
+    TarType["turret",string] = "gmod_wire_turret"
+    TarType["ring",string] = "ring_base_ancient"
+    TarType["sat",string] = "stargate_asuran"
+    TarType["rotaty",string] = "sf-rotatybase"
+    TarType["prop",string] = "prop_physics"
+    TarType["npc",string] = "npc_*"
+    TarType["ragdoll",string] = "prop_ragdoll"
+    TarType["grenade",string] = "grenade_ar2"
+    TarType["stargate",string] = "stargate_*"
+    TarType["jamming",string] = "jamming_device"
+    TarType["ball",string] = "sent_ball"
+    TarType["shuttle",string] = "*shuttle*"
+    TarType["e2",string] = "gmod_wire_expression2"
+    TarType["collector",string] = "stargazer_water_core_collector"
+    TarType["cube",string] = "box_cube"
+    TarType["sphere",string] = "box_sphere"
+    TarType["cubetac",string] = "box_cube_tactical"
+    TarType["kino",string] = "kino_ball"
+    TarType["forcefield",string] = "st_forcefield"
+    TarType["button",string] = "func_button"
+    TarType["spacemine",string] = "sf-spacemine"
+    TarType["drivecore",string] = "drive_core"
+    
+    #Beam Weapon Types
+    
+    BeamType = table()
+    BeamType["disruptor",number] = 1
+    BeamType["disrupt",number] = 1
+    BeamType["dis",number] = 1
+    BeamType["tetryon",number] = 2
+    BeamType["tet",number] = 2
+    BeamType["antiproton",number] = 3
+    BeamType["antip",number] = 3
+    BeamType["plasma",number] = 4
+    BeamType["plas",number] = 4
+    BeamType["polaron",number] = 5
+    BeamType["pol",number] = 5
+    BeamType["phaser",number] = 6
+    BeamType["phas",number] = 6
+    BeamType["proton",number] = 7
+    BeamType["prot",number] = 7
+    BeamType["protonicpolaron",number] = 8
+    BeamType["protpol",number] = 8
+    BeamType["spiralwavedisruptor",number] = 9
+    BeamType["spiral",number] = 9
+    BeamType["cardie",number] = 9
+    BeamType["vothantiproton",number] = 10
+    BeamType["vothap",number] = 10
+    BeamType["destabilizingtetryon",number] = 11
+    BeamType["destet",number] = 11
+    BeamType["phasertmp",number] = 12
+    BeamType["phastmp",number] = 12
+    BeamType["tmp",number] = 12
+    BeamType["tmpphas",number] = 12
+    BeamType["phasertos",number] = 13
+    BeamType["phastos",number] = 13
+    BeamType["tos",number] = 13
+    BeamType["tosphas",number] = 13
+    BeamType["chroniton",number] = 14
+    BeamType["chron",number] = 14
+    BeamType["gay",number] = 14
+    BeamType["rainbow",number] = 14
+    BeamType["phaserdsc",number] = 15
+    BeamType["phasdsc",number] = 15
+    BeamType["dsc",number] = 15
+    BeamType["dscphas",number] = 15
+    
+    TorpType = table()
+    TorpType["photon",number] = 1
+    TorpType["phot",number] = 1
+    TorpType["quantum",number] = 2
+    TorpType["quan",number] = 2
+    TorpType["plasma",number] = 3
+    TorpType["plas",number] = 3
+    TorpType["transphasic",number] = 4
+    TorpType["trans",number] = 4
+    TorpType["chroniton",number] = 5
+    TorpType["chron",number] = 5
+    TorpType["transpahsicchroniton",number] = 6
+    TorpType["transchron",number] = 6
+    TorpType["tchron",number] = 6
+    TorpType["biomolecular",number] = 7
+    TorpType["bio",number] = 7
+    TorpType["tricobalt",number] = 8
+    TorpType["trico",number] = 8
+    TorpType["photontmp",number] = 9
+    TorpType["phottmp",number] = 9
+    TorpType["tmp",number] = 9
+    TorpType["tmpphot",number] = 9
+    TorpType["photontos",number] = 10
+    TorpType["phottos",number] = 10
+    TorpType["tos",number] = 10
+    TorpType["tosphot",number] = 10
+    
+    TurretType = table()
+    TurretType["ionlaser",number] = 1
+    TurretType["ion",number] = 1
+    TurretType["phaser",number] = 2
+    TurretType["phas",number] = 2
+    TurretType["antiproton",number] = 3
+    TurretType["antip",number] = 3
+    TurretType["ap",number] = 3
+    TurretType["disruptor",number] = 4
+    TurretType["dis",number] = 4
+    TurretType["tetryon",number] = 5
+    TurretType["tet",number] = 5
+    TurretType["plasma",number] = 6
+    TurretType["plas",number] = 6
+    TurretType["polaron",number] = 7
+    TurretType["pol",number] = 7
+    TurretType["flak",number] = 8
+    TurretType["kinetic",number] = 9
+    TurretType["kin",number] = 9
+    TurretType["proton",number] = 10
+    TurretType["prot",number] = 10
+    TurretType["protonicpolaron",number] = 11
+    TurretType["protpol",number] = 11
+    TurretType["vothantiproton",number] = 12
+    TurretType["vothap",number] = 12
+    TurretType["spiralwavedisruptor",number] = 13
+    TurretType["spiral",number] = 13
+    TurretType["cardie",number] = 13
 }
-
-#Drive Selector types
-DriveName["ship",string] = "ship_drive"
-DriveName["bsg",string] = "bsg_drive"
-DriveName["ftl",string] = "bsg_drive"
-DriveName["warp",string] = "st_warp_drive"
-DriveName["sg",string] = "sg_hyperdrive"
-DriveName["hyper",string] = "sg_hyperdrive"
-DriveName["spore",string] =  "spore_drive"
-DriveName["wiretp",string] = "gmod_wire_teleporter"
-DriveName["sbep",string] = "warpdrive"
-DriveName["qsd",string] = "quantum_slipstream_drive"
-DriveName["slipstream",string] = "quantum_slipstream_drive"
-DriveName["e2",string] = "gmod_wire_expression2"
-
-#Warp Locations
-WarpLoc["milk",vector] = vec(-7659,8215,8300)
-WarpLoc["earth",vector] = vec(-89,8258,10690)
-WarpLoc["moon",vector] = vec(-4938,13441,10444)
-WarpLoc["pegasus",vector] = vec(1703,-8593,9143)
-WarpLoc["shakur",vector] = vec(-7576,-7152,9060)
-WarpLoc["shakurbase",vector] = vec(-7576,-7152,5560)
-WarpLoc["universe",vector] = vec(111,-2874,-3954)
-WarpLoc["unicorner",vector] = vec(-7179,-7562,-10663)
-WarpLoc["hiigara",vector] = vec(6144,9267,-4660)
-WarpLoc["hiibase",vector] = vec(7556,6805,-7450)
-WarpLoc["desert",vector] = vec(10813,-9631,-8541)
-WarpLoc["lava",vector] = vec(-9891,167,-4283)
-WarpLoc["members",vector] = vec(13,-94,-15202)
-WarpLoc["build",vector] = vec(10696,12179,-15484)
-WarpLoc["build2",vector] = vec(12820,4475,-15105)
-WarpLoc["build3",vector] = vec(12820,-4130,-15105)
-WarpLoc["build4",vector] = vec(12820,-12345,-15105)
-
-TransportLoc["earth",vector] = vec(2982,8034,7944)
-TransportLoc["sgc",vector] = vec(2263,8033,6736)
-TransportLoc["moon",vector] = vec(-3411,13023,9952)
-TransportLoc["shakur",vector] = vec(-7725,-3554,6889)
-TransportLoc["shakbase",vector] = vec(-7540,-7063,5040)
-TransportLoc["station",vector] = vec(7823,-5866,9408)
-TransportLoc["hangar",vector] = vec(9156,-7225,9392)
-TransportLoc["hiigara",vector] = vec(7167,11826,-5856)
-TransportLoc["hiibase",vector] = vec(7128,9616,-8191)
-TransportLoc["desert",vector] = vec(11643,-10660,-9184)
-TransportLoc["pyramid",vector] = vec(12920,-10097,-9120)
-TransportLoc["pyramidbase",vector] = vec(10753,-12992,-10224)
-TransportLoc["lava",vector] = vec(-11241,753,-4656)
-TransportLoc["lavabase",vector] = vec(-9416,-1104,-5376)
-TransportLoc["hell",vector] = vec(-8235,-970,-4815)
-TransportLoc["space",vector] = vec(-707,-2889,-5946)
-
-TarType["glider",string] = "sg_vehicle_glider"
-TarType["f302",string] = "sg_vehicle_f302"
-TarType["dest",string] = "sg_vehicle_shuttle"
-TarType["gateg",string] = "sg_vehicle_gate_glider"
-TarType["teltac",string] = "sg_vehicle_teltac"
-TarType["jumper",string] = "*puddle_jumper"
-TarType["core",string] = "ship_core"
-TarType["node",string] = "stargazer_node"
-TarType["sbnode",string] = "resource_node"
-TarType["gyro",string] = "gyropod_advanced"
-TarType["sgshield",string] = "shield_generator"
-TarType["shield",string] = "st_shield_emitter"
-TarType["zpm",string] = "zpm_mk3"
-TarType["ag3",string] = "ag_3"
-TarType["drive",string] = "ship_drive"
-TarType["sbepdrive",string] = "warpdrive"
-TarType["turret",string] = "gmod_wire_turret"
-TarType["ring",string] = "ring_base_ancient"
-TarType["sat",string] = "stargate_asuran"
-TarType["rotaty",string] = "sf-rotatybase"
-TarType["prop",string] = "prop_physics"
-TarType["npc",string] = "npc_*"
-TarType["ragdoll",string] = "prop_ragdoll"
-TarType["grenade",string] = "grenade_ar2"
-TarType["stargate",string] = "stargate_*"
-TarType["jamming",string] = "jamming_device"
-TarType["ball",string] = "sent_ball"
-TarType["shuttle",string] = "*shuttle*"
-TarType["e2",string] = "gmod_wire_expression2"
-TarType["collector",string] = "stargazer_water_core_collector"
-TarType["cube",string] = "box_cube"
-TarType["sphere",string] = "box_sphere"
-TarType["cubetac",string] = "box_cube_tactical"
-TarType["kino",string] = "kino_ball"
-TarType["forcefield",string] = "st_forcefield"
-TarType["button",string] = "func_button"
-TarType["spacemine",string] = "sf-spacemine"
-TarType["drivecore",string] = "drive_core"
-
-#Location Find Planets
-FindPLoc["",number] = findInSphere(vec(0,0,0),0)
-FindPLoc["",number] = findInSphere(vec(0,0,0),0)
-
-#Beam Weapon Types
-BeamType["disruptor",number] = 1
-BeamType["disrupt",number] = 1
-BeamType["dis",number] = 1
-BeamType["tetryon",number] = 2
-BeamType["tet",number] = 2
-BeamType["antiproton",number] = 3
-BeamType["antip",number] = 3
-BeamType["plasma",number] = 4
-BeamType["plas",number] = 4
-BeamType["polaron",number] = 5
-BeamType["pol",number] = 5
-BeamType["phaser",number] = 6
-BeamType["phas",number] = 6
-BeamType["proton",number] = 7
-BeamType["prot",number] = 7
-BeamType["protonicpolaron",number] = 8
-BeamType["protpol",number] = 8
-BeamType["spiralwavedisruptor",number] = 9
-BeamType["spiral",number] = 9
-BeamType["cardie",number] = 9
-BeamType["vothantiproton",number] = 10
-BeamType["vothap",number] = 10
-BeamType["destabilizingtetryon",number] = 11
-BeamType["destet",number] = 11
-BeamType["phasertmp",number] = 12
-BeamType["phastmp",number] = 12
-BeamType["tmp",number] = 12
-BeamType["tmpphas",number] = 12
-BeamType["phasertos",number] = 13
-BeamType["phastos",number] = 13
-BeamType["tos",number] = 13
-BeamType["tosphas",number] = 13
-BeamType["chroniton",number] = 14
-BeamType["chron",number] = 14
-BeamType["gay",number] = 14
-BeamType["rainbow",number] = 14
-BeamType["phaserdsc",number] = 15
-BeamType["phasdsc",number] = 15
-BeamType["dsc",number] = 15
-BeamType["dscphas",number] = 15
-
-TorpType["photon",number] = 1
-TorpType["phot",number] = 1
-TorpType["quantum",number] = 2
-TorpType["quan",number] = 2
-TorpType["plasma",number] = 3
-TorpType["plas",number] = 3
-TorpType["transphasic",number] = 4
-TorpType["trans",number] = 4
-TorpType["chroniton",number] = 5
-TorpType["chron",number] = 5
-TorpType["transpahsicchroniton",number] = 6
-TorpType["transchron",number] = 6
-TorpType["tchron",number] = 6
-TorpType["biomolecular",number] = 7
-TorpType["bio",number] = 7
-TorpType["tricobalt",number] = 8
-TorpType["trico",number] = 8
-TorpType["photontmp",number] = 9
-TorpType["phottmp",number] = 9
-TorpType["tmp",number] = 9
-TorpType["tmpphot",number] = 9
-TorpType["photontos",number] = 10
-TorpType["phottos",number] = 10
-TorpType["tos",number] = 10
-TorpType["tosphot",number] = 10
-
-TurretType["ionlaser",number] = 1
-TurretType["ion",number] = 1
-TurretType["phaser",number] = 2
-TurretType["phas",number] = 2
-TurretType["antiproton",number] = 3
-TurretType["antip",number] = 3
-TurretType["ap",number] = 3
-TurretType["disruptor",number] = 4
-TurretType["dis",number] = 4
-TurretType["tetryon",number] = 5
-TurretType["tet",number] = 5
-TurretType["plasma",number] = 6
-TurretType["plas",number] = 6
-TurretType["polaron",number] = 7
-TurretType["pol",number] = 7
-TurretType["flak",number] = 8
-TurretType["kinetic",number] = 9
-TurretType["kin",number] = 9
-TurretType["proton",number] = 10
-TurretType["prot",number] = 10
-TurretType["protonicpolaron",number] = 11
-TurretType["protpol",number] = 11
-TurretType["vothantiproton",number] = 12
-TurretType["vothap",number] = 12
-TurretType["spiralwavedisruptor",number] = 13
-TurretType["spiral",number] = 13
-TurretType["cardie",number] = 13
-
 #o'neill command in vethian :)
 if(clk("whacko")){
     printColor(ColPink," [O'Neill] ",ColOng,"I'm telling you Teal'c, if we don't find a way out of this soon, I'm gonna lose it.")

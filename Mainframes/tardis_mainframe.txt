@@ -92,7 +92,6 @@ if(chatClk(O)){
         printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"tmat, tdemat here, tdemat me, tdemat, treturn, ttfly, tthads, ttiso, ttlock.")
         printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"ttlongfly, ttphase, ttphys, ttpower, ttrepair, tu, tadv.")
 }
-
     if(OLS == "/ts on"){
         hideChat(1)
         Shield:propNotSolid(0)

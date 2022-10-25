@@ -24,7 +24,7 @@ if(clk("pos/use")){
         if(owner():keyUse() == 1){
             I++
             holoCreate(I,owner():aimPos())
-            printColor(vec(255,95,215)," [HoloAim] ",vec(230,110,0),round(owner():aimPos()))
+            printColor(vec(255,95,215),"[HoloAim] ",vec(230,110,0),toString(round(owner():aimPos())))
         }
     }
 }
