@@ -1,7 +1,7 @@
 @name TARDIS Mainframe v2
 @inputs [B1,B2,B3,B4,B5,B6,Throttle]:entity
 @outputs [O,T]:entity
-@persist TW:wirelink ShieldEnt:entity Prefix:string
+@persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
 @persist Shield HPLow Advt
 
 function vector vector:round(D:number) { return vec(round(This:x(), D), round(This:y(), D), round(This:z(), D)) }
@@ -62,6 +62,7 @@ if(clk("tget")){
         timer("shield",10)
         timer("shieldcheck",1000)
         timer("hpcheck",1000)
+        timer("sndcreate",100)
     }
 }
 
@@ -77,6 +78,8 @@ if(clk("shield")){
 }
 
 if(clk("shieldcheck")){
+    timer("shieldcheck",100)
+    
     if(!ShieldEnt:isValid()){
         printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"WARNING: Shield Offline! Generating new shield and activating.")
         T:soundPlay(2,5,"tardis/cloisterbell.wav")
@@ -107,6 +110,18 @@ if(clk("hpcheck")){
     }
 }
 
+if(clk("sndcreate")){
+    ShieldOnSnd = webAudio("https://cdn.discordapp.com/attachments/915811722646925312/1034538675742183556/force_field_up.ogg")
+    ShieldOffSnd = webAudio("https://cdn.discordapp.com/attachments/915811722646925312/1034538675398246400/force_field_down.ogg")
+}
+
+if(clk("sndstop")){
+    ShieldOnSnd:destroy()
+    ShieldOffSnd:destroy()
+    
+    timer("sndcreate",10)
+}
+
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
         hideChat(1)
@@ -126,7 +141,12 @@ if(chatClk(O)){
                     ShieldEnt:propNotSolid(0)
                     ShieldEnt:propDraw(1)
                     
-                    T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
+                    #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
+                    
+                    ShieldOnSnd:setPos(T:pos())
+                    ShieldOnSnd:setParent(T)
+                    ShieldOnSnd:play()
+                    timer("sndstop",ShieldOnSnd:getLength()*1000)
                 }
                 else{
                     Shield = 0
@@ -134,7 +154,12 @@ if(chatClk(O)){
                     ShieldEnt:propNotSolid(1)
                     ShieldEnt:propDraw(0)
                     
-                    T:soundPlay(1,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
+                    #T:soundPlay(1,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
+                    
+                    ShieldOffSnd:setPos(T:pos())
+                    ShieldOffSnd:setParent(T)
+                    ShieldOffSnd:play()
+                    timer("sndstop",ShieldOffSnd:getLength()*1000)
                 }
             }
             
@@ -150,7 +175,12 @@ if(chatClk(O)){
                     ShieldEnt:propNotSolid(0)
                     ShieldEnt:propDraw(1)
                     
-                    T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
+                    #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
+                    
+                    ShieldOnSnd:setPos(T:pos())
+                    ShieldOnSnd:setParent(T)
+                    ShieldOnSnd:play()
+                    timer("sndstop",ShieldOnSnd:getLength()*1000)
                 }
             }
             
@@ -166,7 +196,12 @@ if(chatClk(O)){
                     ShieldEnt:propNotSolid(1)
                     ShieldEnt:propDraw(0)
                     
-                    T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
+                    #T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
+                    
+                    ShieldOffSnd:setPos(T:pos())
+                    ShieldOffSnd:setParent(T)
+                    ShieldOffSnd:play()
+                    timer("sndstop",ShieldOnSnd:getLength()*1000)
                 }
             }
         }
