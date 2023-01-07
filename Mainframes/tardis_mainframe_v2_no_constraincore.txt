@@ -1,5 +1,5 @@
 @name TARDIS Mainframe v2
-@inputs [B1,B2,B3,B4,B5,B6,Throttle]:entity
+@inputs Tardis:wirelink TEnt:entity
 @outputs [O,T]:entity
 @persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
 @persist Shield HPLow Advt
@@ -12,15 +12,8 @@ function angle angle:round(D:number) { return ang(round(This:pitch(), D), round(
 #Discord: Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
-#The Entity inputs are for the Advanced Takeoff of the Legacy TARDIS. 
-#It does not and never will work on the 'Rewrite' TARDIS
-
-#[
-Todo:
-
-nothing :)
-
-]#
+#This version of the mainframe is for servers without propcore or constraintcore enabled
+#Legacy Advanced Takeoff, Door Use, and Shield are all removed.
 
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -48,9 +41,7 @@ if(clk("config")){
 
 
 if(clk("tget")){
-    if(entity():isWeldedTo():type() == "gmod_tardis_interior"){
-        T = entity():isWeldedTo():tardisGet()
-    }
+    T = TEnt:tardisGet()
     
     if(!T:isValid()){
         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS not found. Mainframe Offline.")
@@ -60,12 +51,12 @@ if(clk("tget")){
     else{
         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Mainframe Online")
         
-        TW = T:wirelink()
+        TW = Tardis
         
-        timer("shield",10)
-        timer("shieldcheck",1000)
+        #timer("shield",10)
+        #timer("shieldcheck",1000)
         timer("hpcheck",1000)
-        timer("sndcreate",100)
+        #timer("sndcreate",100)
     }
 }
 
@@ -112,7 +103,7 @@ if(clk("funcsetup")){
         }
     }
 }
-
+#[
 if(clk("shield")){
     ShieldEnt = propSpawn("models/hunter/misc/sphere375x375.mdl",T:pos()+vec(0,0,50),1) #models/cubic/effects/core.mdl from sb_discovery, visual shield
     ShieldEnt:propNotSolid(1)
@@ -140,7 +131,7 @@ if(clk("shieldvis")){
     ShieldEnt:propNotSolid(0)
     ShieldEnt:propDraw(1)
 }
-
+]#
 if(clk("hpcheck")){
     timer("hpcheck",1000)
     
@@ -178,7 +169,7 @@ if(chatClk(O)){
             printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"If you're seeing this, I haven't made a help file yet oops")
         }
         
-        if(OLS[2,string] == "shield"){
+#[        if(OLS[2,string] == "shield"){
             if(OLS[3,string]:length() == 0){                
                 if(Shield == 0){
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Online")
@@ -254,6 +245,7 @@ if(chatClk(O)){
                 }
             }
         }
+        ]#
         
         if(OLS[2,string] == "mat" | OLS[2,string] == "materialise"){
             if(T:tardisInVortex() == 1){
@@ -579,11 +571,11 @@ if(chatClk(O)){
             }
         }
         
-        if(OLS[2,string] == "doors"){
+        #[if(OLS[2,string] == "doors"){
             printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Doors Toggled")
                 
             T:use()
-        }
+        }]#
         
         if(OLS[2,string] == "track"){
             if(owner():aimEntity():isValid()){
@@ -595,14 +587,13 @@ if(chatClk(O)){
                 T:tardisTrack(noentity())
             }
         }
-    
+        #[
         #Legacy Advanced Takeoff
         if(OLS[2,string] == "adv"){ #This only works on the Legacy TARDIS, and you must wire the buttons manually
             printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Activating Advanced Takeoff")
             B1:use()
             timer("adv1",Advt)
-        }
-    
+        }]#
     
         ###########################
         ###Check what things are###
@@ -759,7 +750,7 @@ if(chatClk(O)){
         }
     }
 }
-
+#[
 #Legacy Advanced Takeoff timers
 if(clk("adv1")){
     B2:use()
@@ -790,3 +781,4 @@ if(clk("throttle")){
     Throttle:use()
     stopAllTimers()
 }
+]#

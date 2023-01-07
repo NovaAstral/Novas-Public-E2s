@@ -30,17 +30,17 @@ if(first() | dupefinished()){
     }
     
     #This is to get rid of the annoying warnings of "Unused global variable"
-    holoCreate(1,vec(0,0,0))
-    holoColor(1,ColTeam)
-    holoColor(1,ColBlu)
-    holoColor(1,ColWht)
-    holoColor(1,ColBlk)
-    holoColor(1,ZeiaOng)
-    holoColor(1,ZeiaTBlu)
-    holoColor(1,ZeiaMBlu)
-    holoColor(1,ZeiaWht)
-    holoColor(1,ZeiaBlk)
-    holoDelete(1)
+    holoCreate(1742,vec(0,0,0))
+    holoColor(1742,ColTeam)
+    holoColor(1742,ColBlu)
+    holoColor(1742,ColWht)
+    holoColor(1742,ColBlk)
+    holoColor(1742,ZeiaOng)
+    holoColor(1742,ZeiaTBlu)
+    holoColor(1742,ZeiaMBlu)
+    holoColor(1742,ZeiaWht)
+    holoColor(1742,ZeiaBlk)
+    holoDelete(1742)
     
     #Drive Selector types
     DriveName = table()
