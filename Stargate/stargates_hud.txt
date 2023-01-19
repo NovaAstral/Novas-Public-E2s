@@ -9,7 +9,7 @@ if(first()|duped()){
 
 if(clk("find")){
     timer("find",1000)
-    findByClass("stargate*")
+    findByClass("stargate*") #make it exclude irises (stargate_iris)
     findClipToSphere(owner():pos(),1000)
     
     EGP:egpClear()

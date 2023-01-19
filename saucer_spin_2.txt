@@ -2,13 +2,13 @@
 
 @inputs Activate VisProps RVisProps DriveIn:string DestIn:vector Core:wirelink [ORing,IRing,ORingP,IRingP]:entity
 @outputs Warp Destination:vector Alert:string NameInvis Move Speed Acceleration Direction Reset
+@persist ActivateSpin
 
 #include "Novas-Public-E2s/library/nova_lib"
 
 #This links to Princess Nova's Motor SF
 
 if(first() | dupefinished()){
-    
     Speed = 600
     Acceleration = 80
     Direction = -1
@@ -21,6 +21,21 @@ if(first() | dupefinished()){
 }
 
 if(changed(Activate) & Activate == 1){
+    timer("SpinOn",200)
+    timer("SpinOff",2000)
+}
+
+if(clk("SpinOn")){
+    ActivateSpin = 1
+}
+
+if(clk("SpinOff")){
+    ActivateSpin = 0
+}
+    
+
+
+if(changed(ActivateSpin) & ActivateSpin == 1){
     if(DriveIn == "gmod_wire_expression2"){
         Destination = DestIn
         Move = 1
@@ -29,7 +44,7 @@ if(changed(Activate) & Activate == 1){
         IRingP:setAlpha(255)
         noCollideAll(ORingP,0)
         noCollideAll(IRingP,0)
-        
+            
         timer("alertend",8500)
         
         Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",0.5,100)
@@ -37,6 +52,7 @@ if(changed(Activate) & Activate == 1){
         Alert = "Black"
     }
 }
+    
 
 if(changed(VisProps) & VisProps == 1){
     ORingP:setAlpha(255)

@@ -3,13 +3,14 @@
 @outputs Col:vector Count 
 
 #This makes a smooth rainbow on many entities
-#This can also be done much simpler
+#This can also be done much simpler (i dont know how??)
 
 interval(10)
 if(In) {
     Count += 0.5
     Col = hsv2rgb(Count, 1, 1)
     if(Count == 360) { Count = 0 }
+    
     En1:setColor(Col,255)
     En2:setColor(Col,255)
     En3:setColor(Col,255)

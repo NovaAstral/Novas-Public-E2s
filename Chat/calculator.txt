@@ -1,12 +1,8 @@
 @name Calculator
 
-runOnChat(1)
-
-O = owner()
-OLS = owner():lastSaid():lower():explode(" ")
-
-if(chatClk(O)){
-    if(OLS[1,string] == "/calc"){
+event chat(SaidPly:entity, Said:string, Team:number){
+    local OLS = Said:lower():explode(" ")
+    if(OLS[1,string] == "/calc" & SaidPly == owner()){
         if(OLS[2,string]:toNumber() == 0 | OLS[4,string]:toNumber() == 0){
             print("NaN or 0 Used as Input, Cannot Calculate.")
         }
