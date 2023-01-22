@@ -2,7 +2,7 @@
 @inputs Parent:entity Alpha
 @outputs 
 
-#this only exists because TSCM decided to disable resizing of some phx props
+#this isn't needed anymore, it existed because of an accidental on TSCM where some PHX props got resizing disabled
 
 Scale = 2.2
 Offset = vec(-40,0,-30)

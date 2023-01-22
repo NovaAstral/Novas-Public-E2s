@@ -1,7 +1,7 @@
 @name TARDIS Mainframe v2
-@inputs [B1,B2,B3,B4,B5,B6,Throttle]:entity
+@inputs [TardisExt,B1,B2,B3,B4,B5,B6,Throttle]:entity
 @outputs [O,T]:entity
-@persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
+@persist TW:wirelink ShieldEnt:entity Prefix:string #ShieldOnSnd:webaudio ShieldOffSnd:webaudio
 @persist Shield HPLow Advt
 
 function vector vector:round(D:number) { return vec(round(This:x(), D), round(This:y(), D), round(This:z(), D)) }
@@ -53,9 +53,22 @@ if(clk("tget")){
     }
     
     if(!T:isValid()){
-        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS not found. Mainframe Offline.")
-        exit()
-        stopAllTimers()
+        if(TardisExt:isValid()){
+            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Mainframe Online")
+            
+            TW = TardisExt:wirelink()
+            T = TardisExt:tardisGet()
+            
+            timer("shield",10)
+            timer("shieldcheck",1000)
+            timer("hpcheck",1000)
+            timer("sndcreate",100)
+        }
+        else{
+            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS not found. Mainframe Offline.")
+            exit()
+            stopAllTimers()
+        }
     }
     else{
         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Mainframe Online")
@@ -77,9 +90,8 @@ if(clk("funcsetup")){
         if(T:tardisMoving() == 1){
             return JamNo
         }
-        else{
-            return JamYes
-            
+        
+        if(T:tardisMoving() == 0){
             if(CheckDest == 1){
                 findIncludeClass("gmod_time_distortion_generator")
                 findInSphere(Dest,1000) #TDG has 1000u radius
@@ -90,25 +102,27 @@ if(clk("funcsetup")){
             
             findIncludeClass("gmod_time_distortion_generator")
             findInSphere(T:pos(),1000)
-            if(find():isValid() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," outside ",ColOng,"the TARDIS!",ColRed,"Cannot Dematerialize!")
+            if(find():isValid() == 1 & find():getColor() != vec(255,255,255)){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," outside ",ColOng,"the TARDIS! ",ColRed,"Cannot Dematerialize!")
             }
             else{
                 findIncludeClass("gmod_time_distortion_generator")
                 findInSphere(entity():pos(),1000)
-                if(find():isValid() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," inside ",ColOng,"the TARDIS!",ColRed,"Cannot Dematerialize!")
+                if(find():isValid() == 1 & find():getColor() != vec(255,255,255)){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," inside ",ColOng,"the TARDIS! ",ColRed,"Cannot Dematerialize!")
                 }                    
                 elseif(T:tardisHealth() <= 0){
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Systems are",ColRed," Offline! ",ColOng,"You must repair the TARDIS!")
                 }
                 elseif(T:tardisPowered() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColRed,"Offline",ColOng,"Cannot Dematerialize")
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColRed,"Offline! ",ColOng,"Cannot Dematerialize")
                 }
                 else{
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is something stopping the TARDIS from taking off! Check the",ColGrn," Handbrake ",ColOng,"or",ColGrn," Door!")
                 }
             }
+            
+            return JamYes
         }
     }
 }
@@ -204,7 +218,7 @@ if(chatClk(O)){
                     ShieldEnt:propDraw(0)
                     
                     #T:soundPlay(1,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-                    
+
                     ShieldOffSnd:setPos(T:pos())
                     ShieldOffSnd:setParent(T)
                     ShieldOffSnd:play()
@@ -246,7 +260,7 @@ if(chatClk(O)){
                     ShieldEnt:propDraw(0)
                     
                     #T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-                    
+
                     ShieldOffSnd:setPos(T:pos())
                     ShieldOffSnd:setParent(T)
                     ShieldOffSnd:play()
