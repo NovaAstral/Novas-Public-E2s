@@ -23,13 +23,13 @@ if(clk("jamcheck")){
 if(clk("a")){
     PrevPos = RingsE:pos()
     Rings["Dial Address",string] = RingAddress
-    timer("b",4000)
+    timer("b",4200)
 }
 
 if(clk("b")){
     RingsE:setPos(Target:pos()+vec(0,150,0))
     #Moves the rings to the target with an offset of 200 so it doesn't ring them up
-    timer("c",600)
+    timer("c",300)
 }
 
 if(clk("c")){

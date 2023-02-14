@@ -1,7 +1,7 @@
 @name Zei'a Ship Status
 @inputs EGP:wirelink Core:wirelink Shield:wirelink Sensor:wirelink LS:wirelink Cloak:wirelink
 @outputs Emergency HullDamaged PlatingDamaged
-@persist Eggmergency HP CP SH SES SHS LSS CLS Emergency
+@persist HP CP SH SES SHS LSS CLS Emergency
 
 interval(200)
 
@@ -23,12 +23,12 @@ if(clk("fawnt")){
     EGP:egpFont(37,"poleepkwan")
 }
 
-if(changed(EGP)){
+if(~EGP & EGP){
     EGP:egpClear()
     timer("setup",10)
 }
 
-if(Shield:entity():type() == "atlantis_shield"){
+if(Shield:entity():type() == "atlantis_shield_emitter"){
     CurEng = "Current Energy"
     MaxEng = "Max Energy"
 }

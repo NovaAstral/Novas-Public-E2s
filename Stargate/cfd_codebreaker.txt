@@ -28,6 +28,9 @@ Code = think()
 if(TS == 1){
     runOnTick(0)
 }
+else{
+    runOnTick(1)
+}
 
 if(Reset == 1){
     reset()

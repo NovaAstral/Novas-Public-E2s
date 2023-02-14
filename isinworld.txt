@@ -6,7 +6,7 @@
 #=If the targetted vector is outside the world
 
 if(first()){
-    holoCreate(1)
+    holoCreate(1) #you dont need this, this is just visual for the safepos
 }
 
 if(changed(Vec) & Vec != vec(0,0,0)){

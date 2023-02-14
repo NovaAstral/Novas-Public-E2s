@@ -1,22 +1,21 @@
 @name Music Bank Selector
 @inputs EGP:wirelink User:entity
-@outputs MusicName:string MusicLink:string Bank Cursor:vector2
-@persist Bank
+@outputs MusicName:string MusicLink:string Bank WebA:webaudio #Cursor:vector2
+@persist Bank Play Pause
+@persist WebA:webaudio [MusicName,MusicLink]:string
 @persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string
 @persist [B2N1,B2N2,B2N3,B2N4,B2N5,B2N6,B2N7,B2N8,B2N9,B2N10,B2N11,B2N12]:string
 @persist [B1V1,B1V2,B1V3,B1V4,B1V5,B1V6,B1V7,B1V8,B1V9,B1V10,B1V11,B1V12]:string
 @persist [B2V1,B2V2,B2V3,B2V4,B2V5,B2V6,B2V7,B2V8,B2V9,B2V10,B2V11,B2V12]:string
-@persist WebA:webaudio Play Pause
 #@model models/Madman07/com_device/stone.mdl
 
-#This is repurposed from my MusicLink Bank Selector
+#This is repurposed from my Vector Bank Selector
 #You need an E2 Extention called "Webaudio"
 
-runOnTick(1)
+#Cursor = EGP:egpCursor(owner())
+#print(WebA:getRadius())
 
-Cursor = EGP:egpCursor(owner())
-
-if(first() | duped()){
+if(first() | dupefinished()){
     MusicName = "Losing Rodney"
     MusicLink = "https://cdn.discordapp.com/attachments/915811722646925312/915812501705355324/losingroney.ogg"
     
@@ -36,7 +35,7 @@ if(first() | duped()){
     B1N4 = "Worst Day Since Ystrday"
     B1V4 = "https://cdn.discordapp.com/attachments/915811722646925312/915815307636006912/The_Worst_Day_Since_Yesterday.ogg"
     
-    B1N5 = "Don't Forget to Breahe"
+    B1N5 = "Don't Forget to Breathe"
     B1V5 = "https://cdn.discordapp.com/attachments/915811722646925312/915815427475644467/Dont_Forget_To_Breathe.ogg"
     
     B1N6 = "SGU - Light"
@@ -46,10 +45,10 @@ if(first() | duped()){
     B1V7 = "https://cdn.discordapp.com/attachments/915811722646925312/919856692961890335/BSG_-_Heeding_the_Call.ogg"
     
     B1N8 = ""
-    B1V8 = ""
+    B1V8 = "https://cdn.discordapp.com/attachments/915811722646925312/959265874496331836/speen.mp3"
     
     B1N9 = ""
-    B1V9 = ""
+    B1V9 = "https://cdn.discordapp.com/attachments/915811722646925312/959276686053105704/do_you_suck_dicks.ogg"
     
     B1N10 = ""
     B1V10 = ""
@@ -100,7 +99,6 @@ if(~EGP & EGP){
 }
 
 if(clk("update")){
-    MusicLinkString = MusicLink
     stoptimer("update")
 }
 
@@ -212,7 +210,7 @@ if(~User & User){
         }
     }
     
-    if(inrange(Cursor,vec2(230,30),vec2(290,90))){
+    if(inrange(Cursor,vec2(230,30),vec2(290,90))){ #Play Button
         EGP:egpColor(71,vec(0,255,0))
         EGP:egpColor(72,vec(0,255,0))
         
@@ -226,13 +224,35 @@ if(~User & User){
         else{
             Play = 1
             WebA:play()
+            
+            timer("musicstop",WebA:getLength()*1000)
         }
     }
-    
+    #[
+    if(inrange(Cursor,vec2(230,30),vec2(290,90))){ #Play Button
+        EGP:egpColor(71,vec(0,255,0))
+        EGP:egpColor(72,vec(0,255,0))
+        
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+        
+        if(Play == 1){
+            Play = 0
+            WebA:destroy()
+            timer("resetcolor",1000)
+        }
+        else{
+            Play = 1
+            WebA:play()
+            
+            timer("musicstop",WebA:getLength()*1000)
+        }
+    }
+    ]#
     if(inrange(Cursor,vec2(35,125),vec2(235,175))){ #Selector 1
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(11,vec(0,255,0))
-        EGP:egpColor(12,vec(0,255,0))        
+        EGP:egpColor(12,vec(0,255,0))
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N1
@@ -247,7 +267,8 @@ if(~User & User){
     if(inrange(Cursor,vec2(35,185),vec2(235,235))){ #Selector 2
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(16,vec(0,255,0))
-        EGP:egpColor(17,vec(0,255,0))        
+        EGP:egpColor(17,vec(0,255,0))
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N2
@@ -263,6 +284,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(21,vec(0,255,0))
         EGP:egpColor(22,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N3
@@ -278,6 +300,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(26,vec(0,255,0))
         EGP:egpColor(27,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N4
@@ -293,6 +316,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(31,vec(0,255,0))
         EGP:egpColor(32,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N5
@@ -308,6 +332,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(36,vec(0,255,0))
         EGP:egpColor(37,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N6
@@ -323,6 +348,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(41,vec(0,255,0))
         EGP:egpColor(42,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N7
@@ -338,6 +364,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(46,vec(0,255,0))
         EGP:egpColor(47,vec(0,255,0))    
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N8
@@ -353,6 +380,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(51,vec(0,255,0))
         EGP:egpColor(52,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N9
@@ -368,6 +396,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(56,vec(0,255,0))
         EGP:egpColor(57,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N10
@@ -383,6 +412,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(61,vec(0,255,0))
         EGP:egpColor(62,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N11
@@ -398,6 +428,7 @@ if(~User & User){
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         EGP:egpColor(66,vec(0,255,0))
         EGP:egpColor(67,vec(0,255,0))        
+        timer("musicchange",10)
         
         if(Bank == 1){
             MusicName = B1N12
@@ -411,7 +442,7 @@ if(~User & User){
     
 }
 
-if(clk("colorreset")){
+if(clk("resetcolor")){
     EGP:egpColor(5,vec(255)) #Bank Selector
     EGP:egpColor(6,vec(255))
     
@@ -450,6 +481,12 @@ if(clk("colorreset")){
     
     EGP:egpColor(66,vec(255)) #Selector 12
     EGP:egpColor(67,vec(255))
+    
+    EGP:egpColor(71,vec(255)) #Play
+    EGP:egpColor(72,vec(255))
+    
+    EGP:egpColor(76,vec(255)) #Pause
+    EGP:egpColor(77,vec(255))
 }
 
 if(clk("bank1")){
@@ -508,14 +545,16 @@ if(clk("soundpurge")){
     soundPurge()
 }
 
-if(changed(MusicName) && !first() || dupefinished()){
-    timer("soundpurge",500)
+if(clk("musicchange")){
+    #timer("soundpurge",10)
+    
+    Play = 0
     
     WebA = webAudio(MusicLink)
+    WebA:set3DEnabled(0)
+    WebA:setRadius(30000)
     WebA:setPos(EGP:entity():pos())
     WebA:setParent(EGP:entity())
-    
-    timer("musicstop",WebA:getLength()*1000)
 }
 
 if(clk("musicstop")){

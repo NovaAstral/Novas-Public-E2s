@@ -1,8 +1,7 @@
 @name Ship Status EGP
-@inputs EGP:wirelink 
-@outputs CPos:vector2
-
-#This is unfinished as fuck lol
+@inputs [EGP,ShipCore,ResourceCore,Shield,LSCore]:wirelink
+@outputs CPos:vector2 SH CurEng:string
+@persist HP WC EC DT SH OX [CurEng MaxEng]:string
 
 interval(200)
 
@@ -15,19 +14,83 @@ if(first()){
 if(~EGP & EGP){
     EGP:egpClear()
     timer("update",100)
-    timer("create",200)
+    timer("create",10)
+    timer("cursor",100)
+}
+
+if(clk("cursor")){
+    CPos = EGP:egpCursor(owner())
+}
+
+if(~Shield & Shield | first() | dupefinished()){
+    if(Shield:entity():type() == "atlantis_shield_emitter"){
+        CurEng = "Current Energy"
+        MaxEng = "Max Energy"
+    }
+    
+    if(Shield:entity():type() == "st_shield_emitter"){
+        CurEng = "Total Charge"
+        MaxEng = "Max Charge"
+    }
 }
 
 if(clk("update")){
-    CPos = EGP:egpCursor(owner())
-    timer("update",1000)
+    EGP:egpText(0,"ZPM Chair Ship Status",vec2(256,50))
+    EGP:egpAlign(0,1)
+    EGP:egpSize(0,20)
+    
+    WC = round(ResourceCore["Water",number] / ResourceCore["Max Water",number] * 100)
+    HP = round(ShipCore["Health",number] / ShipCore["Max Health",number] * 100)
+    EC = round(ResourceCore["Energy",number] / ResourceCore["Max Energy",number] * 100)
+    DT = round(ResourceCore["Deuterium",number] / ResourceCore["Max Deuterium",number] * 100)
+    SH = round(Shield[CurEng,number] / Shield[MaxEng,number] * 100)
+    OX = round(ResourceCore["Oxygen",number] / ResourceCore["Max Oxygen",number] * 100)
+    
+    timer("update2",100)
+}
+
+if(clk("update2")){
+    EGP:egpSize(32,vec2(WC*1,8)) #Water
+    EGP:egpSetText(45,toString(ResourceCore["Water",number]) + "/" + toString(ResourceCore["Max Water",number]))
+    EGP:egpSetText(51,WC + "%")
+    
+    EGP:egpSize(33,vec2(HP*1,8))
+    EGP:egpSetText(46,toString(round(ShipCore["Health",number])) + "/" + toString(round(ShipCore["Max Health",number])))
+    EGP:egpSetText(52,HP + "%")
+    
+    EGP:egpSize(34,vec2(ShipCore["Plating",number]*1,8))
+    EGP:egpSetText(53,round(ShipCore["Plating",number]) + "%")
+    
+    EGP:egpSize(35,vec2(EC*1,8))
+    EGP:egpSetText(47,toString(ResourceCore["Energy",number]) + "/" + toString(ResourceCore["Max Energy",number]))
+    EGP:egpSetText(54,EC + "%")
+    
+    EGP:egpSize(36,vec2(DT*1,8))
+    EGP:egpSetText(48,toString(ResourceCore["Deuterium",number]) + "/" + toString(ResourceCore["Max Deuterium",number]))
+    EGP:egpSetText(55,DT + "%")
+    
+    EGP:egpSize(37,vec2(SH*1,8))
+    EGP:egpSetText(49,toString(Shield[CurEng,number]) + "/" + toString(Shield[MaxEng,number]))
+    EGP:egpSetText(56,SH + "%")
+    
+    EGP:egpSize(38,vec2(OX*1,8))
+    EGP:egpSetText(50,toString(ResourceCore["Oxygen",number]) + "/" + toString(ResourceCore["Max Oxygen",number]))
+    EGP:egpSetText(57,OX + "%")
+    
+    EGP:egpSize(60,vec2(Shield["Subsystem Health",number]*1,8))
+    EGP:egpSetText(64,Shield["Subsystem Health",number] + "%")
+
+    EGP:egpSize(61,vec2(LSCore["Subsystem Health",number]*1,8))
+    EGP:egpSetText(65,LSCore["Subsystem Health",number] + "%")
 }
 
 if(clk("create")){
-    #Control chair base
-    
-    EGP:egpLine(100,vec2(0,238),vec2(512,238))
+    EGP:egpText(200,"ZPM Chair Ship Status",vec2(256,50))
+    EGP:egpAlign(200,1)
+    EGP:egpSize(200,25)
+    EGP:egpColor(200,vec(255,150,50))
 
+    #Control chair base
     EGP:egpPoly(1,vec2(201,351),vec2(146,256),vec2(200,160),vec2(311,160),vec2(366,256),vec2(311,351)) #Main Platform
     EGP:egpPoly(2,vec2(196,359),vec2(186,342),vec2(196,324),vec2(216,324),vec2(226,342),vec2(216,359)) #Bottom Left
     EGP:egpPoly(3,vec2(146,273),vec2(136,256),vec2(146,237),vec2(166,237),vec2(176,256),vec2(166,273)) #Left
@@ -44,11 +107,11 @@ if(clk("create")){
     EGP:egpCircle(9,vec2(156,255),vec2(10,10)) #Ship Core (Left)
     EGP:egpCircle(10,vec2(205,169),vec2(10,10)) #Energy Core (Top Left)
     EGP:egpCircle(11,vec2(306,169),vec2(10,10)) #Refinery (Top Right)
-    EGP:egpCircle(12,vec2(356,256),vec2(10,10)) #??? (Right)
+    EGP:egpCircle(12,vec2(356,256),vec2(10,10)) #Shield (Right)
     EGP:egpCircle(13,vec2(306,342),vec2(10,10)) #Lifesupport Core (Bottom Right)
     
     for(I=8,13){
-        EGP:egpColor(I,vec(190,140,90)) #ZPM Color
+        EGP:egpColor(I,vec(255,150,50)) #ZPM Color
     }
     
     #Zpm inside
@@ -56,10 +119,195 @@ if(clk("create")){
     EGP:egpCircle(15,vec2(156,255),vec2(5,5)) #Ship Core (Left)
     EGP:egpCircle(16,vec2(205,169),vec2(5,5)) #Energy Core (Top Left)
     EGP:egpCircle(17,vec2(306,169),vec2(5,5)) #Refinery (Top Right)
-    EGP:egpCircle(18,vec2(356,256),vec2(5,5)) #??? (Right)
+    EGP:egpCircle(18,vec2(356,256),vec2(5,5)) #Shield (Right)
     EGP:egpCircle(19,vec2(306,342),vec2(5,5)) #Lifesupport Core (Bottom Right)
 
     for(I=14,19){
-        EGP:egpColor(I,vec(200,20,20)) #Inside Color
+        EGP:egpColor(I,vec(255,20,20)) #Inside Color
     }
+    
+    #Background Bars
+    EGP:egpRoundedBox(20,vec2(125,342),vec2(100,10)) #Water Core (Bottom Left)
+    EGP:egpRoundedBox(21,vec2(70,256),vec2(100,10)) #Ship Core (Left)
+    EGP:egpRoundedBox(22,vec2(125,169),vec2(100,10)) #Energy Core (Top Left)
+    EGP:egpRoundedBox(23,vec2(386,169),vec2(100,10)) #Refinery (Top Right)
+    EGP:egpRoundedBox(24,vec2(442,256),vec2(100,10)) #Shield (Right)
+    EGP:egpRoundedBox(25,vec2(386,342),vec2(100,10)) #Lifesupport Core (Bottom Right)
+    
+    for(I=20,25){
+        EGP:egpColor(I,vec(50))
+    }
+    
+    #Bar Text
+    EGP:egpText(26,"Water Core",vec2(125,302)) #Water Core (Bottom Left)
+    EGP:egpText(27,"Ship core",vec2(70,216)) #Ship Core (Left)
+    EGP:egpText(28,"Energy Core",vec2(125,129)) #Energy Core (Top Left)
+    EGP:egpText(29,"Refinery",vec2(386,129)) #Refinery (Top Right)
+    EGP:egpText(30,"Shield",vec2(442,216)) #Shield (Right)
+    EGP:egpText(31,"Life Support",vec2(386,302)) #Lifesupport Core (Bottom Right)
+    
+    for(I=26,31){
+        EGP:egpSize(I,15)
+        EGP:egpAlign(I,1)
+        EGP:egpColor(I,vec(255,150,50))
+    }
+    
+    #Resource Bars
+    EGP:egpRoundedBox(32,vec2(125,342),vec2(100,8)) #Water (Bottom Left)
+    EGP:egpRoundedBox(33,vec2(70,256),vec2(100,8)) #Hull (Left)
+    EGP:egpRoundedBox(34,vec2(70,256),vec2(100,8)) #Plating (Left)
+    EGP:egpRoundedBox(35,vec2(125,169),vec2(100,8)) #Energy (Top Left)
+    EGP:egpRoundedBox(36,vec2(386,169),vec2(100,8)) #Deuterium (Top Right)
+    EGP:egpRoundedBox(37,vec2(442,256),vec2(100,8)) #Shield (Right)
+    EGP:egpRoundedBox(38,vec2(386,342),vec2(100,8)) #Oxygen (Bottom Right)
+    
+    for(I=32,38){
+        EGP:egpColor(I,vec(255,150,50))
+    }
+    
+    EGP:egpColor(34,vec(50,150,255))
+
+    #Resource Text
+    EGP:egpText(39,"Water",vec2(125,322)) #Water (Bottom Left)
+    EGP:egpText(40,"Plating/Hull",vec2(70,236)) #Hull/Plating (Left)
+    EGP:egpText(41,"Energy",vec2(125,149)) #Energy (Top Left)
+    EGP:egpText(42,"Deuterium",vec2(386,149)) #Deuterium (Top Right)
+    EGP:egpText(43,"Capacity",vec2(442,236)) #Shield (Right)
+    EGP:egpText(44,"Oxygen",vec2(386,322)) #Oxygen (Bottom Right)
+    
+    for(I=39,44){
+        EGP:egpSize(I,15)
+        EGP:egpAlign(I,1)
+        EGP:egpColor(I,vec(255,150,50))
+    }
+    
+    
+    #Resource Numbers
+    EGP:egpText(45,"0/0",vec2(125,348)) #Water (Bottom Left)
+    EGP:egpText(46,"0/0",vec2(70,262)) #Hull (Left)
+    EGP:egpText(47,"0/0",vec2(125,175)) #Energy (Top Left)
+    EGP:egpText(48,"0/0",vec2(386,175)) #Deuterium (Top Right)
+    EGP:egpText(49,"0/0",vec2(442,262)) #Shield (Right)
+    EGP:egpText(50,"0/0",vec2(386,348)) #Oxygen (Bottom Right)
+    
+    for(I=45,50){
+        EGP:egpSize(I,10)
+        EGP:egpAlign(I,1)
+        EGP:egpColor(I,vec(255,150,50))
+    }
+    
+    #Resource Percents
+    EGP:egpText(51,"0%",vec2(125,362)) #Water (Bottom Left)
+    EGP:egpText(52,"0%",vec2(70,276)) #Hull (Left)
+    EGP:egpText(53,"0%",vec2(70,288)) #Plating (Left)
+    EGP:egpText(54,"0%",vec2(125,189)) #Energy (Top Left)
+    EGP:egpText(55,"0%",vec2(386,189)) #Deuterium (Top Right)
+    EGP:egpText(56,"0%",vec2(442,276)) #Shield (Right)
+    EGP:egpText(57,"0%",vec2(386,362)) #Oxygen (Bottom Right)
+    
+    for(I=51,57){
+        EGP:egpSize(I,15)
+        EGP:egpAlign(I,1)
+        EGP:egpColor(I,vec(255,150,50))
+    }
+    
+    #Subsystem Bar Backgrounds
+    EGP:egpRoundedBox(58,vec2(256,400),vec2(100,10)) #Shield
+    EGP:egpRoundedBox(59,vec2(256,450),vec2(100,10)) #LSCore
+    
+    for(I=58,59){
+        EGP:egpColor(I,vec(50))
+    }
+    
+    #Subsystem Bars
+    EGP:egpRoundedBox(60,vec2(256,400),vec2(100,8)) #Shield
+    EGP:egpRoundedBox(61,vec2(256,450),vec2(100,8)) #LSCore
+    
+    for(I=60,61){
+        EGP:egpColor(I,vec(255,150,50))
+    }
+    
+    #Subsystem Text
+    EGP:egpText(62,"Shield Subsystem",vec2(256,380))
+    EGP:egpText(63,"LS Subsystem",vec2(256,430))
+    
+    for(I=62,63){
+        EGP:egpSize(I,15)
+        EGP:egpAlign(I,1)
+        EGP:egpColor(I,vec(255,150,50))
+    }
+    
+    #Subsystem Percents
+    EGP:egpText(64,"0%",vec2(256,405))
+    EGP:egpText(65,"0%",vec2(256,455))
+    
+    for(I=64,65){
+        EGP:egpSize(I,15)
+        EGP:egpAlign(I,1)
+        EGP:egpColor(I,vec(255,150,50))
+    }
+}
+
+if(changed(ResourceCore["Water",number])){
+    WC = round(ResourceCore["Water",number] / ResourceCore["Max Water",number] * 100)
+    
+    EGP:egpSize(32,vec2(WC*1,8))
+    EGP:egpSetText(45,toString(ResourceCore["Water",number]) + "/" + toString(ResourceCore["Max Water",number]))
+    EGP:egpSetText(51,WC + "%")
+}
+
+if(changed(ShipCore["Health",number])){
+    HP = round(ShipCore["Health",number] / ShipCore["Max Health",number] * 100)
+    
+    EGP:egpSize(33,vec2(HP*1,8))
+    EGP:egpSetText(46,toString(round(ShipCore["Health",number])) + "/" + toString(round(ShipCore["Max Health",number])))
+    EGP:egpSetText(52,HP + "%")
+}
+
+if(changed(ShipCore["Plating",number])){
+    EGP:egpSize(34,vec2(ShipCore["Plating",number]*1,8))
+    EGP:egpSetText(53,round(ShipCore["Plating",number],2) + "%")
+}
+
+if(changed(ResourceCore["Energy",number])){
+    EC = round(ResourceCore["Energy",number] / ResourceCore["Max Energy",number] * 100)
+    
+    EGP:egpSize(35,vec2(EC*1,8))
+    EGP:egpSetText(47,toString(ResourceCore["Energy",number]) + "/" + toString(ResourceCore["Max Energy",number]))
+    EGP:egpSetText(54,EC + "%")
+}
+
+if(changed(ResourceCore["Deuterium",number])){
+    DT = round(ResourceCore["Deuterium",number] / ResourceCore["Max Deuterium",number] * 100)
+    
+    EGP:egpSize(36,vec2(DT*1,8))
+    EGP:egpSetText(48,toString(ResourceCore["Deuterium",number]) + "/" + toString(ResourceCore["Max Deuterium",number]))
+    EGP:egpSetText(55,DT + "%")
+}
+
+if(changed(Shield[CurEng,number])){
+    SH = round(Shield[CurEng,number] / Shield[MaxEng,number] * 100)
+    
+    EGP:egpSize(37,vec2(SH*1,8))
+    EGP:egpSetText(49,toString(Shield[CurEng,number]) + "/" + toString(Shield[MaxEng,number]))
+    EGP:egpSetText(56,SH + "%")
+}
+
+if(changed(ResourceCore["Oxygen",number])){
+    OX = round(ResourceCore["Oxygen",number] / ResourceCore["Max Oxygen",number] * 100)
+    
+    EGP:egpSize(38,vec2(OX*1,8))
+    EGP:egpSetText(50,toString(ResourceCore["Oxygen",number]) + "/" + toString(ResourceCore["Max Oxygen",number]))
+    EGP:egpSetText(57,OX + "%")
+}
+
+#Subsystem Health
+if(changed(Shield["Subsystem Health",number])){
+    EGP:egpSize(60,vec2(Shield["Subsystem Health",number]*1,8))
+    EGP:egpSetText(64,round(Shield["Subsystem Health",number],2) + "%")
+}
+
+if(changed(LSCore["Subsystem Health",number])){
+    EGP:egpSize(61,vec2(LSCore["Subsystem Health",number]*1,8))
+    EGP:egpSetText(65,round(LSCore["Subsystem Health",number],2) + "%")
 }

@@ -1,7 +1,7 @@
 @name TARDIS Mainframe v2
 @inputs [TardisExt,B1,B2,B3,B4,B5,B6,Throttle]:entity
 @outputs [O,T]:entity
-@persist TW:wirelink ShieldEnt:entity Prefix:string #ShieldOnSnd:webaudio ShieldOffSnd:webaudio
+@persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
 @persist Shield HPLow Advt
 
 function vector vector:round(D:number) { return vec(round(This:x(), D), round(This:y(), D), round(This:z(), D)) }

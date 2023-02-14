@@ -1,0 +1,67 @@
+@name DHD Dial
+@inputs
+@outputs 
+@persist DHD:wirelink Delay
+@trigger 
+@strict
+
+#include "Novas-Public-E2s/library/keyboardnumber"
+
+if(first()){
+    DHD = entity():isWeldedTo():wirelink()
+    
+    timer("b1",10)
+    
+    Delay = 1
+}
+
+if(clk("b1")){
+    DHD["Press Button",number] = NumS
+    timer("b2",Delay)
+}
+
+if(clk("b2")){
+    timer("b3",Delay)
+    DHD["Press Button",number] = NumP
+}
+
+if(clk("b3")){
+    timer("b4",Delay)
+    DHD["Press Button",number] = NumA
+}
+
+if(clk("b4")){
+    timer("b5",Delay)
+    DHD["Press Button",number] = NumW
+}
+
+if(clk("b5")){
+    timer("b6",Delay)
+    DHD["Press Button",number] = NumN
+}
+
+if(clk("b6")){
+    timer("b7",Delay)
+    DHD["Press Button",number] = Num0
+    
+}
+
+if(clk("b7")){
+    timer("b8",Delay)
+    DHD["Press Button",number] = NumM
+}
+
+if(clk("b8")){
+    timer("b9",Delay)
+    DHD["Press Button",number] = NumHash
+}
+
+if(clk("b9")){
+    timer("b10",Delay)
+    DHD["Press Button",number] = 0
+}
+
+if(clk("b10")){
+    DHD["Press Button",number] = NumEnt
+    #timer("b1",Delay)
+}

@@ -1,0 +1,32 @@
+@name panelpress
+@inputs
+@outputs Count
+@persist Panel:wirelink MaxCount
+
+if(first()){
+    timer("count",10)
+    Panel = entity():isWeldedTo():wirelink()
+}
+
+if(Panel:entity():model() == "models/madman07/ring_panel/goauld_panel.mdl"){
+    MaxCount = 6
+}
+
+if(Panel:entity():model() == "models/madman07/ring_panel/ancient_panel.mdl"){
+    MaxCount = 9
+}
+
+if(Panel:entity():model() == "models/zsdaniel/ori-ringpanel/panel.mdl"){
+    MaxCount = 5
+}
+
+if(clk("count")){
+    timer("count",250)
+    
+    Count += 1
+    Panel["Press Button",number] = Count
+    
+    if(Count == MaxCount){ 
+        Count = 0
+    }
+}

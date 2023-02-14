@@ -1,0 +1,48 @@
+@name Destiny FTL
+@inputs Warp Destination:vector
+@outputs WarpOut Dest:vector SoundEmitSample:string SoundEmitOn Stage
+
+#Made by Nova Astral
+#Discord: Nova Astral#2079
+#Steam: http://steamcommunity.com/profiles/76561198068127098
+
+###The 'Stage' Output isn't actually used for anything, you don't need to touch it
+###You can wire it to a screen if you want it to look like it's doing something though
+
+if(Warp == 1){
+    SoundEmitOn = 1
+    SoundEmitSample = "destiny/destiny_ftl_jump_in.wav"
+    Stage = 1
+    Dest = Destination
+    timer("A",4000)
+}
+
+if(clk("A")){
+    SoundEmitOn = 0
+    WarpOut = 1
+    Stage = 2
+    timer("B",200)
+    timer("soundset",10)
+    stoptimer("A")
+}
+
+if(clk("soundset")){
+    SoundEmitSample = "destiny/destiny_ftl_jump_out.wav"
+    stoptimer("soundset")
+}
+
+if(clk("B")){
+    SoundEmitOn = 1
+    WarpOut = 0
+    Stage = 3
+    timer("C",5400)
+    stoptimer("B")
+}
+
+if(clk("C")){
+    SoundEmitOn = 0
+    SoundEmitSample = ""
+    Stage = 4
+    stopAllTimers()
+}
+
