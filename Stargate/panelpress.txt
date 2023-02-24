@@ -17,7 +17,7 @@ if(Panel:entity():model() == "models/madman07/ring_panel/ancient_panel.mdl"){
 }
 
 if(Panel:entity():model() == "models/zsdaniel/ori-ringpanel/panel.mdl"){
-    MaxCount = 5
+    MaxCount = 5 #You can't press the '0' button on the panel with wire
 }
 
 if(clk("count")){

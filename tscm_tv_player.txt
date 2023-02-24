@@ -1,0 +1,29 @@
+@name TSCM TV Player
+@persist TV:wirelink [Provider VidID]:string
+
+if(first()){
+    TV = entity():isWeldedTo():wirelink()
+    
+    Provider = "YouTube"
+    VidID = "https://www.youtube.com/watch?v=EZdwSugMuO4"
+    
+    timer("play the fuckin tv",100)
+}
+
+if(clk("play the fuckin tv")){
+    TV["Provider",string] = Provider
+    TV["Video ID",string] = VidID
+    
+    timer("play",100)
+    timer("playstop",1000)
+}
+
+if(clk("play")){
+    TV["Play",number] = 1
+}
+
+if(clk("playstop")){ #Because setting play to 0 doesn't stop it from playing
+    TV["Provider",string] = ""
+    TV["Video ID",string] = ""
+    TV["Play",number] = 0
+}

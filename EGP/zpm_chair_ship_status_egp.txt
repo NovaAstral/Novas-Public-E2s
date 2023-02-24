@@ -1,4 +1,4 @@
-@name Ship Status EGP
+@name ZPM Chair Ship Status EGP
 @inputs [EGP,ShipCore,ResourceCore,Shield,LSCore]:wirelink
 @outputs CPos:vector2 SH CurEng:string
 @persist HP WC EC DT SH OX [CurEng MaxEng]:string
@@ -35,10 +35,6 @@ if(~Shield & Shield | first() | dupefinished()){
 }
 
 if(clk("update")){
-    EGP:egpText(0,"ZPM Chair Ship Status",vec2(256,50))
-    EGP:egpAlign(0,1)
-    EGP:egpSize(0,20)
-    
     WC = round(ResourceCore["Water",number] / ResourceCore["Max Water",number] * 100)
     HP = round(ShipCore["Health",number] / ShipCore["Max Health",number] * 100)
     EC = round(ResourceCore["Energy",number] / ResourceCore["Max Energy",number] * 100)

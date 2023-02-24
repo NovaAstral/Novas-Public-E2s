@@ -1,6 +1,6 @@
 @name Vector Bank Selector
 @inputs EGP:wirelink User:entity
-@outputs LocName:string Vector:vector Bank
+@outputs LocName:string Vector:vector Angle:angle Bank
 @persist Bank
 @persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string #Bank 1 Names
 @persist [B2N1,B2N2,B2N3,B2N4,B2N5,B2N6,B2N7,B2N8,B2N9,B2N10,B2N11,B2N12]:string #Bank 2 Names
@@ -8,124 +8,169 @@
 @persist [B1V1,B1V2,B1V3,B1V4,B1V5,B1V6,B1V7,B1V8,B1V9,B1V10,B1V11,B1V12]:vector #Bank 1 Vectors
 @persist [B2V1,B2V2,B2V3,B2V4,B2V5,B2V6,B2V7,B2V8,B2V9,B2V10,B2V11,B2V12]:vector #Bank 2 Vectors
 @persist [B3V1,B3V2,B3V3,B3V4,B3V5,B3V6,B3V7,B3V8,B3V9,B3V10,B3V11,B3V12]:vector #Bank 3 Vectors
+@persist [B1A1,B1A2,B1A3,B1A4,B1A5,B1A6,B1A7,B1A8,B1A9,B1A10,B1A11,B1A12]:angle #Bank 1 Angles
+@persist [B2A1,B2A2,B2A3,B2A4,B2A5,B2A6,B2A7,B2A8,B2A9,B2A10,B2A11,B2A12]:angle #Bank 2 Angles
+@persist [B3A1,B3A2,B3A3,B3A4,B3A5,B3A6,B3A7,B3A8,B3A9,B3A10,B3A11,B3A12]:angle #Bank 3 Angles
 #@model models/Madman07/com_device/stone.mdl
 
 if(first() | duped()){
     LocName = "Earth"
     Vector = vec(-1886,9554,8080)
+    Angle = ang(0,0,0)
     
     EGP:egpClear()
     timer("update",100)
     timer("egpcreate",10)
     
+    #If you're using this for warp drives on TSCM, you dont need to change the angles
+    
     #Vector Bank 1
-    B1N1 = "Earth"
-    B1V1 = vec(-1886,9554,8080)
+    B1N1 = "Earth" #Name
+    B1V1 = vec(-1886,9554,8080) #Vector
+    B1A1 = ang(0,0,0) # Angles
     
     B1N2 = "Moon"
     B1V2 = vec(-4099,13470,9957)
+    B1A2 = ang(0,0,0)
     
     B1N3 = "Shakuras"
     B1V3 = vec(-6301,-3485,6880)
+    B1A3 = ang(0,0,0)
     
     B1N4 = "Station"
     B1V4 = vec(8363,-6861,9392)
+    B1A4 = ang(0,0,0)
     
     B1N5 = "Hiigara"
     B1V5 = vec(9415,6234,-6007)
+    B1A5 = ang(0,0,0)
     
     B1N6 = "Under Hiigara"
     B1V6 = vec(9431,6800,-7359)
+    B1A6 = ang(0,0,0)
     
     B1N7 = "Desert"
     B1V7 = vec(12900,-10661,-9183)
+    B1A7 = ang(0,0,0)
     
     B1N8 = "Under Desert"
     B1V8 = vec(10748,-12979,-10223)
+    B1A8 = ang(0,0,0)
     
     B1N9 = "Lava"
     B1V9 = vec(-11190,497,-4655)
+    B1A9 = ang(0,0,0)
     
     B1N10 = "???"
     B1V10 = vec(0)
+    B1A10 = ang(0,0,0)
     
     B1N11 = "???"
+    B1V11 = vec(0)
+    B1A11 = ang(0,0,0)
+    
+    B1N12 = "???"
     B1V12 = vec(0)
+    B1A12 = ang(0,0,0)
     
     #Vector Bank 2
     B2N1 = "Build 1"
     B2V1 = vec(10496,12288,-16156)
+    B2A1 = ang(0,0,0)
     
     B2N2 = "Build 2"
     B2V2 = vec(10495,4095,-16156)
+    B2A2 = ang(0,0,0)
     
     B2N3 = "Build 3"
     B2V3 = vec(10496,-4096,-16156)
+    B2A3 = ang(0,0,0)
     
     B2N4 = "Build 4"
     B2V4 = vec(10496,-12287,-16156)
+    B2A4 = ang(0,0,0)
     
     B2N5 = "???"
     B2V5 = vec(0)
+    B2A5 = ang(0,0,0)
     
     B2N6 = "???"
     B2V6 = vec(0)
+    B2A6 = ang(0,0,0)
     
     B2N7 = "???"
     B2V7 = vec(0)
+    B2A7 = ang(0,0,0)
     
     B2N8 = "???"
     B2V8 = vec(0)
+    B2A8 = ang(0,0,0)
     
     B2N9 = "???"
     B2V9 = vec(0)
+    B2A9 = ang(0,0,0)
     
     B2N10 = "???"
     B2V10 = vec(0)
+    B2A10 = ang(0,0,0)
     
     B2N11 = "???"
     B2V11 = vec(0)
+    B2A11 = ang(0,0,0)
     
     B2N12 = "???"
     B2V12 = vec(0)
+    B2A12 = ang(0,0,0)
     
     #Vector Bank 3
 
     B3N1 = "???"
     B3V1 = vec(0)
+    B3A1 = ang(0,0,0)
     
     B3N2 = "???"
     B3V2 = vec(0)
+    B3A2 = ang(0,0,0)
     
     B3N3 = "???"
     B3V3 = vec(0)
+    B3A3 = ang(0,0,0)
     
     B3N4 = "???"
     B3V4 = vec(0)
+    B3A4 = ang(0,0,0)
     
     B3N5 = "???"
     B3V5 = vec(0)
+    B3A5 = ang(0,0,0)
     
     B3N6 = "???"
     B3V6 = vec(0)
+    B3A6 = ang(0,0,0)
     
     B3N7 = "???"
     B3V7 = vec(0)
+    B3A7 = ang(0,0,0)
     
     B3N8 = "???"
     B3V8 = vec(0)
+    B3A8 = ang(0,0,0)
     
     B3N9 = "???"
     B3V9 = vec(0)
+    B3A9 = ang(0,0,0)
     
     B3N10 = "???"
     B3V10 = vec(0)
+    B3A10 = ang(0,0,0)
     
     B3N11 = "???"
     B3V11 = vec(0)
+    B3A11 = ang(0,0,0)
     
     B3N12 = "???"
     B3V12 = vec(0)
+    B3A12 = ang(0,0,0)
 }
 
 if(~EGP & EGP){
@@ -143,10 +188,19 @@ if(clk("egpcreate")){
     EGP:egpBox(1,vec2(256),vec2(512)) #Background
     EGP:egpColor(1,vec(75))
     
-    EGP:egpRoundedBoxOutline(2,vec2(118,60),vec2(200,80)) #Titlebox
-    EGP:egpText(3,"Vector Bank Selector",vec2(118,50))
+    EGP:egpRoundedBoxOutline(2,vec2(118,20),vec2(200,20)) #Titlebox
+    EGP:egpText(3,"Vector Bank Selector",vec2(118,10))
     EGP:egpAlign(3,1)
     EGP:egpSize(3,20)
+    
+    EGP:egpRoundedBoxOutline(69,vec2(118,70),vec2(200,70)) #Selected
+    EGP:egpText(70,"Select a Location",vec2(118,40))
+    EGP:egpText(71,"[0,0,0]",vec2(118,60))
+    EGP:egpText(72,"[0,0,0]",vec2(118,80))
+    
+    for(I = 70,72){
+        EGP:egpAlign(I,1)
+    }
     
     EGP:egpRoundedBoxOutline(4,vec2(396,60),vec2(200,80)) #Bank Box
     
@@ -271,14 +325,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N1
             Vector = B1V1
+            Angle = B1A1
         }
         elseif(Bank == 2){
             LocName = B2N1
             Vector = B2V1
+            Angle = B2A1
         }
         elseif(Bank == 3){
             LocName = B3N1
             Vector = B3V1
+            Angle = B3A1
         }
     }
     
@@ -292,14 +349,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N2
             Vector = B1V2
+            Angle = B1A2
         }
         if(Bank == 2){
             LocName = B2N2
             Vector = B2V2
+            Angle = B2A2
         }
         if(Bank == 3){
             LocName = B3N2
             Vector = B3V2
+            Angle = B3A2
         }
     }
     
@@ -313,14 +373,18 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N3
             Vector = B1V3
+            Angle = B1A3
         }
         if(Bank == 2){
             LocName = B2N3
             Vector = B2V3
+            Angle = B2A3
         }
         if(Bank == 3){
             LocName = B3N3
             Vector = B3V3
+            Angle = B3A3
+            
         }
     }
     
@@ -334,14 +398,19 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N4
             Vector = B1V4
+            Angle = B1A4
         }
         if(Bank == 2){
             LocName = B2N4
             Vector = B2V4
+            Angle = B2A4
+            
         }
         if(Bank == 3){
             LocName = B3N4
             Vector = B3V4
+            Angle = B3A4
+            
         }
     }
     
@@ -355,14 +424,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N5
             Vector = B1V5
+            Angle = B1A5
         }
         if(Bank == 2){
             LocName = B2N5
             Vector = B2V5
+            Angle = B2A5
         }
         if(Bank == 3){
             LocName = B3N5
             Vector = B3V5
+            Angle = B3A5
         }
     }
     
@@ -376,14 +448,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N6
             Vector = B1V6
+            Angle = B1A6
         }
         if(Bank == 2){
             LocName = B2N6
             Vector = B2V6
+            Angle = B2A6
         }
         if(Bank == 3){
             LocName = B3N6
             Vector = B3V6
+            Angle = B3A6
         }
     }
     
@@ -397,14 +472,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N7
             Vector = B1V7
+            Angle = B1A7
         }
         if(Bank == 2){
             LocName = B2N7
             Vector = B2V7
+            Angle = B2A7
         }
         if(Bank == 3){
             LocName = B3N7
             Vector = B3V7
+            Angle = B3A7
         }
     }
     
@@ -418,14 +496,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N8
             Vector = B1V8
+            Angle = B1A8
         }
         if(Bank == 2){
             LocName = B2N8
             Vector = B2V8
+            Angle = B2A8
         }
         if(Bank == 3){
             LocName = B3N8
             Vector = B3V8
+            Angle = B2A8
         }
     }
     
@@ -439,14 +520,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N9
             Vector = B1V9
+            Angle = B1A9
         }
         if(Bank == 2){
             LocName = B2N9
             Vector = B2V9
+            Angle = B2A9
         }
         if(Bank == 3){
             LocName = B3N9
             Vector = B3V9
+            Angle = B3A9
         }
     }
     
@@ -460,14 +544,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N10
             Vector = B1V10
+            Angle = B1A10
         }
         if(Bank == 2){
             LocName = B2N10
             Vector = B2V10
+            Angle = B2A10
         }
         if(Bank == 3){
             LocName = B3N10
             Vector = B3V10
+            Angle = B3A10
         }
     }
     
@@ -481,14 +568,17 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N11
             Vector = B1V11
+            Angle = B1A11
         }
         if(Bank == 2){
             LocName = B2N11
             Vector = B2V11
+            Angle = B2A11
         }
         if(Bank == 3){
             LocName = B3N11
             Vector = B3V11
+            Angle = B3A11
         }
     }
     
@@ -502,16 +592,23 @@ if(~User & User){
         if(Bank == 1){
             LocName = B1N12
             Vector = B1V12
+            Angle = B1A12
         }
         if(Bank == 2){
             LocName = B2N12
             Vector = B2V12
+            Angle = B2A12
         }
         if(Bank == 3){
             LocName = B3N12
             Vector = B3V12
+            Angle = B3A12
         }
     }
+    
+    EGP:egpSetText(70,LocName)
+    EGP:egpSetText(71,Vector:toString())
+    EGP:egpSetText(72,Angle:toString())
     
 }
 

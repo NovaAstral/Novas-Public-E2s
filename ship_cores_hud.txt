@@ -39,10 +39,10 @@ if(clk("find")){
         E:egp3DTracker(Tracker,Core:pos())
         
         
-        E:egpBoxOutline(Rect, vec2(0,-Core:height()/2), vec2(0,0))
+        E:egpBoxOutline(Rect, vec2(0,0), vec2(0,0))
         E:egpColor(Rect,vec(0,255,0))
         
-        E:egpText(Name,Core:owner():name(),vec2(0,-Core:height()))
+        E:egpText(Name,Core:owner():name(),vec2(0,0))
         E:egpSize(Name,15)
         
         E:egpParent(Name,Rect)

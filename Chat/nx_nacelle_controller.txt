@@ -1,0 +1,96 @@
+@name NX Nacelle Controller
+@inputs [Nacelle1,Nacelle2,N1,N2,N3,N4,N5,N6,N7,N8]:entity
+@outputs Active Col1 Col2
+
+function void nSetColor(){
+    Nacelle1:setColor(vec(Col2,0,0)) #255 0 0 on
+    Nacelle2:setColor(vec(Col2,0,0))
+    N1:setColor(vec(0,Col1,Col2)) #0 60 255 on
+    N2:setColor(vec(0,Col1,Col2))
+    N3:setColor(vec(0,Col1,Col2))
+    N4:setColor(vec(0,Col1,Col2))
+    N5:setColor(vec(0,Col1,Col2))
+    N6:setColor(vec(0,Col1,Col2))
+    N7:setColor(vec(0,Col1,Col2))
+    N8:setColor(vec(0,Col1,Col2))
+}
+
+event chat(SaidPly:entity, Said:string, Team:number){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner()){
+        if(OLS[1,string] == "/n" | OLS[1,string] == "/nacelle" | OLS[1,string] == "/nac"){
+            if(OLS[2,string] == "off"){
+                if(Active == 0){
+                    printColor(vec(230,110,0),"Nacelles are already ",vec(255,0,0),"Offline!")
+                }
+                else{
+                    Active = 0
+                    printColor(vec(230,110,0),"Nacelles ",vec(255,0,0),"Offline")
+                    
+                    timer("off",1)
+                    timer("off2",1)
+                }
+            }
+            
+            if(OLS[2,string] == "on"){
+                if(Active == 1){
+                    printColor(vec(230,110,0),"Nacelles are already ",vec(0,255,0),"Online!")
+                }
+                else{
+                    Active = 1
+                    printColor(vec(230,110,0),"Nacelles ",vec(0,255,0),"Online")
+                    
+                    timer("on",1)
+                    timer("on2",1)
+                }
+            }
+        }
+    }
+}
+
+if(clk("on")){
+    timer("on",60)
+    
+    if(Col1 != 55){
+        Col1++
+    }
+    else{
+        stoptimer("on")
+    }
+}
+
+if(clk("on2")){
+    timer("on2",10)
+    nSetColor()
+    
+    if(Col2 != 255){
+        Col2++
+    }
+    else{
+        stoptimer("on2")
+    }
+}
+
+if(clk("off")){
+    timer("off",60)
+    
+    if(Col1 != 0){
+        Col1--
+    }
+    else{
+        stoptimer("off")
+    }
+}
+
+if(clk("off2")){
+    timer("off2",10)
+    nSetColor()
+    
+    if(Col2 != 0){
+        Col2--
+    }
+    else{
+        stoptimer("off2")
+    }
+}
