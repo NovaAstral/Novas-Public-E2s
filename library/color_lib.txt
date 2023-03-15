@@ -1,0 +1,41 @@
+@name Color_Lib
+@inputs 
+@outputs 
+
+
+
+if(first() | dupefinished()){
+    ColTeam = teamColor(owner():team())
+    ColPink = vec(255,95,215)
+    ColOng = vec(230,110,0)
+    ColRed = vec(255,0,0)
+    ColGrn = vec(0,255,0)
+    ColBlu = vec(0,0,255)
+    ColWht = vec(255)
+    ColBlk = vec(0)
+    
+    ZeiaOng = vec(255,90,0)
+    ZeiaTBlu = vec(200,255,255)
+    ZeiaMBlu = vec(0,255,255)
+    ZeiaWht = vec(230,230,230)
+    ZeiaBlk = vec(99,99,99)
+    
+    if(entity():getName() == "Color_Lib"){
+        printColor(ColPink,"[NovaLib] ",ColOng,"This Library doesn't need to be placed anywhere. ",ColRed,"Removing.")
+        printColor(ColPink,"[NovaLib] ",ColOng,"If you're trying to give this to someone, send them to ",ColGrn,"https://github.com/NovaAstral/Novas-Public-E2s")
+        selfDestruct()
+    }
+    
+    #This is to get rid of the annoying warnings of "Unused global variable"
+    holoCreate(1742,vec(0,0,0))
+    holoColor(1742,ColTeam)
+    holoColor(1742,ColBlu)
+    holoColor(1742,ColWht)
+    holoColor(1742,ColBlk)
+    holoColor(1742,ZeiaOng)
+    holoColor(1742,ZeiaTBlu)
+    holoColor(1742,ZeiaMBlu)
+    holoColor(1742,ZeiaWht)
+    holoColor(1742,ZeiaBlk)
+    holoDelete(1742)
+}

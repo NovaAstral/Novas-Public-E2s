@@ -1,0 +1,26 @@
+@name Wep Test
+@persist EW:wirelink
+
+#include "Novas-Public-E2s/library/color_lib"
+
+if(first() | dupefinished()){
+    EW = entity():isWeldedTo():wirelink()
+    entity():setAlpha(0)
+    
+    if(EW:hasInput("Fire")){
+        EW["Fire",number] = 1
+        timer("start",3000)
+    }
+    else{
+        printColor(vec(255,95,215),"WepTest ",vec(230,110,0),"That ",vec(255,0,0),entity():isWeldedTo():type(),vec(230,110,0)," doesn't have a ",vec(255,0,0),"Fire ",vec(230,110,0),"input!")
+        
+        selfDestruct()
+    }
+}
+
+if(clk("start")){
+    EW["Fire",number] = 0
+    printColor(vec(255,95,215),"[WepTest] ",vec(230,110,0),"Weapon test ",vec(0,255,0),"Complete")
+    
+    selfDestruct()
+}

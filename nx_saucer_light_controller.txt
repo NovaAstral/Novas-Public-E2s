@@ -1,0 +1,30 @@
+@name NX Saucer Light Controller
+@inputs [G1,G2,R1,R2]:entity
+@outputs Brightness
+@persist 
+
+if(first() | dupefinished()){
+    timer("lighton",10)
+}
+
+if(clk("lighton")){
+    timer("lightoff",2000)
+    
+    Brightness = 5
+    
+    G1:setColor(vec(0,195,0))
+    G2:setColor(vec(0,195,0))
+    R1:setColor(vec(195,0,0))
+    R2:setColor(vec(195,0,0))
+}
+
+if(clk("lightoff")){
+    timer("lighton",2000)
+    
+    Brightness = 0
+    
+    G1:setColor(vec(0,0,0))
+    G2:setColor(vec(0,0,0))
+    R1:setColor(vec(0,0,0))
+    R2:setColor(vec(0,0,0))
+}

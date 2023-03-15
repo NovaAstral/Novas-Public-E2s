@@ -4,26 +4,14 @@
 @persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
 @persist Shield HPLow Advt
 
-function vector vector:round(D:number) { return vec(round(This:x(), D), round(This:y(), D), round(This:z(), D)) }
-function angle angle:round(D:number) { return ang(round(This:pitch(), D), round(This:yaw(), D), round(This:roll(), D)) }
-#vector and angle functions made by Quiru
+#include "Novas-Public-E2s/library/nova_lib"
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
 #The Entity inputs are for the Advanced Takeoff of the Legacy TARDIS. 
-#It does not and never will work on the 'Rewrite' TARDIS
-
-#[
-Todo:
-
-nothing :)
-
-]#
-
-
-#include "Novas-Public-E2s/library/nova_lib"
+#It does not and never will work on the 'Rewrite' TARDIS unless they change how their buttons work
 
 runOnChat(1)
 O = owner()
@@ -42,8 +30,14 @@ if(first() | dupefinished()){
     timer("funcsetup",100)
 }
 
+
 if(clk("config")){
     Prefix = "/t"
+    
+    function vector vector:round(D:number) { return vec(round(This:x(), D), round(This:y(), D), round(This:z(), D)) }
+    function angle angle:round(D:number) { return ang(round(This:pitch(), D), round(This:yaw(), D), round(This:roll(), D)) }
+    #vector and angle functions made by Quiru/Princess Nova
+
 }
 
 

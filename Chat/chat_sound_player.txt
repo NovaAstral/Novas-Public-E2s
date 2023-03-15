@@ -1,0 +1,108 @@
+@name Chat Sound Player
+@outputs WebSnd:webaudio
+@persist Prefix:string Sound:table [ColPink,ColOng,ColRed,ColGrn]:vector WebSnd:webaudio
+
+if(first() | dupefinished()){
+    Prefix = "/sound" #Sound Prefix
+    
+    ColPink = vec(255,95,215)
+    ColOng = vec(230,110,0)
+    ColRed = vec(255,0,0)
+    ColGrn = vec(0,255,0)
+    
+    Sound = table()
+    Sound["rod",string] = "https://cdn.discordapp.com/attachments/915811722646925312/915812501705355324/losingroney.ogg"
+    Sound["light",string] = "https://cdn.discordapp.com/attachments/915811722646925312/915816044612976680/SGU_Light_lowq.ogg"
+}
+
+event chat(SaidPly:entity, Said:string, Team:number){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner()){
+        if(OLS[1,string] == Prefix){
+            hideChat(1)
+            
+            if(OLS[2,string] == "set"){
+                if(Sound:exists(OLS[3,string])){
+                    printColor(ColPink,"[SoundPlayer] ",ColOng,"Sound Set to: ",ColGrn,OLS[3,string])
+                    WebSnd = webAudio(Sound[OLS[3,string],string])
+                    
+                    WebSnd:setRadius(2000)
+                }
+                else{
+                    WebSnd = webAudio(OLS[3,string])
+                    
+                    if(!WebSnd:isValid()){
+                        printColor(ColPink,"[SoundPlayer] ",ColOng,"That's not a valid sound!")
+                    }
+                    else{
+                        printColor(ColPink,"[SoundPlayer] ",ColOng,"Sound set to: ",ColGrn,OLS[3,string])
+                        WebSnd = webAudio(OLS[3,string])
+                        
+                        WebSnd:setRadius(2000)
+                    }
+                }
+            }
+            elseif(OLS[2,string] == "radius"){
+                if(OLS[3,string]:toNumber() == 0){
+                    printColor(ColPink,"[SoundPlayer] ",ColOng,"Radius must be a number!")
+                }
+                else{
+                    WebSnd:setRadius(OLS[3,string]:toNumber())
+                    
+                    if(WebSnd:getRadius() == OLS[3,string]:toNumber()){
+                        printColor(ColPink,"[SoundPlayer] ",ColOng,"Sound radius set to: ",ColGrn,WebSnd:getRadius())
+                    }
+                    else{
+                        printColor(ColPink,"[SoundPlayer] ",ColOng,"Setting sound radius to server max of: ",ColGrn,WebSnd:getRadius())
+                    }
+                }
+            }
+            elseif(OLS[2,string] == "play"){
+                if(WebSnd:isValid()){
+                    WebSnd:set3DEnabled(0)
+                    WebSnd:play()
+                }
+                else{
+                    printColor(ColPink,"[SoundPlayer] ","You haven't set a sound to play!")
+                }
+            }
+            elseif(OLS[2,string] == "stop"){
+                if(WebSnd:isValid()){
+                    WebSnd:pause()
+                    WebSnd:setTime(0)
+                }
+                else{
+                    printColor(ColPink,"[SoundPlayer] ","There isn't a sound to stop!")
+                }
+            }
+            elseif(OLS[2,string] == "pause"){
+                if(WebSnd:isValid()){
+                    WebSnd:pause()
+                }
+                else{
+                    printColor(ColPink,"[SoundPlayer] ",ColOng,"There isn't a sound to pause!")
+                }
+            }
+            elseif(OLS[2,string] == "list"){
+                printColor(ColPink,"[SoundPlayer] ",ColOng,Sound:keys():concat(", "))
+            }
+            elseif(OLS[2,string] == "help"){
+                printColor(ColPink,"[SoundPlayer] ",ColOng,"Sound Player Commands:")
+                printColor(ColOng,"help, list, radius")
+            }
+        }
+    }
+}
+
+if(clk("musicset")){
+    #WebA:set3DEnabled(0)
+    #WebA:setRadius(30000)
+    #WebA:setPos(EGP:entity():pos())
+    #WebA:setParent(EGP:entity())
+}
+
+if(clk("musicstop")){
+    #WebA:destroy()
+    print("Music Stopped")
+}
