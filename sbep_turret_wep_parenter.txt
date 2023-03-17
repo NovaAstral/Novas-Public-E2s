@@ -1,0 +1,40 @@
+@name turret wep parenter
+@inputs MoveWep [Wep1,Wep2,Wep3,Wep4,TurWep]:entity
+@outputs 
+
+if(first()){
+    noCollideAll(Wep1,1)
+    Wep1:propFreeze(1)
+    Wep1:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,20,10)))
+    Wep1:setAng(TurWep:angles()+ang(90,0,0))
+
+    noCollideAll(Wep2,1)
+    Wep2:propFreeze(1)
+    Wep2:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,-20,10)))
+    Wep2:setAng(TurWep:angles()+ang(90,0,0))
+    
+    noCollideAll(Wep3,1)
+    Wep3:propFreeze(1)
+    Wep3:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,20,-10)))
+    Wep3:setAng(TurWep:angles()+ang(90,0,0))
+    
+    noCollideAll(Wep4,1)
+    Wep4:propFreeze(1)
+    Wep4:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,-20,-10)))
+    Wep4:setAng(TurWep:angles()+ang(90,0,0))
+    
+}
+
+if(~MoveWep & MoveWep == 1){
+    Wep1:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,20,10)))
+    Wep1:setAng(TurWep:angles()+ang(90,0,0))
+
+    Wep2:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,-20,10)))
+    Wep2:setAng(TurWep:angles()+ang(90,0,0))
+
+    Wep3:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,20,-10)))
+    Wep3:setAng(TurWep:angles()+ang(90,0,0))
+
+    Wep4:setPos(TurWep:toWorld(TurWep:toLocal(TurWep:pos()) + vec(-30,-20,-10)))
+    Wep4:setAng(TurWep:angles()+ang(90,0,0))
+}

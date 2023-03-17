@@ -1,0 +1,50 @@
+@name Wep aimfire
+@inputs Active Cannon:entity
+@outputs Fire Target:entity TargetPos:vector ChangePos
+@persist Targets:array
+
+if(~Active){
+    if(Active == 1){
+        findByClass("sf-spacemine")
+        
+        if(find()){
+            timer("A",100)
+            
+            Targets = findToArray()
+        }
+        else{
+            print("no find")
+        }
+    }
+    
+    if(Active == 0){
+        Fire = 0
+        stopAllTimers()
+    }
+}
+
+if(clk("A")){
+    timer("A",300)
+    
+    Target = Targets:popEntity()
+    TargetPos = Targets:popEntity():pos()
+    
+    Cannon:setAng((Target:pos() - Cannon:pos()):toAngle() + ang(90,0,0))
+    ChangePos = 1
+    
+    if(!Target:isValid()){
+        Targets = findToArray()
+    }
+    
+    timer("fire",5)
+    timer("reset",100)
+}
+
+if(clk("fire")){
+    Fire = 1
+}
+
+if(clk("reset")){
+    ChangePos = 0
+    Fire = 0
+}

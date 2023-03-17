@@ -1,13 +1,13 @@
 @name Chat Sound Player
 @outputs WebSnd:webaudio
-@persist Prefix:string Sound:table [ColPink,ColOng,ColRed,ColGrn]:vector WebSnd:webaudio
+@persist Prefix:string Sound:table [ColPink,ColOng,ColGrn]:vector WebSnd:webaudio
 
 if(first() | dupefinished()){
     Prefix = "/sound" #Sound Prefix
     
     ColPink = vec(255,95,215)
     ColOng = vec(230,110,0)
-    ColRed = vec(255,0,0)
+    #ColRed = vec(255,0,0)
     ColGrn = vec(0,255,0)
     
     Sound = table()
@@ -15,7 +15,7 @@ if(first() | dupefinished()){
     Sound["light",string] = "https://cdn.discordapp.com/attachments/915811722646925312/915816044612976680/SGU_Light_lowq.ogg"
 }
 
-event chat(SaidPly:entity, Said:string, Team:number){
+event chat(SaidPly:entity, Said:string,_){
     local OLS = Said:lower():explode(" ")
     
     if(SaidPly == owner()){

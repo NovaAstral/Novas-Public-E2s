@@ -1,0 +1,60 @@
+@name tardis jamcheck function
+@inputs T:entity A
+
+#include "Novas-Public-E2s/library/color_lib"
+
+    function number dematJamCheck(CheckDest:number,Dest:vector){
+        local JamYes = 1
+        local JamNo = 0
+        
+        if(T:tardisMoving() == 1){
+            return JamNo
+        }
+        else{
+            if(CheckDest == 1){
+                findIncludeClass("gmod_time_distortion_generator")
+                findInSphere(Dest,1000) #TDG has 1000u radius
+                if(find():isValid() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator at the",ColGrn," Destination")
+                }
+            }
+            
+            findIncludeClass("gmod_time_distortion_generator")
+            findInSphere(T:pos(),1000)
+            if(find():isValid() == 1 & find():getColor() != vec(255,255,255)){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," outside ",ColOng,"the TARDIS! ",ColRed,"Cannot Dematerialize!")
+            }
+            else{
+                findIncludeClass("gmod_time_distortion_generator")
+                findInSphere(entity():pos(),1000)
+                if(find():isValid() == 1 & find():getColor() != vec(255,255,255)){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," inside ",ColOng,"the TARDIS! ",ColRed,"Cannot Dematerialize!")
+                }                    
+                elseif(T:tardisHealth() <= 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Systems are",ColRed," Offline! ",ColOng,"You must repair the TARDIS!")
+                }
+                elseif(T:tardisPowered() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColRed,"Offline! ",ColOng,"Cannot Dematerialize")
+                }
+                elseif(T:tardisGetData("doorstate") == "true"){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Doors are ",ColRed,"Open! ",ColOng,"Cannot Dematerialize")
+                }
+                elseif(T:tardisGetData("handbrake") == "true"){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Handbrake is ",ColRed,"Active! ",ColOng,"Cannot Dematerialize")
+                }
+            }
+            
+            return JamYes
+        }
+    }
+
+#usage of the function:
+if(A == 1){
+    if(dematJamCheck(0,vec()) == 0){ #Used when dematerializing or materializing from vortex
+        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing")
+    }
+    
+    if(dematJamCheck(1,owner():aimPos()) == 0){ #Used when dematerializing to a pos, for example: the owner's aimpos
+        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing to aimpos")
+    }
+}

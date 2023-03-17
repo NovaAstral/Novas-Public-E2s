@@ -1,0 +1,68 @@
+@name Ban Platform
+@inputs [EGP,EGP2]:wirelink
+@outputs 
+@persist [Ply,EGPE,EGPE2]:entity Spin
+@model models/props_phx/construct/metal_angle360.mdl
+
+if(first() | dupefinished()){
+    timer("find",1)
+    timer("egp",1)
+    
+    Spin = 0
+}
+
+if(clk("find")){
+    timer("find",200)
+    
+    findIncludeClass("player")
+    findExcludeEntity(owner())
+    findInSphere(entity():pos(),30)
+    Ply = find()
+    if(find():isPlayer()){
+        stoptimer("find")
+        timer("sound",3000)
+        entity():soundPlay(1,1,"garrysmod/save_load1.wav")
+    }
+}
+
+if(clk("sound")){
+    concmd("ulx banid "+Ply:steamID()+" 0.1 Stepped on the Ban Platform :)")
+    timer("find",10)
+}
+
+if(clk("egp")){
+    EGP:egpText(1,"The Ban Platform",vec2(256,256))
+    EGP:egpAlign(1,1)
+    EGP2:egpText(2,"The Ban Platform :)",vec2(256,256))
+    EGP2:egpAlign(2,1)
+    
+    EGP["Scale",number] = 2
+    EGP2["Scale",number] = 2
+    
+    EGPE = EGP:entity()
+    EGPE2 = EGP2:entity()
+    
+    EGPE:setAlpha(1)
+    EGPE2:setAlpha(1)
+    
+    noCollideAll(EGPE,1)
+    noCollideAll(EGPE2,1)
+    
+    timer("speen",10)
+}
+
+if(clk("speen")){
+    timer("speen",20)
+    
+    EGPE:setPos(entity():pos()+vec(0,0,50))
+    EGPE2:setPos(entity():pos()+vec(0,0,50))
+    
+    EGPE:setAng(ang(0,Spin,0))
+    EGPE2:setAng(ang(0,Spin+180,0))
+    
+    Spin++
+    
+    if(Spin >= 360){
+        Spin = 0
+    }
+}

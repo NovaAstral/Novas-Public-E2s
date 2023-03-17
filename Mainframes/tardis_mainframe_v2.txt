@@ -13,10 +13,6 @@
 #The Entity inputs are for the Advanced Takeoff of the Legacy TARDIS. 
 #It does not and never will work on the 'Rewrite' TARDIS unless they change how their buttons work
 
-runOnChat(1)
-O = owner()
-OLS = owner():lastSaid():lower():explode(" ")
-
 if(first() | dupefinished()){
     O = owner()
     timer("tget",1000)
@@ -111,8 +107,11 @@ if(clk("funcsetup")){
                 elseif(T:tardisPowered() == 0){
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColRed,"Offline! ",ColOng,"Cannot Dematerialize")
                 }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is something stopping the TARDIS from taking off! Check the",ColGrn," Handbrake ",ColOng,"or",ColGrn," Door!")
+                elseif(T:tardisGetData("doorstate") == "true"){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Doors are ",ColRed,"Open! ",ColOng,"Cannot Dematerialize")
+                }
+                elseif(T:tardisGetData("handbrake") == "true"){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Handbrake is ",ColRed,"Active! ",ColOng,"Cannot Dematerialize")
                 }
             }
             
@@ -177,592 +176,602 @@ if(clk("sndstop")){
     timer("sndcreate",10)
 }
 
-if(chatClk(O)){
-    if(OLS[1,string] == Prefix){
-        hideChat(1)
-        
-        if(OLS[2,string] == "help"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Help can be found here:")
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"If you're seeing this, I haven't made a help file yet oops")
-        }
-        
-        if(OLS[2,string] == "shield"){
-            if(OLS[3,string]:length() == 0){                
-                if(Shield == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Online")
-                    
-                    Shield = 1
-                    
-                    ShieldEnt:propNotSolid(0)
-                    ShieldEnt:propDraw(1)
-                    
-                    #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
-                    
-                    ShieldOnSnd:setPos(T:pos())
-                    ShieldOnSnd:setParent(T)
-                    ShieldOnSnd:play()
-                    timer("sndstop",ShieldOnSnd:getLength()*1000)
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Offline")
-                    
-                    Shield = 0
-                    
-                    ShieldEnt:propNotSolid(1)
-                    ShieldEnt:propDraw(0)
-                    
-                    #T:soundPlay(1,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-
-                    ShieldOffSnd:setPos(T:pos())
-                    ShieldOffSnd:setParent(T)
-                    ShieldOffSnd:play()
-                    timer("sndstop",ShieldOffSnd:getLength()*1000)
-                }
+event chat(SaidPly:entity, Said:string,_){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner()){
+        if(OLS[1,string] == Prefix){
+            hideChat(1)
+            
+            if(OLS[2,string] == "help"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Help can be found here:")
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"If you're seeing this, I haven't made a help file yet oops")
             }
             
-            if(OLS[3,string] == "on"){
-                if(Shield == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Shield is already ",ColGrn,"Online")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Online")
-                    
-                    Shield = 1
-                    
-                    ShieldEnt:propNotSolid(0)
-                    ShieldEnt:propDraw(1)
-                    
-                    #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
-                    
-                    ShieldOnSnd:setPos(T:pos())
-                    ShieldOnSnd:setParent(T)
-                    ShieldOnSnd:play()
-                    timer("sndstop",ShieldOnSnd:getLength()*1000)
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(Shield == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Shield is already ",ColGrn,"Offline")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Offline")
-                    
-                    Shield = 0
-                    
-                    ShieldEnt:propNotSolid(1)
-                    ShieldEnt:propDraw(0)
-                    
-                    #T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-
-                    ShieldOffSnd:setPos(T:pos())
-                    ShieldOffSnd:setParent(T)
-                    ShieldOffSnd:play()
-                    timer("sndstop",ShieldOnSnd:getLength()*1000)
-                }
-            }
-        }
-        
-        if(OLS[2,string] == "mat" | OLS[2,string] == "materialise"){
-            if(T:tardisInVortex() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Materializing")
-                
-                T:tardisMaterialise()
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS isn't in the Time Vortex!")
-            }
-        }
-        
-        if(OLS[2,string] == "demat" | OLS[2,string] == "dematerialize"){
-            if(OLS[3,string]:length() == 0){
-                if(T:tardisInVortex() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already in the Time Vortex!")
-                }
-                else{
-                    T:tardisFastDemat()
-                    
-                    if(dematJamCheck(0,vec()) == 0){
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing")
-                    }
-                }
-            }
-            
-            if(OLS[3,string] == "here"){
-                T:tardisDemat(owner():aimPos(),T:angles())
-                T:tardisSetDestination(owner():aimPos(),T:angles())
-                
-                if(dematJamCheck(1,owner():aimPos()) == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing to aimpos")
-                }
-            }
-            
-            if(OLS[3,string] == "me"){
-                T:tardisDemat(owner():pos(),T:angles())
-                T:tardisSetDestination(owner():pos(),T:angles())
-                
-                if(dematJamCheck(1,owner():pos()) == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing to ",ColTeam,"You")
-                }
-            }
-        }
-        
-        if(OLS[2,string] == "return"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS returning to previous location")
-            
-            T:tardisFastReturn()
-        }
-        
-        #Flight Mode
-        if(OLS[2,string] == "fly" | OLS[2,string] == "flight"){
-            if(OLS[3,string] == "on"){
-                if(T:tardisFlying() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode is already ",ColGrn,"Enabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode ",ColGrn,"Enabled")
-                    
-                    T:tardisFlightmode()
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(T:tardisFlying() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode is already ",ColRed,"Disabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode ",ColRed,"Disabled")
-                    
-                    T:tardisFlightmode()
-                }
-            }
-        }
-        
-        #HADS
-        if(OLS[2,string] == "hads"){
-            if(OLS[3,string]:length() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Hostile Action Displacement System ",ColGrn,"Toggled")
-                
-                T:tardisHADS()
-            }
-            
-            if(OLS[3,string] == "on"){
-                if(T:tardisIsHADS() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is already ",ColGrn,"Enabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Hostile Action Displacement System ",ColRed,"Disabled")
-                    
-                    T:tardisHADS()
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(T:tardisIsHADS() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is already ",ColRed,"Disabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Hostile Action Displacement System ",ColGrn,"Enabled")
-                    
-                    T:tardisHADS()
-                }
-            }
-        }
-        
-        #Isomorph
-        if(OLS[2,string] == "iso" | OLS[2,string] == "isomorphic"){
-            if(OLS[3,string]:length() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Isomorphic Controls ",ColGrn,"Toggled")
-                
-                T:tardisIsomorph()
-            }
-            
-            if(OLS[3,string] == "on"){
-                if(T:tardisIsomorphic() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are already ",ColGrn,"Enabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Isomorphic Controls ",ColGrn,"Enabled")
-                    
-                    T:tardisIsomorph()
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(T:tardisIsomorphic() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are already ",ColRed,"Disabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Isomorphic Controls ",ColRed,"Disabled")
-                    
-                    T:tardisIsomorph()
-                }
-            }
-        }
-        
-        #Lock
-        if(OLS[2,string] == "lock"){
-            if(T:tardisLocked() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is already ",ColGrn,"Locked")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Door ",ColGrn,"Locked")
-                
-                T:tardisLock()
-            }
-        }
-        
-        #Unlock
-        if(OLS[2,string] == "unlock"){
-            if(T:tardisLocked() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is already ",ColGrn,"Unlocked")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Door ",ColGrn,"Unlocked")
-                
-                T:tardisLock()
-            }
-        }
-        
-        #Longflight
-        if(OLS[2,string] == "longfly" | OLS[2,string] == "lfly"){
-            if(OLS[3,string]:length() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight ",ColGrn,"Toggled")
-                
-                T:tardisLongflight()
-            }
-            
-            if(OLS[3,string] == "on"){
-                if(T:tardisLongflighted() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is already ",ColGrn,"Enabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight ",ColGrn,"Enabled")
-                    
-                    T:tardisLongflight()
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(T:tardisLongflighted() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is already ",ColRed,"Disabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight ",ColRed,"Disabled")
-                    
-                    T:tardisLongflight()
-                }
-            }
-        }
-        
-        #Phase
-        if(OLS[2,string] == "phase" | OLS[2,string] == "cloak"){
-            if(OLS[3,string]:length() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Cloak ",ColGrn,"Toggled")
-                
-                T:tardisPhase()
-            }
-            
-            if(OLS[3,string] == "on"){
-                if(T:tardisVisible() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Cloak is already ",ColGrn,"Enabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Cloak ",ColGrn,"Enabled")
-                    
-                    T:tardisLongflight()
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(T:tardisVisible() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Cloak is already ",ColRed,"Disabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Cloak ",ColRed,"Disabled")
-                    
-                    T:tardisLongflight()
-                }
-            }
-        }
-        
-        #Physlock
-        if(OLS[2,string] == "phys" | OLS[2,string] == "physlock"){
-            if(OLS[3,string]:length() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Physlock ",ColGrn,"Toggled")
-                
-                T:tardisPhyslock()
-            }
-            
-            if(OLS[3,string] == "on"){
-                if(T:tardisPhyslocked() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is already ",ColGrn,"Enabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Physlock ",ColGrn,"Enabled")
-                    
-                    T:tardisPhyslock()
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(T:tardisPhyslocked() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is already ",ColRed,"Disabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Physlock ",ColRed,"Disabled")
-                    
-                    T:tardisPhyslock()
-                }
-            }
-        }
-        
-        if(OLS[2,string] == "power"){
-            if(OLS[3,string]:length() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Power ",ColGrn,"Toggled")
-                
-                T:tardisPower()
-            }
-            
-            if(OLS[3,string] == "on"){
-                if(T:tardisPowered() == 1){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is already ",ColGrn,"Enabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Power ",ColGrn,"Enabled")
-                    
-                    T:tardisPower()
-                }
-            }
-            
-            if(OLS[3,string] == "off"){
-                if(T:tardisPowered() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is already ",ColRed,"Disabled!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Power ",ColRed,"Disabled")
-                    
-                    T:tardisPower()
-                }
-            }
-        }
-        
-        if(OLS[2,string] == "repair"){
-            if(OLS[3,string]:length() == 0){
-                if(T:tardisHealth() == 100){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already fully repaired!")
-                }
-                else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Repair ",ColGrn,"Toggled")
-                    
-                    T:tardisSelfrepair()
-                }
-            }
-            
-            if(OLS[3,string] == "on"){
-                if(T:tardisHealth() == 100){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already fully repaired!")
-                }
-                else{
-                    if(T:tardisSelfrepairing() == 1){
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is already ",ColGrn,"Enabled!")
+            if(OLS[2,string] == "shield"){
+                if(OLS[3,string]:length() == 0){                
+                    if(Shield == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Online")
+                        
+                        Shield = 1
+                        
+                        ShieldEnt:propNotSolid(0)
+                        ShieldEnt:propDraw(1)
+                        
+                        #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
+                        
+                        ShieldOnSnd:setPos(T:pos())
+                        ShieldOnSnd:setParent(T)
+                        ShieldOnSnd:play()
+                        timer("sndstop",ShieldOnSnd:getLength()*1000)
                     }
                     else{
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair ",ColGrn,"Enabled")
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Offline")
+                        
+                        Shield = 0
+                        
+                        ShieldEnt:propNotSolid(1)
+                        ShieldEnt:propDraw(0)
+                        
+                        #T:soundPlay(1,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
+    
+                        ShieldOffSnd:setPos(T:pos())
+                        ShieldOffSnd:setParent(T)
+                        ShieldOffSnd:play()
+                        timer("sndstop",ShieldOffSnd:getLength()*1000)
+                    }
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(Shield == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Shield is already ",ColGrn,"Online")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Online")
+                        
+                        Shield = 1
+                        
+                        ShieldEnt:propNotSolid(0)
+                        ShieldEnt:propDraw(1)
+                        
+                        #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
+                        
+                        ShieldOnSnd:setPos(T:pos())
+                        ShieldOnSnd:setParent(T)
+                        ShieldOnSnd:play()
+                        timer("sndstop",ShieldOnSnd:getLength()*1000)
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(Shield == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Shield is already ",ColGrn,"Offline")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Offline")
+                        
+                        Shield = 0
+                        
+                        ShieldEnt:propNotSolid(1)
+                        ShieldEnt:propDraw(0)
+                        
+                        #T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
+    
+                        ShieldOffSnd:setPos(T:pos())
+                        ShieldOffSnd:setParent(T)
+                        ShieldOffSnd:play()
+                        timer("sndstop",ShieldOnSnd:getLength()*1000)
+                    }
+                }
+            }
+            
+            if(OLS[2,string] == "mat" | OLS[2,string] == "materialise"){
+                if(T:tardisInVortex() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Materializing")
+                    
+                    T:tardisMaterialise()
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS isn't in the Time Vortex!")
+                }
+            }
+            
+            if(OLS[2,string] == "demat" | OLS[2,string] == "dematerialize"){
+                if(OLS[3,string]:length() == 0){
+                    if(T:tardisInVortex() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already in the Time Vortex!")
+                    }
+                    else{
+                        T:tardisFastDemat()
+                        
+                        if(dematJamCheck(0,vec()) == 0){
+                            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing")
+                        }
+                    }
+                }
+                
+                if(OLS[3,string] == "here"){
+                    T:tardisDemat(owner():aimPos(),T:angles())
+                    T:tardisSetDestination(owner():aimPos(),T:angles())
+                    
+                    if(dematJamCheck(1,owner():aimPos()) == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing to aimpos")
+                    }
+                }
+                
+                if(OLS[3,string] == "me"){
+                    T:tardisDemat(owner():pos(),T:angles())
+                    T:tardisSetDestination(owner():pos(),T:angles())
+                    
+                    if(dematJamCheck(1,owner():pos()) == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing to ",ColTeam,"You")
+                    }
+                }
+            }
+            
+            if(OLS[2,string] == "return"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS returning to previous location")
+                
+                T:tardisFastReturn()
+            }
+            
+            #Flight Mode
+            if(OLS[2,string] == "fly" | OLS[2,string] == "flight"){
+                if(OLS[3,string] == "on"){
+                    if(T:tardisFlying() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode is already ",ColGrn,"Enabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode ",ColGrn,"Enabled")
+                        
+                        T:tardisFlightmode()
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisFlying() == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode is already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flight Mode ",ColRed,"Disabled")
+                        
+                        T:tardisFlightmode()
+                    }
+                }
+            }
+            
+            #HADS
+            if(OLS[2,string] == "hads"){
+                if(OLS[3,string]:length() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Hostile Action Displacement System ",ColGrn,"Toggled")
+                    
+                    T:tardisHADS()
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(T:tardisIsHADS() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is already ",ColGrn,"Enabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Hostile Action Displacement System ",ColRed,"Disabled")
+                        
+                        T:tardisHADS()
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisIsHADS() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Hostile Action Displacement System ",ColGrn,"Enabled")
+                        
+                        T:tardisHADS()
+                    }
+                }
+            }
+            
+            #Isomorph
+            if(OLS[2,string] == "iso" | OLS[2,string] == "isomorphic"){
+                if(OLS[3,string]:length() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Isomorphic Controls ",ColGrn,"Toggled")
+                    
+                    T:tardisIsomorph()
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(T:tardisIsomorphic() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are already ",ColGrn,"Enabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Isomorphic Controls ",ColGrn,"Enabled")
+                        
+                        T:tardisIsomorph()
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisIsomorphic() == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Isomorphic Controls ",ColRed,"Disabled")
+                        
+                        T:tardisIsomorph()
+                    }
+                }
+            }
+            
+            #Lock
+            if(OLS[2,string] == "lock"){
+                if(T:tardisLocked() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is already ",ColGrn,"Locked")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Door ",ColGrn,"Locked")
+                    
+                    T:tardisLock()
+                }
+            }
+            
+            #Unlock
+            if(OLS[2,string] == "unlock"){
+                if(T:tardisLocked() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is already ",ColGrn,"Unlocked")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Door ",ColGrn,"Unlocked")
+                    
+                    T:tardisLock()
+                }
+            }
+            
+            #Longflight
+            if(OLS[2,string] == "longfly" | OLS[2,string] == "lfly"){
+                if(OLS[3,string]:length() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight ",ColGrn,"Toggled")
+                    
+                    T:tardisLongflight()
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(T:tardisLongflighted() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is already ",ColGrn,"Enabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight ",ColGrn,"Enabled")
+                        
+                        T:tardisLongflight()
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisLongflighted() == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight ",ColRed,"Disabled")
+                        
+                        T:tardisLongflight()
+                    }
+                }
+            }
+            
+            #Phase
+            if(OLS[2,string] == "phase" | OLS[2,string] == "cloak"){
+                if(OLS[3,string]:length() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Cloak ",ColGrn,"Toggled")
+                    
+                    T:tardisPhase()
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(T:tardisVisible() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Cloak is already ",ColGrn,"Enabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Cloak ",ColGrn,"Enabled")
+                        
+                        T:tardisLongflight()
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisVisible() == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Cloak is already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Cloak ",ColRed,"Disabled")
+                        
+                        T:tardisLongflight()
+                    }
+                }
+            }
+            
+            #Physlock
+            if(OLS[2,string] == "phys" | OLS[2,string] == "physlock"){
+                if(OLS[3,string]:length() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Physlock ",ColGrn,"Toggled")
+                    
+                    T:tardisPhyslock()
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(T:tardisPhyslocked() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is already ",ColGrn,"Enabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Physlock ",ColGrn,"Enabled")
+                        
+                        T:tardisPhyslock()
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisPhyslocked() == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Physlock ",ColRed,"Disabled")
+                        
+                        T:tardisPhyslock()
+                    }
+                }
+            }
+            
+            if(OLS[2,string] == "power"){
+                if(OLS[3,string]:length() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Power ",ColGrn,"Toggled")
+                    
+                    T:tardisPower()
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(T:tardisPowered() == 1){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is already ",ColGrn,"Enabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Power ",ColGrn,"Enabled")
+                        
+                        T:tardisPower()
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisPowered() == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Power ",ColRed,"Disabled")
+                        
+                        T:tardisPower()
+                    }
+                }
+            }
+            
+            if(OLS[2,string] == "repair"){
+                if(OLS[3,string]:length() == 0){
+                    if(T:tardisHealth() == 100){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already fully repaired!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Repair ",ColGrn,"Toggled")
+                        
+                        T:tardisSelfrepair()
+                    }
+                }
+                
+                if(OLS[3,string] == "on"){
+                    if(T:tardisHealth() == 100){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already fully repaired!")
+                    }
+                    else{
+                        if(T:tardisSelfrepairing() == 1){
+                            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is already ",ColGrn,"Enabled!")
+                        }
+                        else{
+                            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair ",ColGrn,"Enabled")
+                            
+                            T:tardisSelfrepair()
+                        }
+                    }
+                }
+                
+                if(OLS[3,string] == "off"){
+                    if(T:tardisSelfrepairing() == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is already ",ColRed,"Disabled!")
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair ",ColRed,"Disabled")
                         
                         T:tardisSelfrepair()
                     }
                 }
             }
             
-            if(OLS[3,string] == "off"){
-                if(T:tardisSelfrepairing() == 0){
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is already ",ColRed,"Disabled!")
+            if(OLS[2,string] == "doors"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Doors Toggled")
+                    
+                T:use()
+            }
+            
+            if(OLS[2,string] == "track"){
+                if(owner():aimEntity():isValid()){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is now tracking ",ColGrn,owner():aimEntity():getName())
+                    T:tardisTrack(owner():aimEntity())
                 }
                 else{
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair ",ColRed,"Disabled")
-                    
-                    T:tardisSelfrepair()
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"You are not looking at anything! Disabling Tracking")
+                    T:tardisTrack(noentity())
                 }
             }
-        }
         
-        if(OLS[2,string] == "doors"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Doors Toggled")
+            #Legacy Advanced Takeoff
+            if(OLS[2,string] == "adv"){ #This only works on the Legacy TARDIS, and you must wire the buttons manually
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Activating Advanced Takeoff")
+                B1:use()
+                timer("adv1",Advt)
+            }
+        
+        
+            ###########################
+            ###Check what things are###
+            ###########################
+            
+            #Flying
+            if(OLS[2,string] == "flying"){
+                if(T:tardisFlying() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flightmode is ",ColGrn,"Enabled")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flightmode is ",ColRed,"Disabled")
+                }
+            }
+            
+            #Health
+            if(OLS[2,string] == "hp" | OLS[2,string] == "health"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Health is at ",T:tardisHealth(),"% (",TW["Health",number]+")")
+            }
+            
+            if(OLS[2,string] == "v" | OLS[2,string] == "vortex"){
+                if(T:tardisInVortex() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is in the ",ColGrn,"Time Vortex")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is not in the ",ColRed,"Time Vortex")
+                }
+            }
+            
+            #Moving (Demat/Remat)
+            if(OLS[2,string] == "moving"){
+                if(T:tardisMoving() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColGrn,"Moving")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColRed,"Not Moving")
+                }
+            }
+            
+            #HADS
+            if(OLS[2,string] == "ishads"){
+                if(T:tardisIsHADS() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is ",ColGrn,"Enabled")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is ",ColRed,"Disabled")
+                }
+            }
+            
+            #Isomorph
+            if(OLS[2,string] == "isiso"){
+                if(T:tardisIsomorphic() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are ",ColGrn,"Enabled")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are ",ColRed,"Disabled")
+                }
+            }
+            
+            #Current Pos
+            if(OLS[2,string] == "pos"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Coordinates of the TARDIS are ",ColGrn,round(T:pos()))
+            }
+            
+            #Previous Pos
+            if(OLS[2,string] == "lastpos" | OLS[2,string] == "prevpos"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Previous Coordinates of the TARDIS are ",ColGrn,round(T:tardisLastPos()))
+            }
+            
+            #Current Ang
+            if(OLS[2,string] == "ang"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Angles of the TARDIS are ",ColGrn,round(T:angles()))
+            }
+            
+            #Previous Ang
+            if(OLS[2,string] == "lastang" | OLS[2,string] == "prevang"){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Previous Angles of the TARDIS are ",ColGrn,round(T:tardisLastAng()))
+            }
+            
+            #Door locked
+            if(OLS[2,string] == "locked"){
+                if(T:tardisLocked() == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is ",ColGrn,"Unlocked")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is ",ColRed,"Locked")
+                }
+            }
+            
+            #Longfly
+            if(OLS[2,string] == "lflying"){
+                if(T:tardisLongflighted() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is ",ColGrn,"Enabled")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is ",ColRed,"Disabled")
+                }
+            }
+            
+            #Physlocked
+            if(OLS[2,string] == "physlocked"){
+                if(T:tardisPhyslocked() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is ",ColGrn,"Enabled")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is ",ColRed,"Disabled")
+                }
+            }
+            
+            if(OLS[2,string] == "powered"){
+                if(T:tardisPowered() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColGrn,"Enabled")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColRed,"Disabled")
+                }
+            }
+            
+            if(OLS[2,string] == "artron"){
+                local ArtronAmount = toString(round(T:tardisGetData("artron-val"):toNumber(),1))
                 
-            T:use()
-        }
-        
-        if(OLS[2,string] == "track"){
-            if(owner():aimEntity():isValid()){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is now tracking ",ColGrn,owner():aimEntity():getName())
-                T:tardisTrack(owner():aimEntity())
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Artron amount is: ",ColGrn,ArtronAmount)
             }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"You are not looking at anything! Disabling Tracking")
-                T:tardisTrack(noentity())
+            
+            if(OLS[2,string] == "repairing"){
+                if(T:tardisSelfrepairing() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is ",ColGrn,"Enabled")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is ",ColRed,"Disabled")
+                }
             }
-        }
-    
-        #Legacy Advanced Takeoff
-        if(OLS[2,string] == "adv"){ #This only works on the Legacy TARDIS, and you must wire the buttons manually
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Activating Advanced Takeoff")
-            B1:use()
-            timer("adv1",Advt)
-        }
-    
-    
-        ###########################
-        ###Check what things are###
-        ###########################
-        
-        #Flying
-        if(OLS[2,string] == "flying"){
-            if(T:tardisFlying() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flightmode is ",ColGrn,"Enabled")
+            
+            if(OLS[2,string] == "visible"){
+                if(T:tardisVisible() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColGrn,"Visible")
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColRed,"InVisible")
+                }
             }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Flightmode is ",ColRed,"Disabled")
+            
+            #Pilot
+            if(OLS[2,string] == "pilot"){
+                if(T:tardisPilot():isValid()){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Pilot is ",teamColor(T:tardisPilot():team()),T:tardisPilot():name())
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is no ",ColRed,"Pilot")
+                }
             }
-        }
-        
-        #Health
-        if(OLS[2,string] == "hp" | OLS[2,string] == "health"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Health is at ",T:tardisHealth(),"% (",TW["Health",number]+")")
-        }
-        
-        if(OLS[2,string] == "v" | OLS[2,string] == "vortex"){
-            if(T:tardisInVortex() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is in the ",ColGrn,"Time Vortex")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is not in the ",ColRed,"Time Vortex")
-            }
-        }
-        
-        #Moving (Demat/Remat)
-        if(OLS[2,string] == "moving"){
-            if(T:tardisMoving() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColGrn,"Moving")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColRed,"Not Moving")
-            }
-        }
-        
-        #HADS
-        if(OLS[2,string] == "ishads"){
-            if(T:tardisIsHADS() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is ",ColGrn,"Enabled")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Hostile Action Displacement System is ",ColRed,"Disabled")
-            }
-        }
-        
-        #Isomorph
-        if(OLS[2,string] == "isiso"){
-            if(T:tardisIsomorphic() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are ",ColGrn,"Enabled")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Isomorphic Controls are ",ColRed,"Disabled")
-            }
-        }
-        
-        #Current Pos
-        if(OLS[2,string] == "pos"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Coordinates of the TARDIS are ",ColGrn,round(T:pos()))
-        }
-        
-        #Previous Pos
-        if(OLS[2,string] == "lastpos" | OLS[2,string] == "prevpos"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Previous Coordinates of the TARDIS are ",ColGrn,round(T:tardisLastPos()))
-        }
-        
-        #Current Ang
-        if(OLS[2,string] == "ang"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Angles of the TARDIS are ",ColGrn,round(T:angles()))
-        }
-        
-        #Previous Ang
-        if(OLS[2,string] == "lastang" | OLS[2,string] == "prevang"){
-            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Previous Angles of the TARDIS are ",ColGrn,round(T:tardisLastAng()))
-        }
-        
-        #Door locked
-        if(OLS[2,string] == "locked"){
-            if(T:tardisLocked() == 0){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is ",ColGrn,"Unlocked")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Door is ",ColRed,"Locked")
-            }
-        }
-        
-        #Longfly
-        if(OLS[2,string] == "lflying"){
-            if(T:tardisLongflighted() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is ",ColGrn,"Enabled")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Long Flight is ",ColRed,"Disabled")
-            }
-        }
-        
-        #Physlocked
-        if(OLS[2,string] == "physlocked"){
-            if(T:tardisPhyslocked() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is ",ColGrn,"Enabled")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Physlock is ",ColRed,"Disabled")
-            }
-        }
-        
-        if(OLS[2,string] == "powered"){
-            if(T:tardisPowered() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColGrn,"Enabled")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Power is ",ColRed,"Disabled")
-            }
-        }
-        
-        if(OLS[2,string] == "repairing"){
-            if(T:tardisSelfrepairing() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is ",ColGrn,"Enabled")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is ",ColRed,"Disabled")
-            }
-        }
-        
-        if(OLS[2,string] == "visible"){
-            if(T:tardisVisible() == 1){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColGrn,"Visible")
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is ",ColRed,"InVisible")
-            }
-        }
-        
-        #Pilot
-        if(OLS[2,string] == "pilot"){
-            if(T:tardisPilot():isValid()){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Pilot is ",teamColor(T:tardisPilot():team()),T:tardisPilot():name())
-            }
-            else{
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is no ",ColRed,"Pilot")
-            }
-        }
-        
-        if(OLS[2,string] == "tracking"){
-            if(T:tardisTracking():isValid()){
-                 printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is currently tracking ",ColGrn,T:tardisTracking():getName())
-            }
-            else{
-                 printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is not currently tracking anything")
+            
+            if(OLS[2,string] == "tracking"){
+                if(T:tardisTracking():isValid()){
+                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is currently tracking ",ColGrn,T:tardisTracking():getName())
+                }
+                else{
+                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is not currently tracking anything")
+                }
             }
         }
     }
