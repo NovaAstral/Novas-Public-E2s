@@ -1,57 +1,185 @@
 @name Chat Target
-@inputs [Core,Sensor]:entity
-@outputs TargetPos:vector TargetEnt:entity TargetOwner:string TargetLocked
-@persist TargetName:string
+@inputs
+@outputs TargetPos:vector TargetEnt:entity TargetOwner:entity TargetLocked
+@persist Prefix:string FEnt:entity FEnts:array Owner:string Color:vector TOffset
 
 #include "Novas-Public-E2s/library/nova_lib"
 
-O = owner()
-OLS = owner():lastSaid():lower():explode(" ")
-
-runOnChat(1)
-
-if(first()){
-    TarList = TarType:keys():concat(", ")
-    
+if(first() | dupefinished()){
     Prefix = "/t" #Target Prefix
     
-    function void targetEntity(TarEnt:entity){
-        if(TarEnt:isPlayer()){
-            TargetEnt = TarEnt
-            TarName = TarEnt:name()
-            TargetLocked = 1
-            printColor(ColPink," [Target] ",ColOng,"Player Target: ",teamColor(TarEnt:team()),TarName,ColOng," Locked.")
+    AutoTarget = 1 #If Target destroyed, try to target another of the same entity owned by the same person
+    
+    timer("functionsetup",10)
+}
+
+if(clk("functionsetup")){
+    FEnts = array()
+    
+    function void target(Ent:entity){
+        TargetEnt = Ent
+        TargetPos = Ent:pos()
+        
+        TargetLocked = 1
+        
+        timer("target",1)
+        
+        if(Ent:owner():name() == ""){
+            TargetOwner = noentity()
+            Owner = "world"
+            Color = vec(255)
         }
-        if(TarEnt:isValid() & !TarEnt:isPlayer()){
-            TargetEnt = TarEnt
-            TargetOwner = TargetEnt:owner():name() != "" ? TargetEnt:owner():name():left(18) : "world"
-            local TarType = TargetEnt:type()
-            TarInfo = TargetOwner + "'s " + TarType
-            TargetLocked = 1
+        else{
+            TargetOwner = Ent:owner()
+            Owner = Ent:owner():name()
+            Color = teamColor(Ent:owner():team())
         }
         
-        if(TargetLocked == 0){
-            printColor(ColPink," [Target] ",ColOng,"Invalid Target, Cannot Lock.")
+        if(Ent:isPlayer()){
+            printColor(ColPink,"[Target] ",ColOng,"Targetting ",teamColor(Ent:team()),Ent:name())
+            
+            TOffset = 50
+        }
+        else{
+            printColor(ColPink,"[Target] ",ColOng,"Targetting ",ColGrn,Ent:type(),ColOng," Owned by: ",Color,Owner)
+            TOffset = 0
         }
     }
 }
 
-if(chatClk(O)){
-    if(OLS[1,string] == Prefix){
-        hideChat(1)
-        if(OLS[2,string] == "this"){
-            targetEntity(owner():aimEntity())
-        }
-        
-        if(OLS[2,string]:length() == 0 & OLS[3,string]:length() == 0 & OLS[4,string]:length() == 0){
-            printColor(vec(255,95,215)," [Target] ",vec(230,110,0),"Cannot target nothing.")
+if(clk("target")){
+    timer("target",10)
+    
+    if(TargetEnt:isValid()){
+        TargetPos = TargetEnt:pos()+vec(0,0,TOffset)
+            
+        TargetLocked = 1
+    }
+    else{
+        if(AutoTarget == 1){
+            FEnts:pushEntity(TargetEnt)
+            
+            if(TargetEnt:isValid()){
+                target(FEnts:shiftEntity())
+            }
+            else{
+                printColor(ColPink,"[Target] ",ColOng,"Target Lost! Likely destroyed.")
+                
+                TargetLocked = 0
+            }
         }
         else{
-            X = OLS[2,string]:toNumber()
-            Y = OLS[3,string]:toNumber()
-            Z = OLS[4,string]:toNumber()
-            Vec = round(vec(X,Y,Z))
-            printColor(vec(255,95,215)," [Target] ",vec(230,110,0),"Targeting: "+ Vec:toString())
+            printColor(ColPink,"[Target] ",ColOng,"Target Lost! Likely destroyed.")
+            
+            TargetLocked = 0
+            
+            stoptimer("target")
+        }
+    }
+}
+
+event chat(SaidPly:entity, Said:string,_){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner()){
+        if(OLS[1,string] == Prefix){
+            hideChat(1)
+            
+            if(OLS[2,string] == "help"){
+                printColor(ColPink,"[Target] ",ColOng,"Chat Target Help:")
+                printColor(ColPink,"[Target] ",ColOng,"If you're seeing this, I haven't made a help file yet oops")
+            }
+            elseif(OLS[2,string] == "list"){
+                printColor(ColPink,"[Target] ",ColOng,"Target List:")
+                printColor(ColOng,TarType:keys():concat(", "))
+            }
+            elseif(OLS[2,string] == "this" | OLS[2,string] == "that"){
+                if(owner():aimEntity():isValid()){
+                    target(owner():aimEntity())
+                }
+                else{
+                    printColor(ColPink,"[Target] ",ColOng,"You're not looking at anything!")
+                }
+            }
+            elseif(OLS[2,string] == "here"){
+                stoptimer("target")
+                
+                TargetEnt = noentity()
+                TargetPos = owner():aimPos()
+                
+                TargetLocked = 1
+                
+                printColor(ColPink,"[Target] ",ColOng,"Targetting ",ColGrn,toString(round(owner():aimPos())))
+            }
+            elseif(OLS[2,string] == "next"){
+                FEnts:pushEntity(TargetEnt)
+                target(FEnts:shiftEntity())
+            }
+            elseif(OLS[2,string] == "off"){
+                TargetEnt = noentity()
+                TargetPos = vec(0)
+                TargetOwner = noentity()
+                
+                TargetLocked = 0
+                
+                stoptimer("target")
+                
+                printColor(ColPink,"[Target] ",ColOng,"Disabling Targetting")
+            }
+            else{
+                local Ply = findPlayerByName(OLS[2,string])
+                local Ply2 = findPlayerByName(OLS[3,string])
+                
+                if(Ply:isPlayer()){
+                    target(Ply)
+                }
+                else{
+                    if(TarType:exists(OLS[2,string])){
+                        findByClass(TarType[OLS[2,string],string])
+                        findClipToPlayerProps(Ply2)
+                        FEnts = findToArray()
+                        
+                        FEnt = FEnts:popEntity()
+                        
+                        if(FEnt:isValid()){
+                            target(FEnt)
+                        }
+                        else{
+                            if(Ply2:isPlayer()){
+                                printColor(ColPink,"[Target] ",ColOng,"The Player ",teamColor(Ply2:owner():team()),Ply2:owner():name(),ColOng," Does not own a ",ColRed,OLS[2,string])
+                            }
+                            else{
+                                printColor(ColPink,"[Target] ",ColOng,"Invalid Target!")
+                            }
+                        }
+                    }
+                    else{ #Find string2 type owned by string3 player
+                        if(Ply2:isPlayer()){
+                            findByClass(OLS[2,string])
+                            findClipToPlayerProps(Ply2)
+                            FEnts = findToArray()
+                            
+                            FEnt = FEnts:popEntity()
+                            
+                            if(FEnt:isValid()){
+                                target(FEnt)
+                            }
+                            else{
+                                if(Ply2:isPlayer()){
+                                    printColor(ColPink,"[Target] ",ColOng,"The Player ",teamColor(Ply2:owner():team()),Ply2:owner():name(),ColOng," Does not own a ",ColRed,OLS[2,string])
+                                    #I have no fucking clue why this still prints even when its not really a player
+                                }
+                                else{
+                                    printColor(ColPink,"[Target] ",ColOng,"Invalid Target!")
+                                }
+                            }
+                        }
+                        else{
+                            printColor(ColPink,"[Target] ",ColOng,"There is no player with the name: ",OLS[3,string])
+                        }
+                    }
+                }
+            }
         }
     }
 }

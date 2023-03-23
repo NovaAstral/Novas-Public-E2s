@@ -13,6 +13,8 @@
 #The Entity inputs are for the Advanced Takeoff of the Legacy TARDIS. 
 #It does not and never will work on the 'Rewrite' TARDIS unless they change how their buttons work
 
+#tardisGetData("repair-time"):toNumber()-curtime()
+
 if(first() | dupefinished()){
     O = owner()
     timer("tget",1000)

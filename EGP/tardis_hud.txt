@@ -1,0 +1,526 @@
+@name TARDIS HUD
+@inputs TardisExt:entity EGP:wirelink
+@persist H W Health Artron Power Lock Cloak Flight Moving Vortex LFly HADS Pos:vector Iso Phys RepairTime
+@persist T:entity [Doors,Handbrake,Pilot]:string
+#include "Novas-Public-E2s/library/color_lib"
+
+if(first() | dupefinished()){
+    EGP:egpClear()
+    
+    timer("tardisfind",1)
+    timer("egpsetup",100)
+    
+    O = owner()
+    
+    H = egpScrH(O)
+    W = egpScrW(O)
+}
+
+if(~EGP & EGP){
+    timer("egpsetup",100)
+}
+
+if(clk("tardisfind")){
+    if(entity():isWeldedTo():type() == "gmod_tardis_interior" | entity():isWeldedTo():type() == "gmod_tardis"){
+        T = entity():isWeldedTo():tardisGet()
+    }
+    
+    if(!T:isValid()){
+        if(TardisExt:isValid()){
+            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS HUD Online")
+            
+            T = TardisExt:tardisGet()
+            
+            timer("tardischeck",10)
+            timer("egpsetup",100)
+        }
+        else{
+            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS not found. HUD Offline.")
+            exit()
+            stopAllTimers()
+        }
+    }
+    else{
+        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS HUD Online")
+        
+        
+        timer("tardischeck",10)
+        timer("egpsetup",100)
+    }
+}
+
+if(clk("tardischeck")){
+    timer("tardischeck",100)
+    
+    Health = T:tardisHealth()
+    Artron = round(T:tardisGetData("artron-val"):toNumber(),1)
+    Power = T:tardisPowered()
+    Doors = T:tardisGetData("doorstate")
+    Lock = T:tardisLocked()
+    Handbrake = T:tardisGetData("handbrake")
+    Cloak = T:tardisVisible()
+    Flight = T:tardisFlying()
+    Float = T:tardisGetData("float")
+    Moving = T:tardisMoving()
+    Vortex = T:tardisInVortex()
+    LFly = T:tardisLongflighted()
+    HADS = T:tardisIsHADS()
+    Pilot = T:tardisPilot():name()
+    Pos = T:pos()
+    Iso = T:tardisIsomorphic()
+    Phys = T:tardisPhyslocked()
+    RepairTime = clamp(round(T:tardisGetData("repair-time"):toNumber()-curtime()),0,1000)
+    
+    if(changed(Health)){
+        EGP:egpSetText(3,toString(round(Health))+"%")
+    }
+    
+    if(changed(RepairTime)){
+        if(RepairTime > 0){
+            EGP:egpSetText(3,toString(RepairTime))
+        }
+        else{
+            EGP:egpSetText(3,toString(round(Health))+"%")
+        }
+    }
+    
+    if(changed(Artron)){
+        EGP:egpSetText(6,toString(round(Artron))+"%")
+    }
+    
+    if(changed(Power)){
+        if(Power == 1){
+            EGP:egpSetText(9,"On")
+            EGP:egpColor(8,vec(0,255,0))
+            EGP:egpColor(9,vec(0,255,0))
+        }
+        else{
+            EGP:egpSetText(9,"Off")
+            EGP:egpColor(8,vec(255,0,0))
+            EGP:egpColor(9,vec(255,0,0))
+        }
+    }
+    
+    if(changed(Doors)){
+        if(Doors == "true"){
+            EGP:egpSetText(12,"Open")
+        }
+        elseif(Doors == "false" & Lock == 0){
+            EGP:egpSetText(12,"Closed")
+        }
+    }
+    
+    if(changed(Lock)){
+        if(Lock == 1){
+            EGP:egpSetText(12,"Locked")
+        }
+        else{
+            EGP:egpSetText(12,"Closed")
+        } 
+    }
+    
+    if(changed(Handbrake)){
+        if(Handbrake == "true"){
+            EGP:egpSetText(15,"On")
+        }
+        else{
+            EGP:egpSetText(15,"Off")
+        }
+    }
+    
+    if(changed(Cloak)){
+        if(Cloak == 1){ #Because cloak returns if the tardis is visible or not
+            EGP:egpSetText(18,"Off")
+        }
+        else{
+            EGP:egpSetText(18,"On")
+        }
+    }
+    
+    if(changed(Flight)){
+        if(Flight == 1){
+            EGP:egpSetText(21,"On")
+        }
+        else{
+            EGP:egpSetText(21,"Off")
+        }
+    }
+    
+    if(changed(Float)){
+        if(Float == "true"){
+            EGP:egpSetText(24,"On")
+        }
+        else{
+            EGP:egpSetText(24,"Off")
+        }
+    }
+    
+    if(changed(Moving)){
+        if(Moving == 1){
+            EGP:egpSetText(27,"Yes")
+        }
+        else{
+            EGP:egpSetText(27,"No")
+        }
+    }
+    
+    if(changed(Vortex)){
+        if(Vortex == 1){
+            EGP:egpSetText(30,"Yes")
+        }
+        else{
+            EGP:egpSetText(30,"No")
+        }
+    }
+    
+    if(changed(LFly)){
+        if(LFly == 1){
+            EGP:egpSetText(33,"Yes")
+        }
+        else{
+            EGP:egpSetText(33,"No")
+        }
+    }
+    
+    if(changed(HADS)){
+        if(HADS == 1){
+            EGP:egpSetText(36,"Yes")
+        }
+        else{
+            EGP:egpSetText(36,"No")
+        }
+    }
+    
+    if(changed(Pilot)){
+        if(T:tardisPilot():isValid()){
+            EGP:egpSetText(40,Pilot)
+        }
+        else{
+            EGP:egpSetText(40,"None")
+        }
+    }
+    
+    if(changed(Pos)){
+        EGP:egpSetText(44,toString(round(Pos)))
+    }
+    
+    if(changed(Iso)){
+        if(Iso == 1){
+            EGP:egpSetText(47,"On")
+        }
+        else{
+            EGP:egpSetText(47,"Off")
+        }
+    }
+    
+    if(changed(Phys)){
+        if(Phys == 1){
+            EGP:egpSetText(50,"On")
+        }
+        else{
+            EGP:egpSetText(50,"Off")
+        }
+    }
+}
+
+if(clk("egpsetup")){
+    ###Health
+    EGP:egpRoundedBox(1,vec2(W-80,H-20),vec2(120,20))
+    EGP:egpColor(1,vec(150))
+    EGP:egpAlpha(1,200)
+    
+    EGP:egpText(2,"Health:",vec2(W-100,H-30))
+    EGP:egpAlign(2,1)
+    EGP:egpColor(2,vec(50,50,255))
+    
+    EGP:egpText(3,toString(round(Health))+"%",vec2(W-70,H-30))
+    EGP:egpColor(3,vec(50,50,255))
+    
+    ###Artron
+    EGP:egpRoundedBox(4,vec2(W-80,H-45),vec2(120,20))
+    EGP:egpColor(4,vec(150))
+    EGP:egpAlpha(4,200)
+    
+    EGP:egpText(5,"Artron:",vec2(W-100,H-55))
+    EGP:egpAlign(5,1)
+    EGP:egpColor(5,vec(255,200,0))
+    
+    EGP:egpText(6,toString(round(Artron))+"%",vec2(W-70,H-55))
+    EGP:egpColor(6,vec(255,200,0))
+    
+    ###Power
+    EGP:egpRoundedBox(7,vec2(W-80,H-70),vec2(120,20))
+    EGP:egpColor(7,vec(150))
+    EGP:egpAlpha(7,200)
+    
+    EGP:egpText(8,"Power:",vec2(W-100,H-80))
+    EGP:egpAlign(8,1)
+    EGP:egpColor(8,vec(0,255,0))
+
+    EGP:egpText(9,"On",vec2(W-70,H-80))
+    EGP:egpColor(9,vec(0,255,0))
+
+    ###Doors    
+    EGP:egpRoundedBox(10,vec2(W-210,H-20),vec2(120,20))
+    EGP:egpColor(10,vec(150))
+    EGP:egpAlpha(10,200)
+    
+    EGP:egpText(11,"Doors:",vec2(W-235,H-30))
+    EGP:egpAlign(11,1)
+    EGP:egpColor(11,ColTLF)
+    
+    EGP:egpText(12,Doors,vec2(W-208,H-30))
+    EGP:egpColor(12,ColTLF)
+    
+    #So the door state is correct when the hud first spawns
+    if(Doors == "true"){
+        EGP:egpSetText(12,"Open")
+    }
+    elseif(Doors == "false" & Lock == 0){
+        EGP:egpSetText(12,"Closed")
+    }
+    elseif(Doors == "false" & Lock == 1){
+        EGP:egpSetText(12,"Locked")
+    }
+    
+    ###Handbrake
+    EGP:egpRoundedBox(13,vec2(W-210,H-45),vec2(120,20))
+    EGP:egpColor(13,vec(150))
+    EGP:egpAlpha(13,200)
+    
+    EGP:egpText(14,"Brake:",vec2(W-235,H-55))
+    EGP:egpAlign(14,1)
+    EGP:egpColor(14,ZeiaMBlu)
+    
+    EGP:egpText(15,Handbrake,vec2(W-208,H-55))
+    EGP:egpColor(15,ZeiaMBlu)
+    
+    #So the handbrake state is correct when the hud first spawns
+    if(Handbrake == "true"){
+        EGP:egpSetText(15,"On")
+    }
+    else{
+        EGP:egpSetText(15,"Off")
+    }
+    
+    ###Cloak
+    EGP:egpRoundedBox(16,vec2(W-210,H-70),vec2(120,20))
+    EGP:egpColor(16,vec(150))
+    EGP:egpAlpha(16,200)
+    
+    EGP:egpText(17,"Cloak:",vec2(W-235,H-80))
+    EGP:egpAlign(17,1)
+    EGP:egpColor(17,ZeiaWht)
+    
+    EGP:egpText(18,"Off",vec2(W-208,H-80))
+    EGP:egpColor(18,ZeiaWht)
+    
+    if(Cloak == 1){ #Because cloak returns if the tardis is visible or not
+        EGP:egpSetText(18,"Off")
+    }
+    else{
+        EGP:egpSetText(18,"On")
+    }
+    
+    ###Flight
+    EGP:egpRoundedBox(19,vec2(W-80,H-95),vec2(120,20))
+    EGP:egpColor(19,vec(150))
+    EGP:egpAlpha(19,200)
+    
+    EGP:egpText(20,"Flight:",vec2(W-100,H-105))
+    EGP:egpAlign(20,1)
+    EGP:egpColor(20,ZeiaWht)
+
+    EGP:egpText(21,"Off",vec2(W-70,H-105))
+    EGP:egpColor(21,ZeiaWht)
+    
+    if(Flight == 1){
+        EGP:egpSetText(21,"On")
+    }
+    else{
+        EGP:egpSetText(21,"Off")
+    }
+    
+    ###Float
+    EGP:egpRoundedBox(22,vec2(W-210,H-95),vec2(120,20))
+    EGP:egpColor(22,vec(150))
+    EGP:egpAlpha(22,200)
+    
+    EGP:egpText(23,"Float:",vec2(W-235,H-105))
+    EGP:egpAlign(23,1)
+    EGP:egpColor(23,ZeiaWht)
+    
+    EGP:egpText(24,"Off",vec2(W-208,H-105))
+    EGP:egpColor(24,ZeiaWht)
+    
+    ###Moving
+    EGP:egpRoundedBox(25,vec2(W-80,H-120),vec2(120,20))
+    EGP:egpColor(25,vec(150))
+    EGP:egpAlpha(25,200)
+    
+    EGP:egpText(26,"Moving:",vec2(W-100,H-130))
+    EGP:egpAlign(26,1)
+    EGP:egpColor(26,ZeiaWht)
+
+    EGP:egpText(27,"No",vec2(W-65,H-130))
+    EGP:egpColor(27,ZeiaWht)
+    
+    if(Moving == 1){
+        EGP:egpSetText(27,"Yes")
+    }
+    else{
+        EGP:egpSetText(27,"No")
+    }
+    
+    ###Vortex
+    EGP:egpRoundedBox(28,vec2(W-210,H-120),vec2(120,20))
+    EGP:egpColor(28,vec(150))
+    EGP:egpAlpha(28,200)
+    
+    EGP:egpText(29,"Vortex:",vec2(W-230,H-130))
+    EGP:egpAlign(29,1)
+    EGP:egpColor(29,ZeiaWht)
+    
+    EGP:egpText(30,"No",vec2(W-195,H-130))
+    EGP:egpColor(30,ZeiaWht)
+    
+    if(Vortex == 1){
+        EGP:egpSetText(30,"Yes")
+    }
+    else{
+        EGP:egpSetText(30,"No")
+    }
+    
+    ###Long Fly
+    EGP:egpRoundedBox(31,vec2(W-80,H-145),vec2(120,20))
+    EGP:egpColor(31,vec(150))
+    EGP:egpAlpha(31,200)
+    
+    EGP:egpText(32,"L-Fly:",vec2(W-100,H-155))
+    EGP:egpAlign(32,1)
+    EGP:egpColor(32,ZeiaWht)
+
+    EGP:egpText(33,"Off",vec2(W-70,H-155))
+    EGP:egpColor(33,ZeiaWht)
+    
+    if(LFly == 1){
+        EGP:egpSetText(33,"On")
+    }
+    else{
+        EGP:egpSetText(33,"Off")
+    }
+    
+    ###HADS
+    EGP:egpRoundedBox(34,vec2(W-210,H-145),vec2(120,20))
+    EGP:egpColor(34,vec(150))
+    EGP:egpAlpha(34,200)
+    
+    EGP:egpText(35,"HADS:",vec2(W-235,H-155))
+    EGP:egpAlign(35,1)
+    EGP:egpColor(35,ZeiaWht)
+    
+    EGP:egpText(36,"Off",vec2(W-200,H-155))
+    EGP:egpColor(36,ZeiaWht)
+    
+    if(HADS == 1){
+        EGP:egpSetText(36,"On")
+    }
+    else{
+        EGP:egpSetText(36,"Off")
+    }
+    
+    ###Pilot
+    EGP:egpRoundedBox(37,vec2(W-420,H-20),vec2(240,20))
+    EGP:egpColor(37,vec(150))
+    EGP:egpAlpha(37,200)
+    
+    EGP:egpRoundedBox(38,vec2(W-420,H-35),vec2(100,20))
+    EGP:egpColor(38,vec(150))
+    EGP:egpAlpha(38,200)
+    
+    EGP:egpText(39,"Pilot:",vec2(W-420,H-45))
+    EGP:egpAlign(39,1)
+    EGP:egpColor(39,ZeiaWht)
+    
+    EGP:egpText(40,"None",vec2(W-420,H-30))
+    EGP:egpColor(40,ZeiaWht)
+    EGP:egpAlign(40,1)
+    
+    if(T:tardisPilot():isValid()){
+        EGP:egpSetText(40,Pilot)
+    }
+    else{
+        EGP:egpSetText(40,"None")
+    }
+    
+    ###Position
+    EGP:egpRoundedBox(41,vec2(W-420,H-60),vec2(240,20))
+    EGP:egpColor(41,vec(150))
+    EGP:egpAlpha(41,200)
+    
+    EGP:egpRoundedBox(42,vec2(W-420,H-75),vec2(100,20))
+    EGP:egpColor(42,vec(150))
+    EGP:egpAlpha(42,200)
+    
+    EGP:egpText(43,"Position:",vec2(W-420,H-85))
+    EGP:egpAlign(43,1)
+    EGP:egpColor(43,ZeiaWht)
+    
+    EGP:egpText(44,"[0,0,0]",vec2(W-420,H-70))
+    EGP:egpColor(44,ZeiaWht)
+    EGP:egpAlign(44,1)
+    
+    EGP:egpSetText(44,toString(round(Pos)))
+    
+    ###Isomorphic
+    EGP:egpRoundedBox(45,vec2(W-80,H-170),vec2(120,20))
+    EGP:egpColor(45,vec(150))
+    EGP:egpAlpha(45,200)
+    
+    EGP:egpText(46,"Iso:",vec2(W-100,H-180))
+    EGP:egpAlign(46,1)
+    EGP:egpColor(46,ZeiaWht)
+
+    EGP:egpText(47,"Off",vec2(W-70,H-180))
+    EGP:egpColor(47,ZeiaWht)
+    
+    if(Iso == 1){
+        EGP:egpSetText(47,"On")
+    }
+    else{
+        EGP:egpSetText(47,"Off")
+    }
+    
+    ###Physlock
+    EGP:egpRoundedBox(48,vec2(W-210,H-170),vec2(120,20))
+    EGP:egpColor(48,vec(150))
+    EGP:egpAlpha(48,200)
+    
+    EGP:egpText(49,"Phys:",vec2(W-235,H-180))
+    EGP:egpAlign(49,1)
+    EGP:egpColor(49,ZeiaWht)
+    
+    EGP:egpText(50,"Off",vec2(W-200,H-180))
+    EGP:egpColor(50,ZeiaWht)
+    
+    if(Phys == 1){
+        EGP:egpSetText(50,"On")
+    }
+    else{
+        EGP:egpSetText(50,"Off")
+    }
+    
+    ###Tardis Location
+    EGP:egp3DTracker(51,vec(0,0,50))
+    EGP:egpParent(51,T)
+    EGP:egpColor(51,vec(50,50,255))
+    
+    EGP:egpCircleOutline(52,vec2(0,0),vec2(40,40))
+    EGP:egpColor(52,vec(100,100,255))
+    EGP:egpParent(52,51)
+    
+    EGP:egpText(53,"TARDIS",vec2(0,-10))
+    EGP:egpAlign(53,1)
+    EGP:egpColor(53,vec(100,100,255))
+    EGP:egpParent(53,51)
+}

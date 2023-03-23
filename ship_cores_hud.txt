@@ -19,7 +19,6 @@ for(Tracker=1,Cores:count()){
     
     E:egpSize(X, vec2(40,50))
     E:egpPos(Tracker,Core:pos())
-    
 }
 
 
@@ -37,7 +36,7 @@ if(clk("find")){
         Name = Tracker+Cores:count()*2
         
         E:egp3DTracker(Tracker,Core:pos())
-        
+        #E:egpParent(Tracker,Core) #pos becomes local when you parent
         
         E:egpBoxOutline(Rect, vec2(0,0), vec2(0,0))
         E:egpColor(Rect,vec(0,255,0))

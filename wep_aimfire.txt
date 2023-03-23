@@ -3,6 +3,10 @@
 @outputs Fire Target:entity TargetPos:vector ChangePos
 @persist Targets:array
 
+if(first()){
+    Target = noentity()
+}
+
 if(~Active){
     if(Active == 1){
         findByClass("sf-spacemine")
@@ -11,6 +15,8 @@ if(~Active){
             timer("A",100)
             
             Targets = findToArray()
+            Target = Targets:popEntity()
+            TargetPos = Targets:popEntity():pos()
         }
         else{
             print("no find")
@@ -27,17 +33,20 @@ if(clk("A")){
     timer("A",300)
     
     Target = Targets:popEntity()
-    TargetPos = Targets:popEntity():pos()
+    TargetPos = Target:pos()
     
-    Cannon:setAng((Target:pos() - Cannon:pos()):toAngle() + ang(90,0,0))
-    ChangePos = 1
-    
-    if(!Target:isValid()){
+    if(Target:isValid()){
+        Cannon:setAng((Target:pos() - Cannon:pos()):toAngle() + ang(90,0,0))
+        ChangePos = 1
+        
+        timer("fire",5)
+        timer("reset",100)
+    }
+    else{
         Targets = findToArray()
     }
     
-    timer("fire",5)
-    timer("reset",100)
+    
 }
 
 if(clk("fire")){
