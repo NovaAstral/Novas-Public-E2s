@@ -1,0 +1,58 @@
+@name Angle InterpTest
+@inputs Active Ent:entity Target:vector
+@persist TurnSpeed [TarAng,EntAng]:angle [EndPitch,EndYaw] TarPos:vector MaxTurnSpeed
+
+if(first()){
+    TurnSpeed = 0
+    EntAng = ang()
+    
+    MaxTurnSpeed = 1
+}
+
+if(~Active){
+    if(Active == 1){
+        timer("update",1)
+    }
+    else{
+        TarPos = vec(0)
+        
+        TurnSpeed = 0
+        
+        stoptimer("update")
+        stoptimer("lerp")
+    }
+}
+
+if(clk("update")){
+    timer("update",100)
+    TarPos = Target
+    
+    if(changed(TarPos)){
+        TarAng = (TarPos - Ent:pos()):toAngle()
+        
+        EndPitch = angnorm(TarAng:pitch())
+        EndYaw = angnorm(TarAng:yaw())
+        
+        timer("lerp",0)
+    }
+}
+
+if(clk("lerp")){
+    timer("lerp",10)
+    
+    TurnSpeed = clamp(TurnSpeed+0.1,0,MaxTurnSpeed)
+    
+    if(TurnSpeed == 1){
+        #stoptimer("lerp")
+    }
+    
+    EntAng = EntAng:setPitch(mathApproachAngle(Ent:angles():pitch(),EndPitch,TurnSpeed))
+    EntAng = EntAng:setYaw(mathApproachAngle(Ent:angles():yaw(),EndYaw,TurnSpeed))
+    
+    
+    timer("setang",1)
+}
+
+if(clk("setang")){
+    Ent:setAng(EntAng)
+}
