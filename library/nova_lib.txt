@@ -95,7 +95,10 @@ if(first() | dupefinished()){
         WarpLoc["asteroid2",vector] = vec(-7000,12222,-8555)
         WarpLoc["space",vector] = vec(-1600,-1313,2525)
         WarpLoc["space2",vector] = vec(3666,3838,-2745)
-        
+    }
+    elseif(map() == "sb_forlorn_sb3_r3"){
+        WarpLoc["sun",vector] = vec(13424,13254,13143)
+        WarpLoc["shakur",vector] = vec(7860,-7975,-5470)
     }
     
     TransportLoc = table()
@@ -149,6 +152,8 @@ if(first() | dupefinished()){
     TarType["jumper",string] = "*puddle_jumper"
     
     TarType["kino",string] = "kino_ball"
+    
+    TarType["malp",string] = "malp"
     
     TarType["node",string] = "stargazer_node"
     TarType["npc",string] = "npc_*"

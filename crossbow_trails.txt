@@ -1,0 +1,40 @@
+@name Crossbow Trails
+@outputs Bolt:entity
+@persist TrailLength Bolt:entity Bolts:array MaxTrails
+
+if(first()){
+    TrailLength = 5
+    
+    MaxTrails = 5
+    
+    for(I=1,MaxTrails){
+        holoCreate(I)
+        holoAlpha(I,0)
+    }
+    
+    timer("trail",1)
+}
+
+if(clk("trail")){ #To random color the trail
+    for(I=1,MaxTrails){
+        holoEntity(I):setTrails(32,0,TrailLength,"trails/laser",randvec(vec(100),vec(255)),255)
+    }
+}
+
+event tick(){
+    findByClass("crossbow_bolt")
+    Bolts = findToArray()
+    
+    if(Bolts:count() > 0){
+        for(I=1,Bolts:count()){
+            Bolt = Bolts[I,entity]
+            
+            holoPos(I,Bolt:pos())
+            
+            if(!timerRunning("trailcol")){
+                timer("trailcol",1000)
+            }
+        }
+    }
+}
+

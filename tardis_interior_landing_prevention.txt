@@ -1,0 +1,24 @@
+@name Yeet the fucking tardises landing inside yours
+@inputs InteriorEnt:entity
+@outputs FEnt:entity
+@persist FindRadius
+
+if(first()){
+    FindRadius = 1000
+    
+    timer("find",10)
+}
+
+if(clk("find")){
+    timer("find",100)
+    
+    findByClass("gmod_tardis")
+    findClipToSphere(InteriorEnt:pos(),FindRadius)
+    
+    FEnt = find()
+    
+    if(FEnt:isValid() & FEnt:owner() != owner()){
+        FEnt:setPos(FEnt:pos() - vec(0,0,1500))
+        printColorOther(FEnt:owner(),teamColor(owner():team()),owner():name(),": ",vec(0,255,255),"[TARDIS] ",vec(230,110,0),"Please do not try to land inside this TARDIS. The position of your TARDIS has been moved.")
+    }
+}

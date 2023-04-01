@@ -1,4 +1,4 @@
-@name Vethian AI 2.0
+@name Vethian AI 2.1
 
 @inputs [Energy,Refinery,LSCore,WaterCore,ShipCore,Shield,Cloak,Gate,Rings,DriveCore,Transporter,Drive]:wirelink [DriveEnt,BrigEnt]:entity
 
@@ -7,13 +7,14 @@
 @outputs HangarDoor HangarDoorLeft HangarDoorRight Shutters BlastDoors BridgeDoor GateRDoor EngDoor TransDoor OtherDoors ##Doors
 @outputs Fire WepStrength WepRate BeamWepType TorpWepType TurretWepType ##Weapon Control
 @outputs Warp [Destination,PrevPos]:vector AngleOffset:angle ##Warp Control
+@outputs TargetPos:vector TargetEnt:entity TargetOwner:entity TargetLocked
 
 @persist [WaterCW,AimEFW,AimEW]:wirelink [WaterCE,AimEF,AimE]:entity [Shipname,DistressLocation,AimName]:string
 @persist GateCol SDTimeLeft DCoreSpeed DCoreTurnSpeed AutoDistress WPlaced Repair Jam PrintOnSpawn [OpenInput TOpenInput LockInput]:string DoorFound
-@persist SH CP HP AllFFs AllDoors [Prefix,WarpPrefix,TPPrefix]:string
+@persist SH CP HP AllFFs AllDoors [Prefix,WarpPrefix,TPPrefix,TargetPrefix]:string
 @persist [PrevPos]:vector [WarpAng,PrevAng,DriveOffset]:angle DriveEnt:entity [WarpInput,AngInput,DestInput]:string
 @persist [PadTarget,PadDest,PadBeam,TransBeamType,BeamName]:string BrigName:array [BeamFrom,BeamTo,AimET]:entity
-
+@persist FEnt:entity FEnts:array AutoTarget AutoTargetPrint
 
 #Made by Nova Astral
 #Discord: Nova Astral#2079
@@ -32,28 +33,13 @@
 #Todo:
 #Merge Iris Computer?
 #Merge Gate Functions
-#Make and Merge Targetting
 #Full Weapons control
 #Change Distress find to normal find and incorporate that into both new distress and player/ship find
 #Remove most wire inputs by using autofind
 
 #[
-V2.0 Changes:
-- Added even more colors to the prints
-- Changed the alerts so you must do "/v alert <alert>" instead of "/v <alert>"
-- Added the ability to "/v sd this" to shuttles
-- Made it so Distress Calls and Water Place still work when the ship is parented (sort of, its buggy >:( )
-- Added an owner print when you have PrintOnSpawn disabled
-- Changed the wire input names of the Water Core, LS Core, and Ship Core
-- Fixed the 'That is not a door' print to properly include the name of the thing you tried to open
-- Added full Transporter Controls (All commands are in the Docs at '/v help')
-- Added "/v sd pause" and "/v sd unpause"
-- Made it so you can also say "/v sd abort" to stop the Self Destruct
-- Made Tractor Beams a toggle ("/v tr" or "/v tractor")
-- Made Repair Beam a toggle ("/v repair")
-- Added Hangar Forcefield control "/v hff/hangff/hangarff"
-- Added Pulsar Emitter Targetting "/v ctarget <player>" and "/v cuntarget <player>"
-- Starfall Release
+V2.1 Changes:
+- Targetting!
 ]#
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -72,13 +58,17 @@ if(clk("config")){ #Main Config
     PrintOnSpawn = 1 #Set this to 0 to stop printing to faction on e2 spawn
 
     Shipname = "Shipname" #Change this to the name of your ship
-
+    
     #AutoDistress = 1 #Disable this if you don't want your ship to send a distress call at 30% hull
     #This isn't implemented yet
+    
+    AutoTarget = 1 #If Target destroyed, try to target another of the same entity owned by the same person
+    AutoTargetPrint = 1 #Print in chat when AutoTarget targets a new entity
     
     Prefix = "/v" #Set this to the prefix you need to enter first in chat for any commands
     WarpPrefix = "/warp" #This is the Warp Prefix for using the warp drive
     TPPrefix = "/pad" #This is the Transport Prefix for using the Transporter Pad
+    TargetPrefix = "/t"
     
     WepStrength = 10 #I would set these lower if you dont have alot of resources
     WepRate = 10
@@ -263,6 +253,37 @@ if(first() | dupefinished()){ #Function Setup
             EngFF = 0
             CoreFF = 0
             OtherFFs = 0
+        }
+    }
+    
+    FEnts = array()
+    
+    function void target(Ent:entity,Print){
+        TargetEnt = Ent
+        TargetPos = Ent:boxCenterW()
+        
+        TargetLocked = 1
+        
+        timer("target",1)
+        
+        if(Ent:owner():name() == ""){
+            TargetOwner = noentity()
+            Owner = "world"
+            Color = vec(255)
+        }
+        else{
+            TargetOwner = Ent:owner()
+            Owner = Ent:owner():name()
+            Color = teamColor(Ent:owner():team())
+        }
+        
+        if(Print == 1){
+            if(Ent:isPlayer()){
+                printColor(ColPink,"[Target] ",ColOng,"Targetting ",teamColor(Ent:team()),Ent:name())
+            }
+            else{
+                printColor(ColPink,"[Target] ",ColOng,"Targetting ",ColGrn,Ent:type(),ColOng," Owned by: ",Color,Owner)
+            }
         }
     }
 }
@@ -781,7 +802,7 @@ if(clk("alightoff")){
 if(chatClk(O)){
     if(OLS[1,string] == Prefix){
         hideChat(1)
-        if(OLS[2,string] == "bridge" | OLS[2,string] == "br"){1
+        if(OLS[2,string] == "bridge" | OLS[2,string] == "br"){
             BridgeDoor = !BridgeDoor
             if(BridgeDoor == 1){
                 printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Bridge Door ",ColGrn,"Opened")
@@ -2269,3 +2290,140 @@ if(clk("resetbeam")){
     Transporter[PadDest,vector] = vec()
     Transporter[PadBeam,number] = 0
 }
+
+if(chatClk(O)){
+    if(OLS[1,string] == TargetPrefix){
+        hideChat(1)
+        if(OLS[2,string] == "help"){
+            printColor(ColPink,"[Target] ",ColOng,"Chat Target Help:")
+            printColor(ColPink,"[Target] ",ColOng,"If you're seeing this, I haven't made a help file yet oops")
+        }
+        elseif(OLS[2,string] == "list"){
+            printColor(ColPink,"[Target] ",ColOng,"Target List:")
+            printColor(ColOng,TarType:keys():concat(", "))
+        }
+        elseif(OLS[2,string] == "this" | OLS[2,string] == "that"){
+            if(owner():aimEntity():isValid()){
+                target(owner():aimEntity(),1)
+            }
+            else{
+                printColor(ColPink,"[Target] ",ColOng,"You're not looking at anything!")
+            }
+        }
+        elseif(OLS[2,string] == "here"){
+            stoptimer("target")
+                
+            TargetEnt = noentity()
+            TargetPos = owner():aimPos()
+                
+            TargetLocked = 1
+                
+            printColor(ColPink,"[Target] ",ColOng,"Targetting ",ColGrn,toString(round(owner():aimPos())))
+        }
+        elseif(OLS[2,string] == "next"){
+            FEnts:pushEntity(TargetEnt)
+            target(FEnts:shiftEntity(),1)
+        }
+        elseif(OLS[2,string] == "off"){
+            TargetEnt = noentity()
+            TargetPos = vec(0)
+            TargetOwner = noentity()
+                
+            TargetLocked = 0
+                
+            stoptimer("target")
+                
+            printColor(ColPink,"[Target] ",ColOng,"Disabling Targetting")
+        }
+        else{
+            local Ply = findPlayerByName(OLS[2,string])
+            local Ply2 = findPlayerByName(OLS[3,string])
+                
+            if(Ply:isPlayer()){
+                target(Ply,1)
+            }
+            else{
+                if(TarType:exists(OLS[2,string])){
+                    findByClass(TarType[OLS[2,string],string])
+                    findClipToPlayerProps(Ply2)
+                    FEnts = findToArray()
+                        
+                    FEnt = FEnts:popEntity()
+                        
+                    if(FEnt:isValid()){
+                        target(FEnt,1)
+                    }
+                    else{
+                        if(Ply2:isPlayer()){
+                            printColor(ColPink,"[Target] ",ColOng,"The Player ",teamColor(Ply2:owner():team()),Ply2:owner():name(),ColOng," Does not own a ",ColRed,OLS[2,string])
+                        }
+                        else{
+                            printColor(ColPink,"[Target] ",ColOng,"Invalid Target!")
+                        }
+                    }
+                }
+                else{ #Find string2 type owned by string3 player
+                    if(Ply2:isPlayer()){
+                        findByClass(OLS[2,string])
+                        findClipToPlayerProps(Ply2)
+                        FEnts = findToArray()
+                            
+                        FEnt = FEnts:popEntity()
+                            
+                        if(FEnt:isValid()){
+                            target(FEnt,1)
+                        }
+                        else{
+                            if(Ply2:isPlayer()){
+                                printColor(ColPink,"[Target] ",ColOng,"The Player ",teamColor(Ply2:owner():team()),Ply2:owner():name(),ColOng," Does not own a ",ColRed,OLS[2,string])
+                                #I have no fucking clue why this still prints even when its not really a player
+                            }
+                            else{
+                                printColor(ColPink,"[Target] ",ColOng,"Invalid Target!")
+                            }
+                        }
+                    }
+                    else{
+                        printColor(ColPink,"[Target] ",ColOng,"There is no player with the name: ",OLS[3,string])
+                    }
+                }
+            }
+        }
+    }
+}
+
+if(clk("target")){
+    timer("target",10)
+    
+    if(TargetEnt:isValid()){
+        TargetPos = TargetEnt:boxCenterW()
+            
+        TargetLocked = 1
+    }
+    else{
+        if(AutoTarget == 1){
+            if(FEnts:count() > 0){
+                TargetEnt = FEnts:popEntity()
+                
+                if(TargetEnt:isValid()){
+                    target(TargetEnt,AutoTargetPrint)
+                }
+            }
+            else{
+                printColor(ColPink,"[Target] ",ColOng,"Target Lost! Likely destroyed.")
+                    
+                TargetLocked = 0
+                    
+                stoptimer("target")
+            }
+        }
+        else{
+            printColor(ColPink,"[Target] ",ColOng,"Target Lost! Likely destroyed.")
+            
+            TargetLocked = 0
+            
+            stoptimer("target")
+        }
+    }
+}
+

@@ -1,7 +1,8 @@
 @name TARDIS HUD
 @inputs TardisExt:entity EGP:wirelink
+@outputs IntDist
 @persist H W Health Artron Power Lock Cloak Flight Moving Vortex LFly HADS Pos:vector Iso Phys RepairTime
-@persist T:entity [Doors,Handbrake,Pilot]:string
+@persist [T,TardisInt]:entity [Doors,Handbrake,Pilot]:string IntDist
 #include "Novas-Public-E2s/library/color_lib"
 
 if(first() | dupefinished()){
@@ -47,6 +48,10 @@ if(clk("tardisfind")){
         timer("tardischeck",10)
         timer("egpsetup",100)
     }
+    
+    findByClass("gmod_tardis_interior")
+    findClipToPlayerProps(owner())
+    TardisInt = find()
 }
 
 if(clk("tardischeck")){
@@ -70,6 +75,8 @@ if(clk("tardischeck")){
     Iso = T:tardisIsomorphic()
     Phys = T:tardisPhyslocked()
     RepairTime = clamp(round(T:tardisGetData("repair-time"):toNumber()-curtime()),0,1000)
+    
+    IntDist = TardisInt:pos():distance(owner():pos())
     
     if(changed(Health)){
         EGP:egpSetText(3,toString(round(Health))+"%")
@@ -220,6 +227,15 @@ if(clk("tardischeck")){
         else{
             EGP:egpSetText(50,"Off")
         }
+    }
+    
+    if(IntDist <= 1000){
+        EGP:egpAlpha(52,0)
+        EGP:egpAlpha(53,0)
+    }
+    else{
+        EGP:egpAlpha(52,255)
+        EGP:egpAlpha(53,255)
     }
 }
 
