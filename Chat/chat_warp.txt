@@ -195,7 +195,7 @@ if(changed(Drive)){
             WarpInput = "Jump"
             printColor(ColPink,"[Warp] ",ColOng,"Wire Drive Linked")
         }
-        elseif(DriveType == "warpdrive"){ #SBEP Warp Drive
+        elseif(DriveType == "warpdrive" | DriveType == "warpdrivev2"){ #SBEP Warp Drive
             DestInput = "Destination"
             WarpInput = "Warp"
             AngInput = ""

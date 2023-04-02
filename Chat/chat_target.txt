@@ -1,7 +1,7 @@
 @name Chat Target
 @inputs
 @outputs TargetPos:vector TargetEnt:entity TargetOwner:entity TargetLocked
-@persist Prefix:string FEnt:entity FEnts:array Owner:string Color:vector AutoTarget AutoTargetPrint
+@persist Prefix:string FEnt:entity FEnts:array Color:vector AutoTarget AutoTargetPrint
 
 #include "Novas-Public-E2s/library/nova_lib"
 
@@ -28,12 +28,10 @@ if(clk("functionsetup")){
         
         if(Ent:owner():name() == ""){
             TargetOwner = noentity()
-            Owner = "world"
             Color = vec(255)
         }
         else{
             TargetOwner = Ent:owner()
-            Owner = Ent:owner():name()
             Color = teamColor(Ent:owner():team())
         }
         
