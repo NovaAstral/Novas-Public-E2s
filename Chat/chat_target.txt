@@ -40,7 +40,7 @@ if(clk("functionsetup")){
                 printColor(ColPink,"[Target] ",ColOng,"Targetting ",teamColor(Ent:team()),Ent:name())
             }
             else{
-                printColor(ColPink,"[Target] ",ColOng,"Targetting ",ColGrn,Ent:type(),ColOng," Owned by: ",Color,Owner)
+                printColor(ColPink,"[Target] ",ColOng,"Targetting ",ColGrn,Ent:type(),ColOng," Owned by: ",Color,Ent:owner():name())
             }
         }
     }

@@ -1,7 +1,7 @@
 @name TARDIS Mainframe v2
 @inputs [TardisExt,B1,B2,B3,B4,B5,B6,Throttle]:entity
 @outputs [O,T]:entity
-@persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
+@persist TW:wirelink ShieldEnt:entity Prefix:string
 @persist Shield HPLow Advt
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -12,6 +12,8 @@
 
 #The Entity inputs are for the Advanced Takeoff of the Legacy TARDIS. 
 #It does not and never will work on the 'Rewrite' TARDIS unless they change how their buttons work
+
+#tardisGetData("repair-time"):toNumber()-curtime()
 
 if(first() | dupefinished()){
     O = owner()
@@ -164,18 +166,6 @@ if(clk("hpcheck")){
     }
 }
 
-if(clk("sndcreate")){
-    ShieldOnSnd = webAudio("https://cdn.discordapp.com/attachments/915811722646925312/1034538675742183556/force_field_up.ogg")
-    ShieldOffSnd = webAudio("https://cdn.discordapp.com/attachments/915811722646925312/1034538675398246400/force_field_down.ogg")
-}
-
-if(clk("sndstop")){
-    ShieldOnSnd:destroy()
-    ShieldOffSnd:destroy()
-    
-    timer("sndcreate",10)
-}
-
 event chat(SaidPly:entity, Said:string,_){
     local OLS = Said:lower():explode(" ")
     
@@ -185,7 +175,7 @@ event chat(SaidPly:entity, Said:string,_){
             
             if(OLS[2,string] == "help"){
                 printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS Help can be found here:")
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"https://docs.google.com/document/d/1BJ8nmUoFAoqvbJe2hhY2GhKMJYK4piwIzZv30RTWR98")
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"If you're seeing this, I haven't made a help file yet oops")
             }
             
             if(OLS[2,string] == "shield"){
@@ -197,13 +187,6 @@ event chat(SaidPly:entity, Said:string,_){
                         
                         ShieldEnt:propNotSolid(0)
                         ShieldEnt:propDraw(1)
-                        
-                        #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
-                        
-                        ShieldOnSnd:setPos(T:pos())
-                        ShieldOnSnd:setParent(T)
-                        ShieldOnSnd:play()
-                        timer("sndstop",ShieldOnSnd:getLength()*1000)
                     }
                     else{
                         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Offline")
@@ -212,13 +195,6 @@ event chat(SaidPly:entity, Said:string,_){
                         
                         ShieldEnt:propNotSolid(1)
                         ShieldEnt:propDraw(0)
-                        
-                        #T:soundPlay(1,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-    
-                        ShieldOffSnd:setPos(T:pos())
-                        ShieldOffSnd:setParent(T)
-                        ShieldOffSnd:play()
-                        timer("sndstop",ShieldOffSnd:getLength()*1000)
                     }
                 }
                 
@@ -233,13 +209,6 @@ event chat(SaidPly:entity, Said:string,_){
                         
                         ShieldEnt:propNotSolid(0)
                         ShieldEnt:propDraw(1)
-                        
-                        #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
-                        
-                        ShieldOnSnd:setPos(T:pos())
-                        ShieldOnSnd:setParent(T)
-                        ShieldOnSnd:play()
-                        timer("sndstop",ShieldOnSnd:getLength()*1000)
                     }
                 }
                 
@@ -254,13 +223,6 @@ event chat(SaidPly:entity, Said:string,_){
                         
                         ShieldEnt:propNotSolid(1)
                         ShieldEnt:propDraw(0)
-                        
-                        #T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-    
-                        ShieldOffSnd:setPos(T:pos())
-                        ShieldOffSnd:setParent(T)
-                        ShieldOffSnd:play()
-                        timer("sndstop",ShieldOnSnd:getLength()*1000)
                     }
                 }
             }
@@ -305,49 +267,6 @@ event chat(SaidPly:entity, Said:string,_){
                     
                     if(dematJamCheck(1,owner():pos()) == 0){
                         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing to ",ColTeam,"You")
-                    }
-                }
-                elseif(OLS[3,string] != "here" & OLS[3,string] != "me" & OLS[3,string]:length() > 0){
-                    DematPly = findPlayerByName(OLS[3,string])
-                    
-                    if(DematPly:isValid()){
-                        if(dematJamCheck(1,owner():pos()) == 0){
-                            printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerializing to ",teamColor(DematPly:team()),DematPly:name())
-                            T:tardisDemat(DematPly:pos(),T:angles())
-                            T:tardisSetDestination(DematPly:pos(),T:angles())
-                        }
-                    }
-                    else{
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is no player with the name ",ColRed,OLS[3,string])
-                    }
-                }
-            }
-            
-            if(OLS[2,string] == "setdest"){
-                if(OLS[3,string] == "here"){
-                    T:tardisSetDestination(owner():aimPos(),T:angles())
-                    
-                    if(dematJamCheck(1,owner():aimPos()) == 0){
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Destination set to aimpos")
-                    }
-                }
-                
-                if(OLS[3,string] == "me"){
-                    T:tardisSetDestination(owner():pos(),T:angles())
-                    
-                    if(dematJamCheck(1,owner():pos()) == 0){
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Destination set to ",ColTeam,"You")
-                    }
-                }
-                elseif(OLS[3,string] != "here" & OLS[3,string] != "me" & OLS[3,string]:length() > 0){
-                    DematPly = findPlayerByName(OLS[3,string])
-                    
-                    if(DematPly:isValid()){
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Destination set to ",teamColor(DematPly:team()),DematPly:name())
-                        T:tardisSetDestination(DematPly:pos(),T:angles())
-                    }
-                    else{
-                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is no player with the name ",ColRed,OLS[3,string])
                     }
                 }
             }
@@ -787,10 +706,6 @@ event chat(SaidPly:entity, Said:string,_){
                 else{
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair is ",ColRed,"Disabled")
                 }
-            }
-            
-            if(OLS[2,string] == "repairtime"){
-                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Self Repair time left: ",ColGrn,toString(T:tardisGetData("repair-time"):toNumber()-curtime()))
             }
             
             if(OLS[2,string] == "visible"){

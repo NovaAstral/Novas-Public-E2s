@@ -6,7 +6,7 @@ if(first()){
     TurnSpeed = 0
     EntAng = ang()
     
-    LerpTime = 0.01 #In Seconds
+    LerpTime = 1 #How many seconds it takes to reach the target
 }
 
 if(~Active){

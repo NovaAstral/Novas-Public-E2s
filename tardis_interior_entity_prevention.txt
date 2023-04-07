@@ -1,6 +1,6 @@
 @name Yeet the fucking ents inside your tardis
 @inputs InteriorEnt:entity
-@persist FindRadius FEnts:array
+@persist FindRadius FEnts:array Blacklist:array
 
 if(first()){
     FindRadius = 1000
@@ -9,12 +9,23 @@ if(first()){
     timer("exclude",10)
 }
 
+if(clk("exclude")){
+    Blacklist = array(
+        "prop_physics",
+        "^gmod_tardis$" #weird characters are lua, basically it means "only gmod_tardis"
+    )#end array
+}
 
 if(clk("find")){
     timer("find",100)
     
-    findExcludePlayerProps(owner())
+    #findExcludePlayerProps(owner())
     findExcludeClass("player")
+    findExcludeClass("gmod_tardis_")
+    for(I=1,Blacklist:count()){
+        findIncludeClass(Blacklist[I,string])
+    }
+    
     findInSphere(InteriorEnt:pos(),FindRadius)
     
     FEnts = findToArray()

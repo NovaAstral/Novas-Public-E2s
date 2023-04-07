@@ -2,6 +2,9 @@
 @inputs Active Ent:entity Target:vector
 @persist TurnSpeed [TarAng,EntAng]:angle [EndPitch,EndYaw] TarPos:vector MaxTurnSpeed
 
+#This is the same way CAP makes its turrets turn to target things (but without the angle limits)
+#its bad, use the angle_lerptest if you found this on my (Nova Astral) github
+
 if(first()){
     TurnSpeed = 0
     EntAng = ang()

@@ -1,0 +1,35 @@
+@name Resource Outputs
+@inputs [Node,Gen1,Gen2,Gen3,Gen4,WatGen]:wirelink 
+@outputs EnergyGen EnergyPerc EnergyUsage WaterGen WaterPerc WaterUsage CurEnergy CurWater
+@persist CurEnergy CurWater
+
+if(first()){
+    timer("getstuff",10)
+    timer("setstuff",10)
+    timer("usage",10)
+}
+
+if(clk("setstuff")){
+    timer("setstuff",2100)
+    #print("fuck")
+    CurEnergy = Node["Energy",number]
+    CurWater = Node["Water",number]
+    
+    #timer("usage",10)
+}
+
+if(clk("getstuff")){
+    timer("getstuff",100)
+    EnergyGen = Gen1["Output",number] + Gen2["Output",number] + Gen3["Output",number] + Gen4["Output",number]
+    WaterGen = WatGen["WaterProduction",number]
+    
+    EnergyPerc = round(Node["Energy",number] / Node["Max Energy",number] * 100)
+    WaterPerc = round(Node["Water",number] / Node["Max Water",number] * 100)
+}
+
+if(clk("usage")){
+    timer("usage",100) #this doesnt fucking work i hate it
+    EnergyUsage = CurEnergy - Node["Energy",number]
+    WaterUsage = CurWater - Node["Water",number]
+}
+

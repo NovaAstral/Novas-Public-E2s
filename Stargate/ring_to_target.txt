@@ -29,7 +29,7 @@ if(clk("a")){
 if(clk("b")){
     RingsE:setPos(Target:pos()+vec(0,150,0))
     #Moves the rings to the target with an offset of 200 so it doesn't ring them up
-    timer("c",300)
+    timer("c",1000) #i hate the timing, it always changes
 }
 
 if(clk("c")){

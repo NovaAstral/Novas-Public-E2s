@@ -174,7 +174,7 @@ if(first() | dupefinished()){
     TarType["sphere",string] = "box_sphere"
     TarType["stargate",string] = "stargate_*"
     
-    TarType["tardis",string] = "*tardis"
+    TarType["tardis",string] = "^gmod_tardis$"
     TarType["teltac",string] = "sg_vehicle_teltac"
     TarType["turret",string] = "gmod_wire_turret"
     
