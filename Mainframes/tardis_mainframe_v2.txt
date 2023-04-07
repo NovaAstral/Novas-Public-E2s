@@ -2,7 +2,7 @@
 @inputs [TardisExt,B1,B2,B3,B4,B5,B6,Throttle]:entity
 @outputs [O,T]:entity
 @persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
-@persist Shield HPLow Advt
+@persist Shield HPLow Advt DematPly:entity
 
 #include "Novas-Public-E2s/library/nova_lib"
 
@@ -311,10 +311,11 @@ event chat(SaidPly:entity, Said:string,_){
                     DematPly = findPlayerByName(OLS[3,string])
                     
                     if(DematPly:isValid()){
-                        if(dematJamCheck(1,owner():pos()) == 0){
+                        T:tardisDemat(DematPly:pos(),T:angles())
+                        T:tardisSetDestination(DematPly:pos(),T:angles())
+                        
+                        if(dematJamCheck(1,DematPly:pos()) == 0){
                             printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerializing to ",teamColor(DematPly:team()),DematPly:name())
-                            T:tardisDemat(DematPly:pos(),T:angles())
-                            T:tardisSetDestination(DematPly:pos(),T:angles())
                         }
                     }
                     else{
