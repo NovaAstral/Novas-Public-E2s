@@ -1,0 +1,8 @@
+@name print players
+
+Plys = table()
+Plys = findToTable()
+
+Plys:keys():concat(", "))
+
+print(Plys:keys():concat(", ")))

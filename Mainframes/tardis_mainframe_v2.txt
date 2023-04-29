@@ -3,6 +3,7 @@
 @outputs [O,T]:entity
 @persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
 @persist Shield HPLow Advt DematPly:entity
+@persist [SiegeMat,SiegeModel]:string STAlpha SCAlpha [SiegeProp,TDoor]:entity
 
 #include "Novas-Public-E2s/library/nova_lib"
 
@@ -17,23 +18,29 @@ if(first() | dupefinished()){
     O = owner()
     timer("tget",1000)
     
-    HPLow = 0
-    Shield = 0
+    SiegeMat = "models/props_combine/Combine_Citadel001" #The material of the Siege Mode prop
+    SiegeModel = "models/hunter/blocks/cube025x025x025.mdl" #The model of the Siege Mode prop
     
     Advt = 1000 #Timer for how fast Advanced Takeoff will happen
     
+    Prefix = "/t"
+    
     timer("config",10)
     timer("funcsetup",100)
+    
+    #no touchy
+    STAlpha = 255
+    SCAlpha = 0
+    
+    HPLow = 0
+    Shield = 0
 }
 
 
 if(clk("config")){
-    Prefix = "/t"
-    
     function vector vector:round(D:number) { return vec(round(This:x(), D), round(This:y(), D), round(This:z(), D)) }
     function angle angle:round(D:number) { return ang(round(This:pitch(), D), round(This:yaw(), D), round(This:roll(), D)) }
     #vector and angle functions made by Quiru/Princess Nova
-
 }
 
 
@@ -53,6 +60,7 @@ if(clk("tget")){
             timer("shieldcheck",1000)
             timer("hpcheck",1000)
             timer("sndcreate",100)
+            timer("doorfind",1)
         }
         else{
             printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS not found. Mainframe Offline.")
@@ -69,7 +77,16 @@ if(clk("tget")){
         timer("shieldcheck",1000)
         timer("hpcheck",1000)
         timer("sndcreate",100)
+        timer("doorfind",1)
     }
+}
+
+if(clk("doorfind")){
+    findByClass("gmod_tardis_part_door")
+    findClipToSphere(T:pos(),200)
+    findClipToPlayerProps(owner())
+    
+    TDoor = find()
 }
 
 if(clk("funcsetup")){
@@ -656,6 +673,43 @@ event chat(SaidPly:entity, Said:string,_){
                 B1:use()
                 timer("adv1",Advt)
             }
+            
+            if(OLS[2,string] == "siege"){
+                if(OLS[3,string] == "on"){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Siege Mode",ColGrn," Enabled")
+                    
+                    SiegeProp = propSpawn(SiegeModel,T:pos()+vec(0,0,10),0)
+                    noCollide(SiegeProp,T)
+                    SiegeProp:setAlpha(0)
+                    SiegeProp:setMaterial(SiegeMat)
+                    
+                    SiegeProp:propSetVelocity(T:vel())
+                    
+                    T:parentTo(SiegeProp)
+                    
+                    T:soundPlay(1,4400,"drmatt/tardis/demat_damaged.wav")
+                    timer("siegedemat",1)
+                    timer("siegedoorcheck",1)
+                    timer("siegesoundstop",4400)
+                }
+                elseif(OLS[3,string] == "off"){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Siege Mode",ColRed," Disabled")
+                    
+                    T:propNotSolid(0)
+                    noCollideAll(TDoor,0)
+                    
+                    T:soundPlay(2,5600,"drmatt/tardis/repairfinish.wav")
+                    T:deparent()
+                    T:propFreeze(0)
+                    T:setPos(SiegeProp:pos() + vec(0,0,-5))
+                    T:setAng(ang(0,SiegeProp:angles():yaw(),0))
+                    
+                    T:propSetVelocity(SiegeProp:vel())
+                    
+                    timer("siegeremat",1)
+                    timer("siegesoundstop",5600)
+                }
+            }
         
         
             ###########################
@@ -822,6 +876,61 @@ event chat(SaidPly:entity, Said:string,_){
                 }
             }
         }
+    }
+}
+
+if(clk("siegedoorcheck")){ #Make sure door cant be opened in siege mode
+    timer("siegedoorcheck",100)
+    
+    if(!T:tardisLocked()){
+        T:tardisLock()
+    }
+}
+
+if(clk("siegesoundstop")){
+    soundStop(1)
+    soundStop(2)
+}
+
+if(clk("siegedemat")){
+    timer("siegedemat",10)
+    
+    STAlpha = STAlpha - 1
+    T:setAlpha(STAlpha)
+    TDoor:setAlpha(STAlpha)
+    
+    SCAlpha = SCAlpha + 1
+    SiegeProp:setAlpha(SCAlpha)
+    
+    if(STAlpha <= 0){
+        stoptimer("siegedemat")
+        T:propNotSolid(1)
+        noCollideAll(TDoor,1)
+    }
+}
+
+if(clk("siegeremat")){
+    timer("siegeremat",1)
+    
+    STAlpha = STAlpha + 4
+    T:setAlpha(STAlpha)
+    TDoor:setAlpha(STAlpha)
+    
+    SCAlpha = SCAlpha - 4
+    SiegeProp:setAlpha(SCAlpha)
+    
+    if(STAlpha >= 255){
+        stoptimer("siegeremat")
+        stoptimer("siegedoorcheck")
+        
+        T:setAlpha(255)
+        TDoor:setAlpha(255)
+        
+        if(T:tardisLocked()){
+            T:tardisGet():tardisLock()
+        }
+        
+        SiegeProp:propDelete()
     }
 }
 

@@ -1,0 +1,99 @@
+@name TARDIS Siege Mode
+@inputs Activate [Ext,Door]:entity
+@persist [CubeMat,CubeModel]:string TAlpha CAlpha CubeProp:entity
+
+if(first()){
+    CubeMat = "models/props_combine/Combine_Citadel001"
+    CubeModel = "models/hunter/blocks/cube025x025x025.mdl"
+    
+    TAlpha = 255
+    CAlpha = 0
+}
+
+if(~Activate){
+    if(Activate > 0){
+        CubeProp = propSpawn(CubeModel,Ext:pos()+vec(0,0,5),0)
+        noCollide(CubeProp,Ext)
+        CubeProp:setAlpha(0)
+        CubeProp:setMaterial(CubeMat)
+        
+        CubeProp:propSetVelocity(Ext:vel())
+        
+        Ext:parentTo(CubeProp)
+        
+        Ext:soundPlay(1,4400,"drmatt/tardis/demat_damaged.wav")
+        timer("demat",1)
+        timer("doorcheck",1)
+        timer("soundstop",4400)
+    }
+    else{
+        Ext:propNotSolid(0)
+        noCollideAll(Door,0)
+        
+        Ext:soundPlay(2,5600,"drmatt/tardis/repairfinish.wav")
+        Ext:deparent()
+        Ext:propFreeze(0)
+        Ext:setPos(CubeProp:pos() + vec(0,0,-5))
+        Ext:setAng(ang(0,CubeProp:angles():yaw(),0))
+        
+        Ext:propSetVelocity(CubeProp:vel())
+        
+        timer("remat",1)
+        timer("soundstop",5600)
+    }
+}
+
+if(clk("doorcheck")){
+    timer("doorcheck",100)
+    
+    if(!Ext:tardisLocked()){
+        Ext:tardisGet():tardisLock()
+    }
+}
+
+if(clk("soundstop")){
+    soundStop(1)
+    soundStop(2)
+}
+
+if(clk("demat")){
+    timer("demat",10)
+    
+    TAlpha = TAlpha - 1
+    Ext:setAlpha(TAlpha)
+    Door:setAlpha(TAlpha)
+    
+    CAlpha = CAlpha + 1
+    CubeProp:setAlpha(CAlpha)
+    
+    if(TAlpha <= 0){
+        stoptimer("demat")
+        Ext:propNotSolid(1)
+        noCollideAll(Door,1)
+    }
+}
+
+if(clk("remat")){
+    timer("remat",1)
+    
+    TAlpha = TAlpha + 4
+    Ext:setAlpha(TAlpha)
+    Door:setAlpha(TAlpha)
+    
+    CAlpha = CAlpha - 4
+    CubeProp:setAlpha(CAlpha)
+    
+    if(TAlpha >= 255){
+        stoptimer("remat")
+        stoptimer("doorcheck")
+        
+        Ext:setAlpha(255)
+        Door:setAlpha(255)
+        
+        if(Ext:tardisLocked()){
+            Ext:tardisGet():tardisLock()
+        }
+        
+        CubeProp:propDelete()
+    }
+}

@@ -1,0 +1,25 @@
+@name WepAim
+@inputs Active Target:entity Cannon:entity FEnt:entity
+
+if(first()){
+    Target = noentity()
+}
+
+if(~Active){
+    if(Active == 1){
+        timer("A",100)
+    }
+    
+    if(Active == 0){
+        Cannon:setAng(FEnt:angles())
+        stopAllTimers()
+    }
+}
+
+if(clk("A")){
+    timer("A",10)
+    
+    if(Target:isValid()){
+        Cannon:setAng((Target:pos() - Cannon:pos()):toAngle() + ang(90,0,0))
+    }
+}

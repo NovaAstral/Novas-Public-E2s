@@ -1,10 +1,6 @@
 @name Button Chime
 @inputs A B
 
-if(A == 1){
-entity():soundPlay(1,1,"door/atlantis_door_chime.wav")
-}
-
-if(B == 1){
-entity():soundPlay(2,1,"door/atlantis_door_chime.wav")
+if(A == 1 | B == 1){
+    entity():soundPlay(1,1,"door/atlantis_door_chime.wav")
 }

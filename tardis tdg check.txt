@@ -1,0 +1,58 @@
+@name tardis tdg check
+
+if(first() | dupefinished()){
+    timer("functionsetup",1)
+}
+
+if(clk("functionsetup")){
+    function number dematJamCheck(CheckDest:number,Dest:vector){
+       local JamYes = 1
+       local JamNo = 0
+        
+        if(T:tardisMoving() == 1){
+            return JamNo
+        }
+        
+        if(T:tardisMoving() == 0){
+            if(CheckDest == 1){
+                findIncludeClass("gmod_time_distortion_generator")
+                findInSphere(Dest,2048) #TDG has max 2048 radius, but this will only trigger if the tardis cant take off
+                if(find():isValid() == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator at the",ColGrn," Destination")
+                }
+            }
+            
+            findIncludeClass("gmod_time_distortion_generator")
+            findInSphere(T:pos(),2048)
+            if(find():isValid() == 1 & find():getColor() != vec(255,255,255)){
+                printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," outside ",ColOng,"the TARDIS! ",ColRed,"Cannot Dematerialize!")
+            }
+            else{
+                findIncludeClass("gmod_time_distortion_generator")
+                findInSphere(entity():pos(),2048)
+                if(find():isValid() == 1 & find():getColor() != vec(255,255,255)){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"There is a Time Distortion Generator",ColRed," inside ",ColOng,"the TARDIS! ",ColRed,"Cannot Dematerialize!")
+                }
+            }
+
+            return JamYes
+        }
+    }
+}
+
+if(DematFast == 1){
+    T:tardisFastDemat()
+                        
+    if(dematJamCheck(0,vec()) == 0){ #set the 0 before vec() to 1 if you want to check the vec() pos for a tdg
+        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing")
+    }
+}
+
+if(DematAim == 1){
+    T:tardisDemat(owner():aimPos(),T:angles())
+    T:tardisSetDestination(owner():aimPos(),T:angles())
+                    
+    if(dematJamCheck(1,owner():aimPos()) == 0){ #Returns 0 if no tdg, returns 1 if tdg
+        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"TARDIS dematerializing to aimpos")
+    }
+}

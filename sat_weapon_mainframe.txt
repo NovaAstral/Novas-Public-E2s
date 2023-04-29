@@ -1,0 +1,91 @@
+@name Sat Weapon Mainframe
+@inputs Activate [W1,W2,W3,W4]:entity
+@outputs Ang AngMult
+@persist Ang AngMult Parent:entity [W1W,W2W,W3W,W4W]:wirelink
+
+if(first() | dupefinished()){
+    Parent = entity():isWeldedTo()
+    holoCreate(1,Parent:pos(),vec(2.5,3.1,3.1),Parent:angles()+ang(0,180,0),vec4(255),"models/spacebuild/emount4_fighter.mdl")
+    holoParent(1,Parent)
+    
+    Ang = 0
+    AngMult = 0
+    
+    W1:parentTo(holoEntity(1))
+    W2:parentTo(holoEntity(1))
+    W3:parentTo(holoEntity(1))
+    W4:parentTo(holoEntity(1))
+    
+    W1W = W1:wirelink()
+    W2W = W2:wirelink()
+    W3W = W3:wirelink()
+    W4W = W4:wirelink()
+}
+
+if(first()){
+    
+}
+
+
+if(clk("unfire")){
+    W1W["Fire",number] = 0
+    W2W["Fire",number] = 0
+    W3W["Fire",number] = 0
+    W4W["Fire",number] = 0
+}
+
+if(clk("fire1")){
+    W1W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire2",250)
+}
+
+if(clk("fire2")){
+    W2W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire3",250)
+}
+
+if(clk("fire3")){
+    W3W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire4",250)
+}
+
+if(clk("fire4")){
+    W4W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire1",250)
+}
+
+if(~Activate){
+    if(Activate > 0){
+        timer("active",1)
+        timer("speedup",1)
+        timer("fire1",1)
+        
+    }
+    else{
+        Ang = 0
+        AngMult = 0
+        
+        holoAng(1,Parent:toWorld(ang(0,180,0)))
+        stopAllTimers()
+        
+        timer("unfire",1)
+    }
+}
+
+if(clk("active")){
+    timer("active",100)
+    AngMult++
+    
+    if(AngMult < 50){
+        Ang = 0.2*AngMult^2
+    }
+    else{
+        Ang = 20*AngMult-140
+    }
+    
+    holoAng(1,Parent:toWorld(ang(0,180,mod(Ang,360))))
+}

@@ -3,7 +3,7 @@
 @outputs OCursor:vector2
 @outputs MainMenu OptionsMenu GameMenu LostGame Score #This is temp for debug
 @persist MainMenu OptionsMenu GameMenu LostGame InnoAmount CharSize BoxTopleft:vector2 BoxBottomright:vector2
-@persist Score PrevScore WantedCol:vector
+@persist Score PrevScore WantedCol:vector MemeChance
 
 #[
 
@@ -51,7 +51,8 @@ if(first()){
     GameMenu = 0
     
     InnoAmount = 20 #Limit is around 190 before the e2 crashes
-    CharSize = 30
+    CharSize = 20
+    MemeChance = 20 #chance to have the wanted be black lol
     
     timer("BoxSize",1)
     
@@ -62,8 +63,6 @@ if(clk("BoxSize")){
     BoxTopleft = vec2(CharSize) + vec2(5)
     BoxBottomright = vec2(440,512) - vec2(CharSize) - vec2(5)
 }
-
-
 
 if(clk("egpcreate")){
     Score = 0
@@ -77,7 +76,7 @@ if(clk("egpcreate")){
     #Start Button
     EGP:egpCircle(2,vec2(256,256),vec2(50)) #Start outline
     
-    EGP:egpCircle(3,vec2(256,256),vec2(48)) #Star Button
+    EGP:egpCircle(3,vec2(256,256),vec2(48)) #Start Button
     EGP:egpColor(3,vec(0,0,0))
     
     EGP:egpText(4,"START",vec2(256,245)) #Start text
@@ -130,7 +129,6 @@ if(clk("startgame")){
     
     EGP:egpText(7,"Find:",vec2(478,200))
     EGP:egpAlign(7,1)
-
     
     EGP:egpText(9,"Score:",vec2(477,280))
     EGP:egpAlign(9,1)
@@ -206,7 +204,13 @@ if(clk("resetgame")){
 }
 
 if(clk("wantedcreate")){
-    WantedCol = vec(randint(75,255),randint(75,255),randint(75,255))
+    
+    if(randint(1,MemeChance) == MemeChance){
+        WantedCol = vec(0)
+    }
+    else{
+        WantedCol = vec(randint(75,255),randint(75,255),randint(75,255))
+    }
     
     EGP:egpCircle(8,vec2(477,228),vec2(10,10)) #Find dot on the sidebar
     #EGP:egpColor(8,vec(75,75,75))

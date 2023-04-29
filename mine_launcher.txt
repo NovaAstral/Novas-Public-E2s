@@ -1,0 +1,20 @@
+@name Mine Launcher
+@inputs Fire ForwardEnt:entity
+@persist MineEnt:entity
+
+if(~Fire){
+    if(Fire == 1){
+        timer("fire",1)
+    }
+    elseif(Fire == 0 & !first()){
+        stopAllTimers()
+    }
+}
+#I dont think this works properly
+if(clk("fire")){
+    timer("fire",2000)
+    MineEnt = entSpawn("sf-spacemine",ForwardEnt:pos() + ForwardEnt:forward() * -200,ang(0))
+    MineEnt:propSetVelocity(ForwardEnt:forward() * -10000)
+    MineWL = MineEnt:wirelink()
+    MineWL["Arm",number] = 1
+}

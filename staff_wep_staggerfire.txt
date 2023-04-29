@@ -1,0 +1,52 @@
+@name 
+@inputs [W1,W2,W3,W4]:entity Fire
+@outputs 
+@persist [W1W,W2W,W3W,W4W]:wirelink
+
+if(first()){
+    W1W = W1:wirelink()
+    W2W = W2:wirelink()
+    W3W = W3:wirelink()
+    W4W = W4:wirelink()
+}
+
+if(~Fire){
+    if(Fire > 0){
+        timer("fire1",1)
+    }
+    else{
+        stopAllTimers()
+        timer("unfire",1)
+    }
+}
+
+if(clk("unfire")){
+    W1W["Fire",number] = 0
+    W2W["Fire",number] = 0
+    W3W["Fire",number] = 0
+    W4W["Fire",number] = 0
+}
+
+if(clk("fire1")){
+    W1W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire2",250)
+}
+
+if(clk("fire2")){
+    W2W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire3",250)
+}
+
+if(clk("fire3")){
+    W3W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire4",250)
+}
+
+if(clk("fire4")){
+    W4W["Fire",number] = 1
+    timer("unfire",10)
+    timer("fire1",250)
+}
