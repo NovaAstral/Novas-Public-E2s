@@ -1,0 +1,150 @@
+@name Ship Cores HUD v2
+@inputs EGP:wirelink Target:entity Sensor:wirelink
+@outputs CoreNum
+@persist Cores:array CoreNum TarBorg Health Plating Shield
+
+if(first() | dupefinished()){
+    timer("findcores",1)
+    timer("staticegp",1) #for things that dont need to be remade like hull/shield/plating text etc
+    timer("tarinfo",5)
+}
+
+if(~EGP & EGP){
+    timer("staticegp",1)
+    timer("tarinfo",5)
+}
+
+if(clk("findcores")){
+    timer("findcores",100)
+    
+    findByClass("ship_core")
+    Cores = findToArray()
+    
+    CoreNum = Cores:count()
+    
+    if(changed(CoreNum)){ #this triggers on e2 start
+        EGP:egpClear()
+        timer("staticegp",1)
+        timer("egpcreate",1)
+    }
+}
+
+if(clk("staticegp")){
+    EGP:egp3DTracker(100,vec(0))
+    EGP:egpText(101,"Hull",vec2(0))
+    EGP:egpText(102,"Hull Cur/Max/%",vec2(0))
+    EGP:egpText(103,"Plating",vec2(0))
+    EGP:egpText(104,"Plating Cur/Max",vec2(0))
+    EGP:egpText(105,"Shield",vec2(0))
+    EGP:egpText(106,"Shield Cur/Max/%",vec2(0))
+    #EGP:egpText(107,"Armor",vec2(0))
+    
+    EGP:egpAlign(101,0)
+    EGP:egpAlign(102,0)
+    EGP:egpAlign(103,0)
+    EGP:egpAlign(104,0)
+    EGP:egpAlign(105,2)
+    EGP:egpAlign(106,2)
+    
+    for(I = 101,106){
+        EGP:egpParent(I,1)
+        EGP:egpAlpha(I,0)
+    }
+}
+
+if(clk("egpcreate")){
+    for(I = 1,Cores:count()){
+        Core = Cores[I,entity]
+        CoreOwner = I*2
+        CoreCircle = I*40
+        
+        EGP:egp3DTracker(I,Core:boxCenter())
+        EGP:egpParent(I,Core)
+        
+        EGP:egpText(CoreOwner,Core:owner():name(),vec2(0,-8))
+        EGP:egpAlign(CoreOwner,1)
+        EGP:egpParent(CoreOwner,I)
+        
+        EGP:egpCircleOutline(CoreCircle,vec2(0),vec2(50))
+        EGP:egpParent(CoreCircle,I)
+    }
+}
+
+if(~Target){
+    if(Target:type() == "box_*"){
+        TarBorg = 1
+    }
+    else{
+        TarBorg = 0
+    }
+    
+    timer("tarinfo",1000)
+}
+
+if(clk("tarinfo")){
+    if(Target:isValid()){
+        if(TarBorg == 0){
+            timer("tarupdate",10)
+            
+            for(I = 101,106){
+                EGP:egpAlpha(I,255)
+            }
+            
+            EGP:egpPos(100,Target:boxCenterW())
+            #EGP:egpParent(100,Target)
+            
+            EGP:egpPos(101,vec2(50,-50)) #Hull Text
+            EGP:egpPos(102,vec2(60,-30)) #Hull Amount
+            EGP:egpSetText(102,round(Sensor["Health",number])+" / "+round(Sensor["Max Health",number])+" / "+round(Sensor["Health",number] / Sensor["Max Health",number] * 100,2)+"%")
+
+            
+            EGP:egpPos(103,vec2(50,40)) #Plating Text
+            EGP:egpPos(104,vec2(60,20))
+            EGP:egpSetText(104,round(Sensor["Plating",number],2)+"%")
+            
+            EGP:egpPos(105,vec2(-50,-50))
+            EGP:egpPos(106,vec2(-60,-30))
+            EGP:egpSetText(106,round(Sensor["Shield Emitter",number])+" / "+round(Sensor["Max Shields",number])+" ("+round(Sensor["Shield Emitter",number] / Sensor["Max Shields",number] * 100,2)+"%)")
+        }
+        else{
+            
+        }
+    }
+    else{
+        stoptimer("tarupdate")
+        
+        for(I = 101,106){
+            EGP:egpAlpha(I,0)
+        }
+    }
+}
+
+if(clk("tarupdate")){
+    timer("tarupdate",100)
+    
+    EGP:egpPos(100,Target:boxCenter())
+    #EGP:egpParent(100,Target)
+    
+    Health = Sensor["Health",number]
+    Plating = Sensor["Plating",number]
+    Shield = Sensor["Shield Emitter",number]
+    
+    if(changed(Health)){
+        EGP:egpSetText(102,round(Sensor["Health",number])+" / "+round(Sensor["Max Health",number])+" / "+round(Sensor["Health",number] / Sensor["Max Health",number] * 100,2)+"%")
+    }
+    
+    if(changed(Plating)){
+        EGP:egpSetText(104,round(Sensor["Plating",number],2)+"%")
+    }
+    
+    if(changed(Shield)){
+        EGP:egpSetText(106,round(Sensor["Shield Emitter",number])+" / "+round(Sensor["Max Shields",number])+" ("+round(Sensor["Shield Emitter",number] / Sensor["Max Shields",number] * 100,2)+"%)")
+    }
+    
+    if(Sensor["Shield Active",number] == 1){
+        EGP:egpColor(105,vec(0,255,0))
+    }
+    else{
+        EGP:egpColor(105,vec(255,0,0))
+    }
+}

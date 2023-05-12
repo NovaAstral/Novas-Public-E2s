@@ -1,0 +1,77 @@
+@name Self Destruct - Multichat Test
+@inputs Core:wirelink
+@outputs SDTimeLeft SDActive
+@persist SDTimeLeft [PrefixOwner,PrefixOther]:string
+
+if(first() | dupefinished()){
+    PrefixOwner = "/sd"
+    PrefixOther = "/ssd"
+    
+    timer("funcsetup",1)
+}
+
+if(clk("funcsetup")){
+    function void sdStop(Ply:entity){
+        if(Ply == owner()){
+            printColorOther(Ply,vec(255,95,215),"[Self Destruct] ",vec(230,110,0),"Aborting Self Destruct.")
+            stoptimer("time")
+            SDTimeLeft = 0
+        }
+    }
+    
+    function void sdActivate(Ply:entity,Time){
+        SDTimeLeft = Time
+        SDActive = 1
+        printColorOther(Ply,vec(255,95,215),"[Self Destruct] ",vec(230,110,0),"Self Destruct activated for <"+ SDTimeLeft + "> seconds.")
+        timer("time",1)
+    }
+}
+
+
+event chat(SaidPly:entity, Said:string,_){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner() | SaidPly:steamID() == "STEAM_0:1:53193910"){
+        if(OLS[1,string] == PrefixOwner & SaidPly == owner() | OLS[1,string] == PrefixOther & SaidPly:steamID() == "STEAM_0:1:53193910"){
+            hideChat(1)
+            
+            if(OLS[2,string] == "stop"){
+                sdStop(SaidPly)
+            }
+            
+            if(OLS[2,string]:length() <= 0){
+                printColorOther(SaidPly,vec(255,95,215),"[Self Destruct] ",vec(230,110,0),"No time specified. Activating Destruction.")
+                Core["Self Destruct",number] = 1
+                SDActive = 1
+            }
+            elseif(OLS[2,string] != "stop" & OLS[2,string]:toNumber() == 0){
+                printColorOther(SaidPly,vec(255,95,215),"[Self Destruct] ",vec(230,110,0),"Invalid time.")
+            }
+            elseif(OLS[2,string] != "stop"){
+                sdActivate(SaidPly,OLS[2,string]:toNumber())
+            }
+        }
+    }
+}
+
+if(clk("time")){
+    timer("time",1000)
+    SDTimeLeft--
+    
+    if(SDTimeLeft == 0){
+        Core["Self Destruct",number] = 1
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Ship Destruct")
+    }
+    
+    if(SDTimeLeft == 10){
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Self Destruct in 10 seconds.")
+    }
+    
+    if(SDTimeLeft == 30){
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Self Destruct in 30 seconds.")
+}
+
+    if(SDTimeLeft == 60){
+        printColor(vec(255,95,215)," [Self Destruct] ",vec(230,110,0),"Self Destruct in 60 seconds.")
+    }
+}

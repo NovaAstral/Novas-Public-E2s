@@ -3,6 +3,8 @@
 event chat(SaidPly:entity, Said:string, Team:number){
     local OLS = Said:lower():explode(" ")
     if(OLS[1,string] == "/calc" & SaidPly == owner()){
+        hideChat(1)
+        
         if(OLS[2,string]:toNumber() == 0 | OLS[4,string]:toNumber() == 0){
             print("NaN or 0 Used as Input, Cannot Calculate.")
         }
