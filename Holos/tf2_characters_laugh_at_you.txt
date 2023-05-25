@@ -12,10 +12,6 @@ if(clk("run")){
     SndInt = randint(1,18)
 }
 
-if(clk("soundplay")){
-    Holo:soundPlay(1,0,Snd)
-}
-
 if(clk("purge")){
     soundPurge()
     holoDeleteAll()
@@ -29,7 +25,9 @@ if(clk("setang")){
     findInSphere(entity():pos(),200)
     ClosestPly = findClosest(entity():pos())
     
-    holoAng(1,ClosestPly:angles() + ang(0,180,0))
+    PlyAng = ang(ClosestPly:pos() - holoEntity(1):pos())
+    
+    holoAng(1,ang(0,PlyAng:yaw(),0)) #almost works
 }
 
 if(clk("soundset")){
@@ -196,4 +194,8 @@ if(clk("soundset")){
         Holo = holoEntity(1)
         timer("purge",2000)
     }
+}
+
+if(clk("soundplay")){
+    Holo:soundPlay(1,0,Snd)
 }

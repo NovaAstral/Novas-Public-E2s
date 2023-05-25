@@ -1,6 +1,6 @@
 @name Ship Cores HUD v2
 @inputs EGP:wirelink Target:entity Sensor:wirelink
-@outputs CoreNum
+@outputs CoreNum TarBorg
 @persist Cores:array CoreNum TarBorg Health Plating Shield
 
 if(first() | dupefinished()){
@@ -15,16 +15,19 @@ if(~EGP & EGP){
 }
 
 if(clk("findcores")){
-    timer("findcores",100)
+    timer("findcores",5000)
     
-    findByClass("ship_core")
+    findIncludeClass("ship_core")
+    findIncludeClass("box_sphere")
+    findIncludeClass("box_cube")
+    findIncludeClass("box_cube_tactical")
+    findInSphere(vec(0),32768)
     Cores = findToArray()
     
     CoreNum = Cores:count()
     
     if(changed(CoreNum)){ #this triggers on e2 start
         EGP:egpClear()
-        timer("staticegp",1)
         timer("egpcreate",1)
     }
 }
@@ -47,7 +50,7 @@ if(clk("staticegp")){
     EGP:egpAlign(106,2)
     
     for(I = 101,106){
-        EGP:egpParent(I,1)
+        EGP:egpParent(I,100)
         EGP:egpAlpha(I,0)
     }
 }
@@ -55,23 +58,46 @@ if(clk("staticegp")){
 if(clk("egpcreate")){
     for(I = 1,Cores:count()){
         Core = Cores[I,entity]
-        CoreOwner = I*2
+        CoreOwner = I*25
         CoreCircle = I*40
         
         EGP:egp3DTracker(I,Core:boxCenter())
         EGP:egpParent(I,Core)
         
-        EGP:egpText(CoreOwner,Core:owner():name(),vec2(0,-8))
-        EGP:egpAlign(CoreOwner,1)
-        EGP:egpParent(CoreOwner,I)
-        
-        EGP:egpCircleOutline(CoreCircle,vec2(0),vec2(50))
-        EGP:egpParent(CoreCircle,I)
+        if(Core:type() == "ship_core"){
+            EGP:egpText(CoreOwner,Core:owner():name(),vec2(0,-8))
+            EGP:egpAlign(CoreOwner,1)
+            EGP:egpParent(CoreOwner,I)
+            
+            EGP:egpCircleOutline(CoreCircle,vec2(0),vec2(50))
+            EGP:egpParent(CoreCircle,I)
+        }
+        elseif(Core:type() == "box_sphere" | Core:type() == "box_cube" | Core:type() == "box_cube_tactical"){
+            EGP:egpBoxOutline(CoreCircle,vec2(0),vec2(100))
+            EGP:egpColor(CoreCircle,vec(0,200,0))
+            EGP:egpParent(CoreCircle,I)
+            
+            if(Core:type() == "box_sphere"){
+                EGP:egpText(CoreOwner,"Box Sphere",vec2(0,-8))
+                EGP:egpAlign(CoreOwner,1)
+                EGP:egpParent(CoreOwner,I)
+            }
+            if(Core:type() == "box_cube"){
+                EGP:egpText(CoreOwner,"Box Cube",vec2(0,-8))
+                EGP:egpAlign(CoreOwner,1)
+                EGP:egpParent(CoreOwner,I)
+            }
+            if(Core:type() == "box_cube_tactical"){
+                EGP:egpText(CoreOwner,"Box Tactical",vec2(0,-8))
+                EGP:egpAlign(CoreOwner,1)
+                EGP:egpParent(CoreOwner,I)
+            }
+        }
     }
 }
 
 if(~Target){
-    if(Target:type() == "box_*"){
+    if(Target:type() == "box_sphere" | Target:type() == "box_cube" | Target:type() == "box_cube_tactical"){
         TarBorg = 1
     }
     else{
@@ -91,12 +117,11 @@ if(clk("tarinfo")){
             }
             
             EGP:egpPos(100,Target:boxCenterW())
-            #EGP:egpParent(100,Target)
+            EGP:egpParent(100,Target)
             
             EGP:egpPos(101,vec2(50,-50)) #Hull Text
             EGP:egpPos(102,vec2(60,-30)) #Hull Amount
             EGP:egpSetText(102,round(Sensor["Health",number])+" / "+round(Sensor["Max Health",number])+" / "+round(Sensor["Health",number] / Sensor["Max Health",number] * 100,2)+"%")
-
             
             EGP:egpPos(103,vec2(50,40)) #Plating Text
             EGP:egpPos(104,vec2(60,20))
@@ -107,7 +132,18 @@ if(clk("tarinfo")){
             EGP:egpSetText(106,round(Sensor["Shield Emitter",number])+" / "+round(Sensor["Max Shields",number])+" ("+round(Sensor["Shield Emitter",number] / Sensor["Max Shields",number] * 100,2)+"%)")
         }
         else{
+            timer("tarupdate",10)
             
+            for(I = 101,102){
+                EGP:egpAlpha(I,255)
+            }
+            
+            EGP:egpPos(100,Target:boxCenterW())
+            EGP:egpParent(100,Target)
+            
+            EGP:egpPos(101,vec2(50,-50)) #Hull Text
+            EGP:egpPos(102,vec2(60,-30)) #Hull Amount
+            EGP:egpSetText(102,round(Sensor["Health",number])+" / "+round(Sensor["MaxHealth",number])+" / "+round(Sensor["Health",number] / Sensor["MaxHealth",number] * 100,2)+"%")
         }
     }
     else{
@@ -123,7 +159,7 @@ if(clk("tarupdate")){
     timer("tarupdate",100)
     
     EGP:egpPos(100,Target:boxCenter())
-    #EGP:egpParent(100,Target)
+    EGP:egpParent(100,Target)
     
     Health = Sensor["Health",number]
     Plating = Sensor["Plating",number]

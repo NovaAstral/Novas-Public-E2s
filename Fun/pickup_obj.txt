@@ -43,7 +43,7 @@ if(clk("pickup")){
 }
 
 if(clk("drop")){ #I forgot how I did this and I lost the code for it because i was stupid :c
-    EntL:applyAngForce(owner():angVel())
+    EntL:applyAngForce(owner():angVel()) #its supposed to follow the same ang velocity as the player
 }
 
 if(changed(Launch) & Launch == 1){

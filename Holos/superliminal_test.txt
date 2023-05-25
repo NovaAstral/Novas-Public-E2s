@@ -1,0 +1,17 @@
+@name 
+@inputs 
+@outputs Dist Size
+@persist Dist Size
+
+if(first() | dupefinished()){
+    holoCreate(1)
+    holoPos(1,entity():pos()+vec(0,0,25))
+    holoModel(1,"models/holograms/hq_icosphere.mdl")
+}
+
+event tick(){
+    Dist = holoEntity(1):pos():distance(owner():pos())
+    Size = Dist / 2
+    
+    holoScaleUnits(1,vec(Size))
+}
