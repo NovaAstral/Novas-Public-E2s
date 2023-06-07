@@ -3,7 +3,6 @@
 
 #If you're not on TSCM, you need an addon called 'Nexus Core'
 #You can find Nexus Core at https://steamcommunity.com/sharedfiles/filedetails/?id=106681516
-#You will also need to comment line 56 to line 62
 
 runOnChat(1)
 OLS = owner():lastSaid():lower():explode(" ")
@@ -53,12 +52,15 @@ if(OLS[1,string] == "/tpv"){ #Teleport to coordinates (eg: /tpv 1000 64 200)
 }}
 
 #If you're not on TSCM this function will crash the e2 because the isJammed function is normally called stargateIsJammed
+#i'd fix this with ifdef if i knew how
 if(clk("jamtest")){
-    if(map() == "sb_galaxies_2018_v2"){
-        if(isJammed(Tarvec)){
-            printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Target Jammed, cannot teleport")
+    #ifdef isJammed(v)
+        if(map() == "sb_galaxies_2018_v2"){
+            if(isJammed(Tarvec)){
+                printColor(vec(255,95,215)," [NcoreTP] ",vec(230,110,0),"Target Jammed, cannot teleport")
+            }
         }
-    }
+    #endif
 }
         
 

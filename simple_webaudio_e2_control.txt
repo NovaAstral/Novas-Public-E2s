@@ -1,0 +1,55 @@
+@name Simple WebAudio E2 Control
+@inputs B1 B2 B3
+@outputs Play URL:string Pos:vector Volume FadeStart FadeEnd Mono
+
+#This links to an SF that only works on TSCM
+
+if(first() | dupefinished()){
+    function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
+        URL = Audio
+        Pos = Vec
+        Volume = Vol
+        FadeStart = FadeS
+        FadeEnd = FadeE
+        Mono = MonoEnable
+        Play = 1
+        timer("noplay",10)
+    }
+}
+
+if(clk("noplay")){
+    Play = 0
+}
+
+if(~B1 & B1){
+    playsound(
+    "https://cdn.discordapp.com/attachments/915811722646925312/1115682746950488094/tardis_takeoff.ogg", #URL
+    entity():pos(), #Audio Pos
+    1, #Volume. It seems to bug when you set it to anything except 1
+    1000, #Fade Start
+    2000, #Fade End
+    1 #Mono. Leave this as 0 unless you get an error when the sound tries to play
+    )
+}
+
+if(~B2 & B2){
+    playsound(
+    "https://cdn.discordapp.com/attachments/915811722646925312/1115626230075633744/control_throttle.wav",
+    owner():pos(),
+    1,
+    100,
+    200,
+    1
+    )
+}
+
+if(~B3 & B3){
+    playsound(
+    "https://cdn.discordapp.com/attachments/915811722646925312/1115626229614247936/control_handbrake.wav",
+    entity():pos(),
+    0.5,
+    1000,
+    2000,
+    1
+    )
+}

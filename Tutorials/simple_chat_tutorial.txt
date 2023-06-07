@@ -1,5 +1,7 @@
 @name simple chat tutorial
 
+#This isn't a good way to do this anymore as chat events exist and are far better
+
 runOnChat(1)
 #This makes the e2 trigger whenever someone sends a message in chat
 

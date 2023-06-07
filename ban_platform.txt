@@ -18,6 +18,7 @@ if(clk("find")){
     findExcludeEntity(owner())
     findInSphere(entity():pos(),30)
     Ply = find()
+    
     if(find():isPlayer()){
         stoptimer("find")
         timer("sound",3000)
