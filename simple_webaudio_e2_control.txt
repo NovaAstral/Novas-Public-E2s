@@ -25,7 +25,7 @@ if(~B1 & B1){
     playsound(
     "https://cdn.discordapp.com/attachments/915811722646925312/1115682746950488094/tardis_takeoff.ogg", #URL
     entity():pos(), #Audio Pos
-    1, #Volume. It seems to bug when you set it to anything except 1
+    1, #Volume
     1000, #Fade Start
     2000, #Fade End
     1 #Mono. Leave this as 0 unless you get an error when the sound tries to play
