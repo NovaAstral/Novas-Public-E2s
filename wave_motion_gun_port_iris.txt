@@ -1,0 +1,35 @@
+@name Wave Motion Gun Port Iris
+@inputs Activate Port:entity
+
+if(first() | dupefinished()){
+    holoCreate(1)
+    holoModel(1,"models/zup/stargate/iris.mdl")
+    holoMaterial(1,"smallbridge/metscreen")
+    holoPos(1,Port:pos()+vec(200,0,0))
+    holoAng(1,Port:angles())
+    holoParent(1,Port)
+    holoAnim(1,3)
+    holoEntity(1):soundPlay(3,1300,"stargate/iris_close.mp3")
+    timer("stopsnd",4000)
+}
+
+if(~Activate & Activate == 1){
+    timer("open",19000)
+    timer("close",60000)
+}
+
+if(clk("open")){
+    holoAnim(1,2)
+    holoEntity(1):soundPlay(1,1700,"stargate/iris_open.mp3")
+    timer("stopsnd",4000)
+}
+
+if(clk("close")){
+    holoAnim(1,3)
+    holoEntity(1):soundPlay(2,1300,"stargate/iris_close.mp3")
+    timer("stopsnd",4000)
+}
+
+if(clk("stopsnd")){
+    soundPurge()
+}

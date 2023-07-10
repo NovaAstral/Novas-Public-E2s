@@ -81,7 +81,7 @@ if(clk("target")){
     }
 }
 
-event chat(SaidPly:entity, Said:string, TeamNumber:number){
+event chat(SaidPly:entity, Said:string,_){
     local OLS = Said:lower():explode(" ")
     
     if(SaidPly == owner()){

@@ -1,0 +1,74 @@
+@name Wave Motion Engine
+@inputs Activate DesiredSpeed ConfirmSpeed [E1Parent,E2Parent]:entity ShipCore:wirelink
+@outputs CurSpd SpoolSpd Active SetSpeed
+@persist CurSpd SpoolSpd SetSpeed
+
+if(first() | dupefinished()){
+    SetSpeed = 100 #Default Speed
+    SpoolSpd = 1.4 #How fast it speeds up/down
+
+    CurSpd = 0 #To stop warnings
+    DesiredSpeed = 0
+    
+    timer("hullcheck",1)
+}
+
+if(~Activate){
+    if(Activate >= 1){
+        Active = 1
+        stoptimer("deactivate")
+        timer("spin",1)
+        E1Parent:soundPlay(1,0,"ambient/lair/ac_vent1.wav")
+        soundPitch(1,0)
+    }
+    else{
+        Active = 0
+        stoptimer("spin")
+        timer("deactivate",1)
+    }
+}
+
+if(~ConfirmSpeed & ConfirmSpeed == 1){
+        SetSpeed = clamp(DesiredSpeed,0,255)
+}
+
+if(clk("spin")){
+    timer("spin",100)
+    
+    if(SetSpeed >= CurSpd){
+        CurSpd += SpoolSpd
+    }
+    else{
+        CurSpd -= SpoolSpd
+    }
+    
+    soundPitch(1,CurSpd)
+    
+    E1Parent:setAng(E1Parent:toWorld(ang(CurSpd,0,0)))
+    E2Parent:setAng(E1Parent:toWorld(ang(CurSpd,0,0)))
+}
+
+if(clk("deactivate")){
+    timer("deactivate",100)
+    
+    CurSpd -= SpoolSpd
+    
+    if(CurSpd <= 0){
+        stoptimer("deactivate")
+        soundStop(1,1)
+        CurSpd = 0
+    }
+    
+    soundPitch(1,CurSpd)
+    
+    E1Parent:setAng(E1Parent:toWorld(ang(CurSpd,0,0)))
+    E2Parent:setAng(E1Parent:toWorld(ang(CurSpd,0,0)))
+}
+
+if(clk("hullcheck")){
+    timer("hullcheck",1000)
+    
+    if(changed(ShipCore["Health",number])){
+        SpoolSpd = floor(ShipCore["Health",number] / ShipCore["Max Health",number]+0.4*(ShipCore["Health",number] / ShipCore["Max Health",number]),1)
+    }
+}
