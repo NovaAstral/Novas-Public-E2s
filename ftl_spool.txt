@@ -1,26 +1,22 @@
-@name FTL Spool
-@inputs Warp Destination:vector AngleOffset:angle Drive:wirelink FTLSpool ForceWarp
-@outputs RotorSpeed ChargeRequired
-@persist DT:string SpoolWait DriveType DriveCheck Dest:vector
+@name Wave Motion Engine Spool
+@inputs Warp Destination:vector AngleOffset:angle Drive:wirelink DriveTransit WMESpeed ForceWarp
+@outputs DesiredSpeed ConfirmSpeed SpeedRequired DT:string
+@persist DT:string SpoolWait DriveType DriveCheck Transitting
 #include "Novas-Public-E2s/library/nova_lib"
 
 #To use this, wire Warp and Destination to the warp chip, and unwire the warp chip from any warp drives,
 #Wire Drive to either a drive, or a drive selector
 
-runOnChat(1)
-
-O = owner()
-OLS = owner():lastSaid():lower():explode(" ")
-
 if(first() | dupefinished()){
-    RotorSpeed = 50
+    DesiredSpeed = 100 #Idle Speed
+    Transitting = 0
 }
 
-if(changed(Warp) & Warp == 1){
+if(~Warp & Warp == 1){
     DT = Drive:entity():type()
     
     if(DT == "sg_hyperdrive" | DT == "quantum_slipstream_drive" | DT == "st_warp_drive"){
-        printColor(ZeiaOng,"[FTL] ",ZeiaWht,"Transit Drive ",ZeiaTBlu,"selected. Waiting for FTL to spool to ",ZeiaWht,"150%")
+        printColor(ZeiaOng,"[WME] ",ZeiaWht,"Transit Drive ",ZeiaTBlu,"selected. Waiting for ",ZeiaMBlu,"Wave Motion Engine",ZeiaTBlu," to spool to ",ZeiaWht,"150%")
         
         Drive["Destination",vector] = Destination
         Drive["Angle Offset",angle] = AngleOffset
@@ -28,13 +24,11 @@ if(changed(Warp) & Warp == 1){
         SpoolWait = 1
         DriveType = 1
         DriveCheck = 1
-        ChargeRequired = 150
-        
-        timer("dcreset",10)
+        SpeedRequired = 150
     }
     
     if(DT == "bsg_drive" | DT == "ship_drive" | DT == "spore_drive"){
-        printColor(ZeiaOng,"[FTL] ",ZeiaWht,"Jump Drive ",ZeiaTBlu,"selected. Waiting for FTL to spool to ",ZeiaWht,"250%")
+        printColor(ZeiaOng,"[WME] ",ZeiaWht,"Jump Drive ",ZeiaTBlu,"selected. Waiting for ",ZeiaMBlu,"Wave Motion Engine",ZeiaTBlu," to spool to ",ZeiaWht,"200%")
         
         Drive["Destination",vector] = Destination
         Drive["Angle Offset",angle] = AngleOffset
@@ -42,35 +36,32 @@ if(changed(Warp) & Warp == 1){
         SpoolWait = 1
         DriveType = 2
         DriveCheck = 1
-        ChargeRequired = 250
-        
-        timer("dcreset",10)
+        SpeedRequired = 200
     }
     
     if(DriveCheck == 0){
-        printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"Unrecognized Drive: [",ZeiaWht,DT,ZeiaTBlu,"] Cannot warp.")
+        printColor(ZeiaOng,"[WME] ",ZeiaTBlu,"Unrecognized Drive: [",ZeiaWht,DT,ZeiaTBlu,"] Cannot warp.")
+    }
+    else{
+        DriveCheck = 0
     }
 }
 
-if(clk("dcreset")){
-    DriveCheck = 0
-}
-
-if(changed(FTLSpool) & SpoolWait == 1){
+if(~WMESpeed & SpoolWait == 1){
     if(DriveType == 1){
-        if(FTLSpool >= 148){
+        if(WMESpeed >= 150){
             SpoolWait = 0
             
-            printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"FTL Spooled to",ZeiaWht," 150% ",ZeiaTBlu,"Activating Drive")
+            printColor(ZeiaOng,"[WME] ",ZeiaMBlu,"Wave Motion Engine ",ZeiaTBlu,"Spooled to",ZeiaWht," 150% ",ZeiaTBlu,"Activating Drive")
             timer("spooled",1)
         }
     }
     
     if(DriveType == 2){
-        if(FTLSpool >= 248){
+        if(WMESpeed >= 200){
             SpoolWait = 0
             
-            printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"FTL Spooled",ZeiaWht," 250% ",ZeiaTBlu,"Activating Drive")
+            printColor(ZeiaOng,"[WME] ",ZeiaMBlu,"Wave Motion Engine ",ZeiaTBlu,"Spooled to",ZeiaWht," 200% ",ZeiaTBlu,"Activating Drive")
             timer("spooled",1)
         }
     }
@@ -78,30 +69,60 @@ if(changed(FTLSpool) & SpoolWait == 1){
 
 if(clk("spooled")){
     Drive["Activate",number] = 1
-    RotorSpeed = 49.9
-    timer("reset",1000)
-    timer("angreset",12000)
+    
+    timer("checktransit",5000)
+}
+
+if(clk("checktransit")){
+    if(DriveTransit == 0 & Transitting == 0){
+        printColor(ZeiaOng,"[WME] ",ZeiaTBlu,"The Drive failed to activate!")
+        
+        DesiredSpeed = 99.5
+        timer("reset",10)
+    }
+}
+
+if(~DriveTransit){
+    Transitting = 1
+    
+    if(DriveTransit == 0){
+        DesiredSpeed = 99.5
+        
+        timer("reset",1000)
+        
+    }
 }
 
 if(clk("reset")){
+    DesiredSpeed = 100
+    ConfirmSpeed = 1
+    
     Drive["Destination",vector] = vec()
     Drive["Activate",number] = 0
-    RotorSpeed = 50
+    
+    timer("confirmoff",10)
+    timer("angreset",11000)
+}
+
+if(clk("confirmoff")){
+    ConfirmSpeed = 0
 }
 
 if(clk("angreset")){
     Drive["Angle Offset",angle] = ang()
+    Transitting = 0
 }
 
-if(changed(ForceWarp) & ForceWarp == 1){
+if(~ForceWarp & ForceWarp == 1){
     timer("spooled",10)
 }
 
-if(chatClk(O)){
-    if(OLS[1,string] == "/forcewarp"){
-        hideChat(1)
-        timer("spooled",10)
-        printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"Force-Warp initated, Activating Wave Motion Core")
-        
+
+event chat(Ply:entity,Said:string,_){
+    if(Ply == owner()){
+        if(Said:lower():explode(" ")[1,string] == "/forcewarp"){
+            timer("spooled",10)
+            printColor(ZeiaOng,"[FTL] ",ZeiaTBlu,"ForceWarp initated, Activating ",ZeiaMBlu,"Wave Motion Engine")
+        }
     }
 }

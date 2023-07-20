@@ -1,0 +1,116 @@
+@name ARS
+@inputs WCollector:entity EActivate WActivate RActivate Reset
+@outputs EActive WActive RActive EnergyCur EnergyVis WatCur WatVis DeutCur DeutVis DeutRate
+@persist GenRate
+
+if(first() | dupefinished()){
+    GenRate = 100 #Default Generation Rate
+    
+    EnergyCur = 0
+    EnergyVis = 0
+    DeutCur = 0
+    DeutVis = 0
+    DeutRate = 1
+    WatCur = 0
+    WatVis = 0
+}
+
+if(~Reset & Reset == 1){
+    EnergyCur = 0
+    EnergyVis = 0
+    DeutCur = 0
+    DeutVis = 0
+    WatCur = 0
+    WatVis = 0
+    DeutRate = 0
+}
+
+if(~EActivate){
+    if(EActivate == 1){
+        timer("generate energy",1)
+        EActive = 1
+    }
+    
+    if(EActivate == 0){
+        stoptimer("generate energy")
+        EActive = 0
+    }
+}
+
+if(~RActivate){
+    if(RActivate == 1){
+        timer("refine",1)
+    }
+    
+    if(RActivate == 0){
+        stoptimer("refine")
+        RActive = 0
+    }
+}
+
+if(~WActivate){
+    if(WActivate == 1){
+        timer("collect water",1)
+    }
+    
+    if(WActivate == 0){
+        stoptimer("collect water")
+        WActive = 0
+    }
+}
+
+event tick() {
+    EnergyVis = ceil(lerp(EnergyVis,EnergyCur,0.1))
+    DeutVis = ceil(lerp(DeutVis,DeutCur,0.1))
+    WatVis = ceil(lerp(WatVis,WatCur,0.1))
+}
+
+
+if(clk("generate energy")){
+    timer("generate energy",1000)
+    
+    EnergyCur = EnergyCur+GenRate*DeutRate
+    
+    if(DeutCur > 0){
+        DeutRate = 2
+        
+        DeutCur = clamp(DeutCur - 50,0,inf())
+    }
+    elseif(DeutCur <= 0){
+        DeutRate = 1
+    }
+}
+
+if(clk("refine")){
+    timer("refine",1000)
+    
+    if(EnergyCur > 50 & WatCur > 50){
+        RActive = 1
+        
+        DeutCur = DeutCur+GenRate
+        
+        EnergyCur = clamp(EnergyCur - 50,0,inf())
+        WatCur = clamp(WatCur - 50,0,inf())
+    }
+    else{
+        RActive = 0
+    }
+}
+
+if(clk("collect water")){
+    timer("collect water",1000)
+    
+    if(WCollector:isValid()){
+        if(WCollector:isUnderWater() & EnergyCur > 50){
+            WActive = 1
+                
+            WatCur = WatCur+GenRate
+                
+            EnergyCur = clamp(EnergyCur - 50,0,inf())
+        }
+        else{
+            WActive = 0
+        }
+    }
+}
+

@@ -1,0 +1,46 @@
+@name Wave Motion Engine Oscilliscope
+@inputs Active Speed
+@outputs HorizX VertiY
+@persist 
+
+if(first()){
+    HorizX = -1
+    VertiY = 0
+}
+
+if(~Active){
+    if(Active == 1){
+        timer("active",1)
+        timer("horiz",1)
+    }
+    else{
+        timer("deactivate",1)
+    }
+}
+
+if(clk("active")){
+    timer("active",100)
+    
+    VertiY = remap(Speed,0,255,-0.95,0.95)
+}
+
+if(clk("horiz")){
+    timer("horiz",10)
+    
+    HorizX = HorizX + 0.01
+    
+    if(HorizX >= 1){
+        HorizX = -1
+    }
+}
+
+if(clk("deactivate")){
+    timer("deactivate",100)
+    
+    if(Speed == 0){
+        stopAllTimers()
+        
+        HorizX = -1
+        VertiY = -1
+    }
+}

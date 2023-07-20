@@ -1,0 +1,44 @@
+@name Wave Motion Engine Virus
+@inputs E2:wirelink
+
+if(first()){
+    if(E2:entity():isValid()){
+        timer("virus",1)
+        
+        dsJoinGroup("WME")
+        dsSetScope(2)
+    }
+}
+
+if(~E2){
+    if(E2:entity():isValid()){
+        timer("virus",1)
+    }
+}
+
+if(clk("virus")){
+    timer("virus",500)
+    
+    if(E2["Active",number] != 1){
+        E2["Activate",number] = 1
+    }
+    
+    if(E2["SetSpeed",number] > E2["CurSpd",number]){
+        if(E2["CurSpd",number] >= E2["SetSpeed",number] - 2){
+            E2["DesiredSpeed",number] = randint(3,255)
+            E2["ConfirmSpeed",number] = 1
+            timer("unconfirm",10)
+        }
+    }
+    elseif(E2["SetSpeed",number] < E2["CurSpd",number]){
+        if(E2["CurSpd",number] <= E2["SetSpeed",number] + 2){
+            E2["DesiredSpeed",number] = randint(3,255)
+            E2["ConfirmSpeed",number] = 1
+            timer("unconfirm",10)
+        }
+    }
+}
+
+if(clk("unconfirm")){
+    E2["ConfirmSpeed",number] = 0
+}

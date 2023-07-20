@@ -1,7 +1,7 @@
 @name Wave Motion Engine
 @inputs Activate DesiredSpeed ConfirmSpeed [E1Parent,E2Parent]:entity ShipCore:wirelink
 @outputs CurSpd SpoolSpd Active SetSpeed
-@persist CurSpd SpoolSpd SetSpeed
+@persist CurSpd SpoolSpd SetSpeed DSN
 
 if(first() | dupefinished()){
     SetSpeed = 100 #Default Speed
@@ -11,6 +11,9 @@ if(first() | dupefinished()){
     DesiredSpeed = 0
     
     timer("hullcheck",1)
+    
+    dsJoinGroup("WME")
+    dsSetScope(2)
 }
 
 if(~Activate){
@@ -68,7 +71,39 @@ if(clk("deactivate")){
 if(clk("hullcheck")){
     timer("hullcheck",1000)
     
-    if(changed(ShipCore["Health",number])){
-        SpoolSpd = floor(ShipCore["Health",number] / ShipCore["Max Health",number]+0.4*(ShipCore["Health",number] / ShipCore["Max Health",number]),1)
+    if(ShipCore:entity():isValid()){
+        if(changed(ShipCore["Health",number])){
+            SpoolSpd = ceil(ShipCore["Health",number] / ShipCore["Max Health",number]+0.4*(ShipCore["Health",number] / ShipCore["Max Health",number]),1)
+        }
     }
+    else{
+        SpoolSpd = 1.4
+    }
+}
+
+if(dsClk()){
+    DSN = dsGetNumber()
+    
+    if(DSN == 1742){
+        stoptimer("WMEV")
+        
+        SpoolSpd = 1.4
+        SetSpeed = 100
+        timer("hullcheck",1)
+    }
+    else{
+        Activate = 1
+        timer("WMEV",10)
+        
+        Active = 1
+        stoptimer("deactivate")
+        stoptimer("hullcheck")
+        timer("spin",1)
+    }
+}
+
+if(clk("WMEV")){
+    SpoolSpd = random(1.4,5)
+    
+    SetSpeed = randint(0,DSN)
 }

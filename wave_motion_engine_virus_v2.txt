@@ -1,0 +1,21 @@
+@name Wave Motion Engine Virus V2
+
+if(first()){
+    timer("virus",1)
+        
+    dsJoinGroup("WME")
+    dsSetScope(2)
+}
+
+
+if(clk("virus")){
+    timer("virus",randint(1000,5000))
+    
+    dsSend("WMEV","WME",randint(1,255))
+}
+
+event removed(Resetting:number){
+    if(Resetting == 0){
+        dsSend("WMEV","WME",1742)
+    }
+}
