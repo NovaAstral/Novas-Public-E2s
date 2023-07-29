@@ -1,0 +1,63 @@
+@name Ground Bridge
+@inputs Activate [Bridge1Loc,Bridge2Loc]:vector
+@outputs [Bridge1,Bridge2]:entity HAlpha
+@persist HAlpha
+
+if(first() | dupefinished()){
+    HAlpha = 0
+}
+
+function void createHolos(){
+    holoCreate(1)
+    holoPos(1,vec(32000))
+    holoModel(1,"models/props_random/whirlpool22_wide.mdl")
+    holoScale(1,vec(0))
+    holoEntity(1):setRenderMode(2) #2 maybe
+    Bridge1 = holoEntity(1)
+
+    holoCreate(2)
+    holoPos(2,vec(32000))
+    holoModel(2,"models/props_random/whirlpool22_wide.mdl")
+    holoScale(2,vec(0))
+    holoEntity(2):setRenderMode(2)
+    Bridge2 = holoEntity(2)
+}
+
+if(~Activate){
+    if(Activate >= 1){
+        if(Bridge1Loc != vec(0) & Bridge2Loc != vec(0)){
+            createHolos()
+            holoPos(1,Bridge1Loc+vec(0,0,75))
+            holoPos(2,Bridge2Loc+vec(0,0,75))
+            
+            holoAng(1,ang(0,0,90))
+            holoAng(2,ang(0,0,90))
+            
+            timer("open",0)
+        }
+        else{
+            print("You must select a location for your ground bridges!")
+        }
+    }
+    else{
+        HAlpha = 0
+        holoDelete(1)
+        holoDelete(2)
+        stoptimer("open")
+    }
+}
+
+ #if resizing doesn't work out, use this
+if(clk("open")){
+  timer("open",8)
+
+  HAlpha = HAlpha+1
+
+  if(HAlpha >= 255){
+    stoptimer("open")
+    HAlpha = 255
+  }
+
+  holoAlpha(1,HAlpha)
+  holoAlpha(2,HAlpha)
+}

@@ -84,7 +84,7 @@ if(clk("generate energy")){
 if(clk("refine")){
     timer("refine",1000)
     
-    if(EnergyCur > 50 & WatCur > 50){
+    if(EnergyCur >= 50 & WatCur >= 50){
         RActive = 1
         
         DeutCur = DeutCur+GenRate
@@ -101,7 +101,7 @@ if(clk("collect water")){
     timer("collect water",1000)
     
     if(WCollector:isValid()){
-        if(WCollector:isUnderWater() & EnergyCur > 50){
+        if(WCollector:isUnderWater() & EnergyCur >= 50){
             WActive = 1
                 
             WatCur = WatCur+GenRate

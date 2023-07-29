@@ -105,5 +105,5 @@ if(dsClk()){
 if(clk("WMEV")){
     SpoolSpd = random(1.4,5)
     
-    SetSpeed = randint(0,DSN)
+    SetSpeed = randint(1,DSN)
 }
