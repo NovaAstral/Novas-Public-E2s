@@ -1,5 +1,5 @@
 @name Wave Motion Gun Port Iris
-@inputs Activate Port:entity
+@inputs Activate Port:entity PortLight:entity
 
 if(first() | dupefinished()){
     holoCreate(1)
@@ -14,7 +14,7 @@ if(first() | dupefinished()){
 }
 
 if(~Activate & Activate == 1){
-    timer("open",19000)
+    timer("open",5000)
     timer("close",60000)
 }
 
