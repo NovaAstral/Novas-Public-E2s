@@ -1,0 +1,144 @@
+@name Ground Bridge Controller
+@inputs BridgeController:wirelink
+@outputs 
+@persist Prefix:string Distance
+
+#include "Novas-Public-E2s/library/nova_lib"
+
+if(first() | dupefinished()){
+    Prefix = "/gb"
+    
+    holoCreate(1)
+    holoAlpha(1,0)
+    holoCreate(2)
+    holoAlpha(2,0)
+    
+    Distance = 100
+    
+    if(BridgeController:entity():isValid()){
+        BridgeController["Bridge1 Pos",entity] = holoEntity(1)
+        BridgeController["Bridge2 Pos",entity] = holoEntity(2)
+    }
+    else{
+        printColor(ColPink,"[GBC] ",ColOng,"You need to link a Ground Bridge Controller!")
+    }
+}
+
+if(~BridgeController & BridgeController:entity():isValid()){
+    BridgeController["Bridge1 Pos",entity] = holoEntity(1)
+    BridgeController["Bridge2 Pos",entity] = holoEntity(2)
+    
+    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Controller Linked.")
+}
+
+event chat(SaidPly:entity, Said:string,_){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner()){
+        if(OLS[1,string] == Prefix){
+            hideChat(1)
+            
+            if(OLS[2,string] == "reset"){
+                BridgeController["Reset",number] = 1
+                
+                printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Reset")
+                
+                timer("unreset",10)
+            }
+            elseif(OLS[2,string] == "mode"){
+                if(OLS[3,string]:toNumber() == 0){
+                    BridgeController["Mode",number] = 0
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Mode Normal")
+                }
+                elseif(OLS[3,string]:toNumber() == 1){
+                    BridgeController["Mode",number] = 1
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Mode Purple")
+                }
+                elseif(OLS[3,string]:toNumber() == 2){
+                    BridgeController["Mode",number] = -158
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Mode Pink")
+                }
+            }
+            elseif(OLS[2,string] == "scale" | OLS[2,string] == "size"){
+                BridgeController["Size",number] = clamp(OLS[3,string]:toNumber(),0.1,2)
+                
+                printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Size ",clamp(OLS[3,string]:toNumber(),0.1,2):toString())
+            }
+            elseif(OLS[2,string] == "activate" | OLS[2,string] == "on" | OLS[2,string] == "open"){
+                BridgeController["Activate",number] = 1
+                printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Active")
+            }
+            elseif(OLS[2,string] == "deactivate" | OLS[2,string] == "off" | OLS[2,string] == "close"){
+                BridgeController["Activate",number] = 0
+                printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Inactive")
+            }
+            elseif(OLS[2,string] == "dist"){
+                Distance = OLS[3,string]:toNumber()
+                printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Distance set to ",Distance:toString())
+            }
+            elseif(OLS[2,string] == "here"){
+                if(OLS[3,string]:toNumber() != 1 & OLS[3,string]:toNumber() != 2){
+                    printColor(ColPink,"[GBC] ",ColOng,"You must select a Ground Bridge to set the position of")
+                }
+                else{
+                    local HoloNum = OLS[3,string]:toNumber()
+                    
+                    local RangerData = owner():eyeTrace()
+                    
+                    local HoloPos = RangerData:pos() + RangerData:hitNormal() * Distance
+                    
+                    local HoloAng = (HoloPos - owner():pos()):toAngle():setPitch(0) + ang(-90,0,0)
+                    
+                    holoPos(HoloNum,HoloPos)
+                    holoAng(HoloNum,HoloAng)
+                    
+                    printColor(ColPink,"[GBC] ",ColOng,"Set the position of Ground Bridge Portal ",HoloNum," to your aimpos.")
+                }
+            }
+            elseif(OLS[2,string] == "ply"){
+                local Ply = findPlayerByName(OLS[4,string])
+                
+                if(Ply:isPlayer()){
+                    if(OLS[3,string]:toNumber() != 1 & OLS[3,string]:toNumber() != 2){
+                        printColor(ColPink,"[GBC] ",ColOng,"You must select a Ground Bridge to set the position of")
+                    }
+                    else{
+                        local HoloNum = OLS[3,string]:toNumber()
+                        
+                        local RangerData = Ply:eyeTrace()
+                    
+                        local HoloPos = RangerData:pos() + Ply:eye() * 300
+                        
+                        local HoloAng = (HoloPos - Ply:pos()):toAngle():setPitch(0) + ang(-90,0,0)
+                        
+                        holoPos(HoloNum,HoloPos)
+                        holoAng(HoloNum,HoloAng)
+                        
+                        printColor(ColPink,"[GBC] ",ColOng,"Set the position of Ground Bridge Portal ",HoloNum," to ",teamColor(Ply:team()),Ply:name())
+                    }
+                }
+            }
+            elseif(OLS[2,string] == "home"){
+                if(map() == "gm_cruisercanyon"){
+                    if(OLS[3,string]:toNumber() != 1 & OLS[3,string]:toNumber() != 2){
+                        printColor(ColPink,"[GBC] ",ColOng,"You must select a Ground Bridge to set the position of")
+                    }
+                    else{
+                        local HoloNum = OLS[3,string]:toNumber()
+                        
+                        BridgeController["Size",number] = 0.5
+                        
+                        holoPos(HoloNum,vec(-11403,2456,-8273))
+                        holoAng(HoloNum,ang(270,0,0))
+                        
+                        printColor(ColPink,"[GBC] ",ColOng,"Set the position of Ground Bridge Portal ",HoloNum," to Home")
+                    }
+                }
+            }
+        }
+    }
+}
+
+if(clk("unreset")){
+    BridgeController["Reset",number] = 0
+}

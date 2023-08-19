@@ -1,0 +1,93 @@
+@name Players HUD
+@inputs E:wirelink
+@persist Ents:array
+
+if(first()|duped()){
+    E:egpClear()
+    timer("find",500)
+    timer("createegp",1000)
+    timer("updateegp",1500)
+    
+    Ents = array()
+    
+    if(E:entity():isValid()){
+        E:egpHudEnable(1)
+    }
+}
+
+if(clk("find")){
+    timer("find",10000)
+    timer("createegp",10) #so that it removes hud entries if someone leaves the game
+    
+    findIncludeClass("player")
+    findIncludeClass("npc*")
+    
+    findExcludeEntity(owner())
+    findExcludeClass("sent_vj_ply_spawnpoint")
+    findExcludeClass("prop_physics_multiplayer")
+    
+    findInBox(vec(-45000,-45000,-45000),vec(45000,45000,45000))
+    findSortByDistance(owner():pos())
+    
+    Ents = findToArray()
+}
+
+if(clk("createegp")){
+    E:egpClear()
+
+    for(I=1,Ents:count()){
+        Ent = Ents[I,entity]
+ 
+        local Name = I+Ents:count()
+        local Health = I+Name*2
+        local Dist = I+Health*2
+        
+        E:egp3DTracker(I,vec(0))
+        E:egpParent(I,Ent) #pos becomes local when you parent
+        
+        if(Ent:name() == ""){
+            NameS = Ent:type()
+        }
+        else{
+            NameS = Ent:name()
+        }
+        
+        E:egpText(Name,NameS,vec2(0,0))
+        E:egpSize(Name,15)
+        E:egpAlign(Name,1)
+        
+        if(Ent:isPlayer()){
+            E:egpColor(Name,vec(0,255,0))
+        }
+        else{
+            E:egpColor(Name,vec(255,0,0))
+        }
+        
+        E:egpText(Health,"HP: "+Ent:health():toString(),vec2(0,15))
+        E:egpSize(Health,15)
+        E:egpAlign(Health,1)
+        
+        E:egpText(Dist,"Dist: "+floor(Ent:pos():distance(owner():pos())):toString(),vec2(0,25))
+        E:egpSize(Dist,15)
+        E:egpAlign(Dist,1)
+
+        E:egpParent(Name,I)
+        E:egpParent(Health,Name)
+        E:egpParent(Dist,Name)
+    }
+}
+
+if(clk("updateegp")){
+    timer("updateegp",100)
+    
+    for(I=1,Ents:count()){
+        Ent = Ents[I,entity]
+ 
+        local Name = I+Ents:count()
+        local Health = I+Name*2
+        local Dist = I+Health*2
+        
+        E:egpSetText(Health,"HP: "+Ent:health():toString())
+        E:egpSetText(Dist,"Dist: "+floor(Ent:pos():distance(owner():pos())):toString())
+    }
+}
