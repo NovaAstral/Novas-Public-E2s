@@ -64,7 +64,7 @@ event chat(SaidPly:entity, Said:string,_){
                     printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Color ",vec(255,95,255),"Pink")
                 }
                 elseif(OLS[3,string] == "custom"){
-                    local V = OLS[3,string]:explode(",")
+                    local V = OLS[4,string]:explode(",")
                     local X = V[1,string]:toNumber()
                     local Y = V[2,string]:toNumber()
                     local Z = V[3,string]:toNumber()
