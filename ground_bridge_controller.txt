@@ -1,7 +1,7 @@
 @name Ground Bridge Controller
 @inputs BridgeController:wirelink
-@outputs 
-@persist Prefix:string Distance
+@outputs Size Active Distance [Color,Br1,Br2]:vector
+@persist Prefix:string Distance AutoReset
 
 #include "Novas-Public-E2s/library/nova_lib"
 
@@ -15,9 +15,11 @@ if(first() | dupefinished()){
     
     Distance = 100
     
+    AutoReset = 0 #Reset automatically when activating
+    
     if(BridgeController:entity():isValid()){
-        BridgeController["Bridge1 Pos",entity] = holoEntity(1)
-        BridgeController["Bridge2 Pos",entity] = holoEntity(2)
+        BridgeController["Bridge1 Pos",vector] = holoEntity(1):pos()
+        BridgeController["Bridge2 Pos",vector] = holoEntity(2):pos()
     }
     else{
         printColor(ColPink,"[GBC] ",ColOng,"You need to link a Ground Bridge Controller!")
@@ -45,31 +47,55 @@ event chat(SaidPly:entity, Said:string,_){
                 
                 timer("unreset",10)
             }
-            elseif(OLS[2,string] == "mode"){
-                if(OLS[3,string]:toNumber() == 0){
-                    BridgeController["Mode",number] = 0
-                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Mode Normal")
+            elseif(OLS[2,string] == "color"){
+                if(OLS[3,string] == "normal" | OLS[3,string] == "default" | OLS[3,string] == "blue"){
+                    BridgeController["Color",vector] = vec(255,255,255)
+                    Color = vec(255,255,255)
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Color Normal")
                 }
-                elseif(OLS[3,string]:toNumber() == 1){
-                    BridgeController["Mode",number] = 1
-                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Mode Purple")
+                elseif(OLS[3,string] == "purple"){
+                    BridgeController["Color",vector] = vec(150,0,150)
+                    Color = vec(150,0,150)
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Color ",vec(150,0,150),"Purple")
                 }
-                elseif(OLS[3,string]:toNumber() == 2){
-                    BridgeController["Mode",number] = -158
-                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Mode Pink")
+                elseif(OLS[3,string] == "pink"){
+                    BridgeController["Color",vector] = vec(255,95,255)
+                    Color = vec(255,95,255)
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Color ",vec(255,95,255),"Pink")
+                }
+                elseif(OLS[3,string] == "custom"){
+                    local V = OLS[3,string]:explode(",")
+                    local X = V[1,string]:toNumber()
+                    local Y = V[2,string]:toNumber()
+                    local Z = V[3,string]:toNumber()
+                    
+                    local Col = vec(X,Y,Z)
+                    
+                    BridgeController["Color",vector] = Col
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Color set to: ",Col,Col:toString())
                 }
             }
             elseif(OLS[2,string] == "scale" | OLS[2,string] == "size"){
                 BridgeController["Size",number] = clamp(OLS[3,string]:toNumber(),0.1,2)
                 
+                Size = clamp(OLS[3,string]:toNumber(),0.1,2)
+                
                 printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Size ",clamp(OLS[3,string]:toNumber(),0.1,2):toString())
             }
             elseif(OLS[2,string] == "activate" | OLS[2,string] == "on" | OLS[2,string] == "open"){
-                BridgeController["Activate",number] = 1
-                printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Active")
+                if(AutoReset == 1){
+                    BridgeController["Reset",number] = 1
+                    timer("resetactive",100)
+                }
+                else{
+                    BridgeController["Activate",number] = 1
+                    Active = 1
+                    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Active")
+                }
             }
             elseif(OLS[2,string] == "deactivate" | OLS[2,string] == "off" | OLS[2,string] == "close"){
                 BridgeController["Activate",number] = 0
+                Active = 0
                 printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Inactive")
             }
             elseif(OLS[2,string] == "dist"){
@@ -91,6 +117,19 @@ event chat(SaidPly:entity, Said:string,_){
                     
                     holoPos(HoloNum,HoloPos)
                     holoAng(HoloNum,HoloAng)
+                    
+                    local BridgePos = "Bridge"+HoloNum:toString()+" Pos"
+                    local BridgeAng = "Bridge"+HoloNum:toString()+" Angle"
+                    
+                    BridgeController[BridgePos,vector] = HoloPos
+                    BridgeController[BridgeAng,angle] = HoloAng
+                    
+                    if(HoloNum == 1){
+                        Br1 = HoloPos
+                    }
+                    else{
+                        Br2 = HoloPos
+                    }
                     
                     printColor(ColPink,"[GBC] ",ColOng,"Set the position of Ground Bridge Portal ",HoloNum," to your aimpos.")
                 }
@@ -114,6 +153,13 @@ event chat(SaidPly:entity, Said:string,_){
                         holoPos(HoloNum,HoloPos)
                         holoAng(HoloNum,HoloAng)
                         
+                        if(HoloNum == 1){
+                            Br1 = HoloPos
+                        }
+                        else{
+                            Br2 = HoloPos
+                        }
+                        
                         printColor(ColPink,"[GBC] ",ColOng,"Set the position of Ground Bridge Portal ",HoloNum," to ",teamColor(Ply:team()),Ply:name())
                     }
                 }
@@ -131,12 +177,26 @@ event chat(SaidPly:entity, Said:string,_){
                         holoPos(HoloNum,vec(-11403,2456,-8273))
                         holoAng(HoloNum,ang(270,0,0))
                         
+                        if(HoloNum == 1){
+                            Br1 = vec(-11403,2456,-8273)
+                        }
+                        else{
+                            Br2 = vec(-11403,2456,-8273)
+                        }
+                        
                         printColor(ColPink,"[GBC] ",ColOng,"Set the position of Ground Bridge Portal ",HoloNum," to Home")
                     }
                 }
             }
         }
     }
+}
+
+if(clk("resetactive")){
+    BridgeController["Reset",number] = 0
+    BridgeController["Activate",number] = 1
+    Active = 1
+    printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Active")
 }
 
 if(clk("unreset")){

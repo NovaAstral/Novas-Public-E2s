@@ -18,18 +18,21 @@ if(first()|duped()){
 if(clk("find")){
     timer("find",10000)
     timer("createegp",10) #so that it removes hud entries if someone leaves the game
-    
-    findIncludeClass("player")
+
     findIncludeClass("npc*")
     
     findExcludeEntity(owner())
     findExcludeClass("sent_vj_ply_spawnpoint")
     findExcludeClass("prop_physics_multiplayer")
     
-    findInBox(vec(-45000,-45000,-45000),vec(45000,45000,45000))
+    findInSphere(owner():pos(),5000)
     findSortByDistance(owner():pos())
     
-    Ents = findToArray()
+    FEnts = findToArray()
+    
+    Plys = players()
+    
+    Ents = Plys:add(FEnts)
 }
 
 if(clk("createegp")){
@@ -57,13 +60,13 @@ if(clk("createegp")){
         E:egpAlign(Name,1)
         
         if(Ent:isPlayer()){
-            E:egpColor(Name,vec(0,255,0))
+            E:egpColor(Name,teamColor(Ent:team()))
         }
         else{
             E:egpColor(Name,vec(255,0,0))
         }
         
-        E:egpText(Health,"HP: "+Ent:health():toString(),vec2(0,15))
+        E:egpText(Health,"HP: "+Ent:health():toString()+" / "+Ent:maxHealth(),vec2(0,15))
         E:egpSize(Health,15)
         E:egpAlign(Health,1)
         
@@ -87,7 +90,19 @@ if(clk("updateegp")){
         local Health = I+Name*2
         local Dist = I+Health*2
         
-        E:egpSetText(Health,"HP: "+Ent:health():toString())
+        local HP = Ent:health() / Ent:maxHealth() * 100
+        
+        if(HP >= 90){ E:egpColor(Health,vec(0,255,0))}
+        if(HP <= 80 & HP > 70){ E:egpColor(Health,vec(100,255,0))}
+        if(HP <= 70 & HP > 60){ E:egpColor(Health,vec(150,255,0))}
+        if(HP <= 60 & HP > 50){ E:egpColor(Health,vec(200,255,0))}
+        if(HP <= 50 & HP > 40){ E:egpColor(Health,vec(255,255,0))}
+        if(HP <= 40 & HP > 30){ E:egpColor(Health,vec(255,200,0))}
+        if(HP <= 30 & HP > 20){ E:egpColor(Health,vec(255,150,0))}
+        if(HP <= 20 & HP > 10){ E:egpColor(Health,vec(255,100,0))}
+        if(HP <= 10 & HP > 0){ E:egpColor(Health,vec(255,0,0))}
+        
+        E:egpSetText(Health,"HP: "+Ent:health():toString()+" / "+Ent:maxHealth())
         E:egpSetText(Dist,"Dist: "+floor(Ent:pos():distance(owner():pos())):toString())
     }
 }
