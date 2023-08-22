@@ -174,8 +174,11 @@ event chat(SaidPly:entity, Said:string,_){
                         
                         BridgeController["Size",number] = 0.5
                         
-                        holoPos(HoloNum,vec(-11403,2456,-8273))
-                        holoAng(HoloNum,ang(270,0,0))
+                        local BridgePos = "Bridge"+HoloNum:toString()+" Pos"
+                        local BridgeAng = "Bridge"+HoloNum:toString()+" Angle"
+                        
+                        BridgeController[BridgePos,vector] = vec(-11403,2456,-8273)
+                        BridgeController[BridgeAng,angle] = ang(270,0,0)
                         
                         if(HoloNum == 1){
                             Br1 = vec(-11403,2456,-8273)
