@@ -2,7 +2,7 @@
 @inputs E:wirelink
 @persist Ents:array
 
-if(first()|duped()){
+if(first() | dupefinished()){
     E:egpClear()
     timer("find",500)
     timer("createegp",1000)
@@ -24,6 +24,8 @@ if(clk("find")){
     findExcludeEntity(owner())
     findExcludeClass("sent_vj_ply_spawnpoint")
     findExcludeClass("prop_physics_multiplayer")
+    findExcludeClass("gmod_wire_input")
+    findExcludeClass("fnp90")
     
     findInSphere(owner():pos(),5000)
     findSortByDistance(owner():pos())

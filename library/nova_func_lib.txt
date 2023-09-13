@@ -1,0 +1,153 @@
+@name Nova_Func_Lib
+#This e2 doesn't need to be placed anywhere
+
+#If you need to give this lib to someone, its better if they get the most recent version from:
+#https://github.com/NovaAstral/Novas-Public-E2s
+
+if(first() | dupefinished()){
+    if(entity():getName() == "Nova_Func_Lib"){
+        printColor(vec(255,95,215),"[NovaFLib] ",vec(230,110,0),"This Library doesn't need to be placed anywhere. ",vec(255,0,0),"Removing.")
+        printColor(vec(255,95,215),"[NovaFLib] ",vec(230,110,0),"If you're trying to give this to someone, send them to ",vec(0,255,0),"https://github.com/NovaAstral/Novas-Public-E2s")
+        selfDestruct()
+    }
+    
+    function entity getIris(Gate:entity){
+        findInSphere(Gate:pos(),10)
+        findClipToClass("stargate_iris")
+        
+        return find()
+    }
+    
+    function entity getGateRing(Gate:entity){
+        findExcludeClass("gmod_wire_hologram")
+        findInSphere(Gate:pos(),10)
+        findClipToModel("models/madman07/stargate/ring_sg1.mdl")
+        
+        return find()
+    }
+    
+    function number getSymbolNumber(Smb:string){ #in order of being on the milkyway gate
+        Smb = Smb:upper()
+        
+        if(Smb == "#"){
+            return 0
+        }
+        elseif(Smb == "0"){
+            return 1
+        }
+        elseif(Smb == "J"){
+            return 2
+        }
+        elseif(Smb == "K"){
+            return 3
+        }
+        elseif(Smb == "N"){
+            return 4
+        }
+        elseif(Smb == "T"){
+            return 5
+        }
+        elseif(Smb == "R"){
+            return 6
+        }
+        elseif(Smb == "3"){
+            return 7
+        }
+        elseif(Smb == "M"){
+            return 8
+        }
+        elseif(Smb == "B"){
+            return 9
+        }
+        elseif(Smb == "Z"){
+            return 10
+        }
+        elseif(Smb == "X"){
+            return 11
+        }
+        elseif(Smb == "*"){
+            return 12
+        }
+        elseif(Smb == "H"){
+            return 13
+        }
+        elseif(Smb == "6"){
+            return 14
+        }
+        elseif(Smb == "9"){
+            return 15
+        }
+        elseif(Smb == "I"){
+            return 16
+        }
+        elseif(Smb == "G"){
+            return 17
+        }
+        elseif(Smb == "P"){
+            return 18
+        }
+        elseif(Smb == "L"){
+            return 19
+        }
+        elseif(Smb == "?"){
+            return 20
+        }
+        elseif(Smb == "@"){
+            return 21
+        }
+        elseif(Smb == "Q"){
+            return 22
+        }
+        elseif(Smb == "F"){
+            return 23
+        }
+        elseif(Smb == "S"){
+            return 24
+        }
+        elseif(Smb == "1"){
+            return 25
+        }
+        elseif(Smb == "E"){
+            return 26
+        }
+        elseif(Smb == "4"){
+            return 27
+        }
+        elseif(Smb == "A"){
+            return 28
+        }
+        elseif(Smb == "U"){
+            return 29
+        }
+        elseif(Smb == "8"){
+            return 30
+        }
+        elseif(Smb == "5"){
+            return 31
+        }
+        elseif(Smb == "O"){
+            return 32
+        }
+        elseif(Smb == "C"){
+            return 33
+        }
+        elseif(Smb == "W"){
+            return 34
+        }
+        elseif(Smb == "7"){
+            return 35
+        }
+        elseif(Smb == "2"){
+            return 36
+        }
+        elseif(Smb == "Y"){
+            return 37
+        }
+        elseif(Smb == "V"){
+            return 38
+        }
+        elseif(Smb == "D"){
+            return 39
+        }
+    }
+}

@@ -1,0 +1,31 @@
+@name 
+@inputs Active Stargate:wirelink Input:string
+@outputs #Out:string
+
+if(~Active){
+    if(Active == 1 & Input != ""){
+        Stargate["Rotate Ring",number] = 1
+        
+        timer("chevcheck",1)
+    }
+    else{
+        stoptimer("chevcheck")
+        
+        Stargate["Rotate Ring",number] = 0
+    }
+}
+
+if(clk("chevcheck")){
+    timer("chevcheck",1)
+    
+    #Out = Stargate["Ring Symbol",string]
+    
+    if(Stargate["Ring Symbol",string] == Input){
+        stoptimer("chevcheck")
+        
+        Stargate["Rotate Ring",number] = 0
+        Stargate["Chevron Encode",number] = 1
+        
+        print("abc")
+    }
+}

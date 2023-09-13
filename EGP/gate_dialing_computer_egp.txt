@@ -1,0 +1,519 @@
+@name Gate Dialing Computer EGP
+@inputs [EGP,Stargate]:wirelink ResetRing
+@outputs 
+@persist [GateModel,TopChevModel,ChevModel,Font,Address]:string GateScale:vector IrisW:wirelink
+@persist [GateRing,Iris]:entity
+@persist [IrisOn,GateOpen,IrisAlpha,IrisIndex]:number
+
+#include "Novas-Public-E2s/library/nova_func_lib"
+
+if(first() | dupefinished()){
+    if(EGP){
+        EGP:egpClear()
+        timer("holoCreate",1)
+        timer("egpCreate",50)
+    }
+    
+    GateScale = vec(0.1)
+    
+    #I dislike the warning system#
+    IrisOn = 0
+    GateOpen = 0
+    IrisAlpha = 0
+    IrisIndex = 0
+    
+    Iris = noentity()
+    ##############################
+}
+
+if(~EGP & EGP){
+    EGP:egpClear()
+    holoDeleteAll()
+    timer("holoCreate",1)
+    timer("egpCreate",50)
+}
+
+if(~Stargate & Stargate){
+    EGP:egpClear()
+    holoDeleteAll()
+    timer("holoCreate",1)
+    timer("egpCreate",50)
+}
+
+if(clk("holoCreate")){
+    if(Stargate:entity():type() == "stargate_sg1"){
+        GateModel = "models/madman07/stargate/base.mdl"
+        TopChevModel = "models/madman07/stargate/chevron.mdl"
+        ChevModel = "models/madman07/stargate/chevron.mdl"
+        
+        if(Stargate["Earth Point of Origin",number] == 1){
+            Font = "Stargate Address Glyphs SG1" #Concept (doesn't seem to work)
+        }
+        else{
+            Font = "Stargate Address Glyphs SG1"
+        }
+        
+        SG1Type = 1
+    }
+    elseif(Stargate:entity():type() == "stargate_movie"){
+        GateModel = "models/madman07/stargate/base_movie.mdl"
+        TopChevModel = "models/madman07/stargate/chevron_movie.mdl"
+        ChevModel = "models/madman07/stargate/chevron.mdl"
+        
+        if(Stargate["Earth Point of Origin",number] == 1){
+            Font = "Stargate Address Glyphs SG1" #Concept (doesn't seem to work)
+        }
+        else{
+            Font = "Stargate Address Glyphs SG1"
+        }
+        
+        SG1Type = 1
+    }
+    elseif(Stargate:entity():type() == "stargate_infinity"){
+        GateModel = "models/madman07/stargate/base.mdl"
+        TopChevModel = "models/madman07/stargate/chevron.mdl"
+        ChevModel = "models/madman07/stargate/chevron.mdl"
+        
+        if(Stargate["Earth Point of Origin",number] == 1){
+            Font = "Stargate Address Glyphs SG1" #Concept (doesn't seem to work)
+        }
+        else{
+            Font = "Stargate Address Glyphs SG1"
+        }
+        
+        SG1Type = 1
+    }
+    elseif(Stargate:entity():type() == "stargate_tollan"){
+        GateModel = "models/alexalx/stargate_cebt/sgtbase.mdl"
+        TopChevModel = "models/alexalx/stargate_cebt/sgtchev.mdl"
+        ChevModel = "models/alexalx/stargate_cebt/sgtchev.mdl"
+        
+        if(Stargate["Earth Point of Origin",number] == 1){
+            Font = "Stargate Address Glyphs SG1" #Concept (doesn't seem to work)
+        }
+        else{
+            Font = "Stargate Address Glyphs SG1"
+        }
+    }
+    elseif(Stargate:entity():type() == "stargate_atlantis"){
+        GateModel = "models/madman07/stargate/base_atlantis.mdl"
+        TopChevModel = ""
+        ChevModel = ""
+        
+        Font = "Stargate Address Glyphs Atl"
+    }
+    elseif(Stargate:entity():type() == "stargate_universe"){
+        GateModel = "models/the_sniper_9/universe/stargate/universegate.mdl"
+        TopChevModel = ""
+        ChevModel = "models/the_sniper_9/universe/stargate/universechevrons.mdl"
+        
+        Font = "Stargate Address Glyphs U"
+    }
+    
+    holoCreate(15,entity():pos()) #Gate Base
+    holoModel(15,GateModel)
+    holoAng(15,EGP:entity():angles()+ang(90,0,0))
+    holoScale(15,GateScale)
+    holoPos(15,EGP:entity():pos()+EGP:entity():up()*2+EGP:entity():right()*5)
+    holoParent(15,EGP:entity())
+    
+    holoCreate(17,holoEntity(15):pos()) #Event Horizon
+    holoModel(17,"models/zup/stargate/stargate_horizon.mdl")
+    holoAng(17,holoEntity(15):angles())
+    holoAlpha(17,0)
+    holoScale(17,GateScale)
+    
+    if(SG1Type == 1){
+        GateRing = getGateRing(Stargate:entity())
+        
+        holoCreate(16,holoEntity(15):pos())
+        holoModel(16,"models/madman07/stargate/ring_sg1.mdl")
+        holoAng(16,holoEntity(15):angles()+ang(0,0,GateRing:angles():roll()))
+        holoScale(16,GateScale)
+    }
+    
+    if(Stargate:entity():type() != "stargate_universe"){ #unigate works different
+        holoCreate(7,holoEntity(15):pos()) #Chevron 7
+        holoModel(7,TopChevModel)
+        holoParent(7,holoEntity(15))
+        holoAng(7,holoEntity(15):angles())
+        holoScale(7,GateScale)
+        
+        holoCreate(1,holoEntity(15):pos()) #Chevron 1
+        holoModel(1,ChevModel)
+        holoParent(1,holoEntity(15))
+        holoAng(1,holoEntity(15):angles()-ang(0,0,40))
+        holoScale(1,GateScale)
+        
+        holoCreate(2,holoEntity(15):pos()) #Chevron 2
+        holoModel(2,ChevModel)
+        holoParent(2,holoEntity(15))
+        holoAng(2,holoEntity(15):angles()-ang(0,0,80))
+        holoScale(2,GateScale)
+        
+        holoCreate(3,holoEntity(15):pos()) #Chevron 3
+        holoModel(3,ChevModel)
+        holoParent(3,holoEntity(15))
+        holoAng(3,holoEntity(15):angles()-ang(0,0,120))
+        holoScale(3,GateScale)
+        
+        holoCreate(8,holoEntity(15):pos()) #Chevron 8
+        holoModel(8,ChevModel)
+        holoParent(8,holoEntity(15))
+        holoAng(8,holoEntity(15):angles()-ang(0,0,160))
+        holoScale(8,GateScale)
+        
+        holoCreate(9,holoEntity(15):pos()) #Chevron 9
+        holoModel(9,ChevModel)
+        holoParent(9,holoEntity(15))
+        holoAng(9,holoEntity(15):angles()-ang(0,0,200))
+        holoScale(9,GateScale)
+        #holoColor(9,vec(255,0,0))
+        
+        holoCreate(4,holoEntity(15):pos()) #Chevron 4
+        holoModel(4,ChevModel)
+        holoParent(4,holoEntity(15))
+        holoAng(4,holoEntity(15):angles()-ang(0,0,240))
+        holoScale(4,GateScale)
+        
+        holoCreate(5,holoEntity(15):pos()) #Chevron 5
+        holoModel(5,ChevModel)
+        holoParent(5,holoEntity(15))
+        holoAng(5,holoEntity(15):angles()-ang(0,0,280))
+        holoScale(5,GateScale)
+        
+        holoCreate(6,holoEntity(15):pos()) #Chevron 6
+        holoModel(6,ChevModel)
+        holoParent(6,holoEntity(15))
+        holoAng(6,holoEntity(15):angles()-ang(0,0,320))
+        holoScale(6,GateScale)
+        
+        timer("update",100)
+    }
+    else{
+        print("unigate unfinished")
+    }
+}
+
+if(clk("egpCreate")){
+    if(Stargate:entity():isValid()){
+        Address = Stargate["Dialing Address",string]
+        Symb = Address:explode("")
+    }
+    
+    EGP:egpCircleOutline(1,vec2(201,256),vec2(155)) #circle around gate
+    
+    EGP:egpBoxOutline(2,vec2(455,205),vec2(100,390)) #Address box
+    
+    for(I=3,11){
+        local A = I-2
+        EGP:egpBoxOutline(I,vec2(430,A*42-6),vec2(40))
+    }
+    
+    for(I=12,20){
+        local A = I-11
+        EGP:egpText(I,Symb[A,string],vec2(430,A*42-25))
+        
+        EGP:egpAlign(I,1)
+        EGP:egpFont(I,Font,35)
+    }
+    
+    for(I=21,29){
+        local A = I-20
+        EGP:egpBoxOutline(I,vec2(480,A*42-6),vec2(40))
+    }
+    
+    for(I=30,38){
+        local A = I-29
+        EGP:egpText(I,Symb[A,string],vec2(480,A*42-25))
+        
+        EGP:egpAlign(I,1)
+        EGP:egpSize(I,35)
+        #EGP:egpFont(I,Font,35)
+    }
+    
+    EGP:egpCircle(39,vec2(201,256),vec2(5)) #point of origin arrow parent
+    EGP:egpAngle(39,GateRing:angles():roll())
+    #EGP:egpAlpha(39,0)
+    
+    EGP:egpCircle(40,vec2(0,-165),vec2(10)) #point of origin arrow 
+    EGP:egpFidelity(40,3)
+    EGP:egpParent(40,39)
+    EGP:egpAngle(40,90)
+    
+    #Dialing Symbol arrow
+    EGP:egpCircle(41,vec2(165*cos(getSymbolNumber("#")*90),165*sin(getSymbolNumber("#")*90)),vec2(10))
+    EGP:egpFidelity(41,3)
+    EGP:egpAngle(41,180+getSymbolNumber("#")*90)
+    EGP:egpParent(41,39)
+    EGP:egpColor(41,vec(0,255,0))
+    EGP:egpAlpha(41,0)
+    
+    #Dialed Symbol arrow
+    EGP:egpCircle(42,vec2(165*cos(getSymbolNumber("#")*90),165*sin(getSymbolNumber("#")*90)),vec2(10))
+    EGP:egpFidelity(42,3)
+    EGP:egpAngle(42,180+getSymbolNumber("#")*90)
+    EGP:egpParent(42,39)
+    EGP:egpColor(42,vec(0,0,255))
+    EGP:egpAlpha(42,0)
+    
+    for(I=1,40){
+        EGP:egpColor(I,vec(230,110,0))
+    }
+}
+
+if(clk("update")){
+    timer("update",100)
+    
+    if(!Iris:isValid() | Iris:creationID() != IrisIndex){
+        Iris = getIris(Stargate:entity())
+        
+        if(Iris:isValid() & !holoEntity(18):isValid()){
+            IrisW = Iris:wirelink()
+            IrisIndex = Iris:creationID()
+            
+            holoCreate(18,holoEntity(15):pos()) #Iris
+            holoModel(18,Iris:model())
+            holoAng(18,holoEntity(15):angles())
+            holoAlpha(18,0)
+            holoScale(18,GateScale)
+        }
+    }
+    
+    if(Stargate["Ring Rotation",number] != 0){
+        holoAng(16,holoEntity(15):angles()+ang(0,0,GateRing:angles():roll()))
+        
+        EGP:egpAngle(39,GateRing:angles():roll()) #point of origin arrow parent
+    }
+    
+    if(Stargate["Open",number] == 1 & GateOpen == 0){
+        GateOpen = 1
+        holoAlpha(17,255)
+    }
+    elseif(Stargate["Open",number] == 0 & GateOpen == 1){
+        GateOpen = 0
+        holoAlpha(17,0)
+    }
+    
+    if(Iris:isValid()){
+        if(IrisW["Activated",number] == 1 & IrisOn == 0){
+            IrisOn = 1
+            
+            if(Iris:model() == "models/zup/stargate/iris.mdl" | Iris:model() == "models/cos/stargate/iris.mdl"){
+                holoAlpha(18,255)
+                holoAnim(18,3)
+            }
+            else{
+                timer("gateShieldOn",1)
+            }
+        }
+        elseif(IrisW["Activated",number] == 0 & IrisOn == 1){
+            IrisOn = 0
+            
+            if(Iris:model() == "models/zup/stargate/iris.mdl" | Iris:model() == "models/cos/stargate/iris.mdl"){
+                holoAnim(18,2)
+                timer("irisOff",3000)
+            }
+            else{
+                timer("gateShieldOff",1)
+            }
+        }
+    }
+    
+    if(Stargate["Dialing Address",string] != Address){
+        Address = Stargate["Dialing Address",string]
+        
+        local Symb = Address:explode("")
+        
+        if(changed(Symb[1,string])){
+            EGP:egpSetText(12,Symb[1,string]) #chevron text 1 
+            EGP:egpSetText(30,Symb[1,string])
+        }
+        
+        if(changed(Symb[2,string])){
+            EGP:egpSetText(13,Symb[2,string])#chevron text 2
+            EGP:egpSetText(31,Symb[2,string])
+        }
+        
+        if(changed(Symb[3,string])){
+            EGP:egpSetText(14,Symb[3,string])#chevron text 3
+            EGP:egpSetText(32,Symb[3,string])
+        }
+        
+        if(changed(Symb[4,string])){
+            EGP:egpSetText(15,Symb[4,string])#chevron text 4
+            EGP:egpSetText(33,Symb[4,string])
+        }
+        
+        if(changed(Symb[5,string])){
+            EGP:egpSetText(16,Symb[5,string])#chevron text 5
+            EGP:egpSetText(34,Symb[5,string])
+        }
+        
+        if(changed(Symb[6,string])){
+            EGP:egpSetText(17,Symb[6,string])#chevron text 6
+            EGP:egpSetText(35,Symb[6,string])
+        }
+        
+        if(changed(Symb[7,string])){
+            EGP:egpSetText(18,Symb[7,string])#chevron text 7
+            EGP:egpSetText(36,Symb[7,string])
+        }
+        
+        if(changed(Symb[8,string])){
+            EGP:egpSetText(19,Symb[8,string])#chevron text 8
+            EGP:egpSetText(37,Symb[8,string])
+        }
+        
+        if(changed(Symb[9,string])){
+            EGP:egpSetText(20,Symb[9,string])#chevron text 9
+            EGP:egpSetText(38,Symb[9,string])
+        }
+    }
+    
+    if(changed(Stargate["Chevrons",string])){
+        local Chevs = Stargate["Chevrons",string]:explode("")
+        
+        if(Chevs[1,string] == "1"){ #Chevron 1
+            holoSkin(1,1)
+        }
+        if(Chevs[1,string] == "0"){
+            holoSkin(1,0)
+        }
+        
+        if(Chevs[2,string] == "1"){ #Chevron 2
+            holoSkin(2,1)
+        }
+        if(Chevs[2,string] == "0"){
+            holoSkin(2,0)
+        }
+        
+        if(Chevs[3,string] == "1"){ #Chevron 3
+            holoSkin(3,1)
+        }
+        if(Chevs[3,string] == "0"){
+            holoSkin(3,0)
+        }
+        
+        if(Chevs[4,string] == "1"){ #Chevron 4
+            holoSkin(4,1)
+        }
+        if(Chevs[4,string] == "0"){
+            holoSkin(4,0)
+        }
+        
+        if(Chevs[5,string] == "1"){ #Chevron 5
+            holoSkin(5,1)
+        }
+        if(Chevs[5,string] == "0"){
+            holoSkin(5,0)
+        }
+        
+        if(Chevs[6,string] == "1"){ #Chevron 6
+            holoSkin(6,1)
+        }
+        if(Chevs[6,string] == "0"){
+            holoSkin(6,0)
+        }
+        
+        if(Chevs[7,string] == "1"){#Chevron 7
+            holoSkin(7,1)
+        }
+        if(Chevs[7,string] == "0"){
+            holoSkin(7,0)
+        }
+        
+        if(Chevs[8,string] == "1"){ #Chevron 8
+            holoSkin(8,1)
+        }
+        if(Chevs[8,string] == "0"){
+            holoSkin(8,0)
+        }
+        
+        if(Chevs[9,string] == "1"){ #Chevron 9
+            holoSkin(9,1)
+        }
+        if(Chevs[9,string] == "0"){
+            holoSkin(9,0)
+        }
+    }
+    
+    if(changed(Stargate["Dialing Symbol",string])){
+        local Symbol = Stargate["Dialing Symbol",string]
+        
+        if(Symbol != ""){
+            EGP:egpAlpha(41,255)
+            EGP:egpPos(41,vec2(165*cos(getSymbolNumber(Symbol)*9-10*9),165*sin(getSymbolNumber(Symbol)*9-10*9)))
+            EGP:egpAngle(41,180+getSymbolNumber(Symbol)*9-10*9)
+        }
+        else{
+            EGP:egpAlpha(41,0)
+        }
+    }
+    
+    if(changed(Stargate["Dialed Symbol",string])){
+        local Symbol = Stargate["Dialed Symbol",string]
+        
+        if(Symbol != ""){
+            EGP:egpAlpha(42,255)
+            EGP:egpPos(42,vec2(165*cos(getSymbolNumber(Symbol)*9-10*9),165*sin(getSymbolNumber(Symbol)*9-10*9)))
+            EGP:egpAngle(42,180+getSymbolNumber(Symbol)*9-10*9)
+        }
+        else{
+            EGP:egpAlpha(42,0)
+        }
+    }
+}
+
+if(clk("irisOff")){
+    holoAlpha(18,0)
+}
+
+if(clk("gateShieldOn")){
+    timer("gateShieldOn",10)
+    
+    if(IrisAlpha >= 255){
+        stoptimer("gateShieldOn")
+        
+        IrisAlpha = 255
+        holoAlpha(18,IrisAlpha)
+    }
+    else{
+        IrisAlpha = clamp(IrisAlpha+1,0,255)
+        holoAlpha(18,IrisAlpha)
+    }
+}
+
+if(clk("gateShieldOff")){
+    timer("gateShieldOff",10)
+    
+    if(IrisAlpha <= 0){
+        stoptimer("gateShieldOff")
+        
+        IrisAlpha = 0
+        holoAlpha(18,IrisAlpha)
+    }
+    else{
+        IrisAlpha = clamp(IrisAlpha-1,0,255)
+        holoAlpha(18,IrisAlpha)
+    }
+}
+
+if(~ResetRing & ResetRing){
+    if(Stargate:entity():isValid()){
+        if(Stargate["Active",number] == 0 & Stargate["Ring Symbol",string] != "#"){
+            Stargate["Ring Speed Mode",number] = 2
+            Stargate["Rotate Ring",number] = 1
+            timer("ringReset",1)
+        }
+    }
+}
+
+if(clk("ringReset")){
+    timer("ringReset",100)
+    
+    if(Stargate["Ring Symbol",string] == "#"){
+        stoptimer("ringReset")
+        Stargate["Rotate Ring",number] = 0
+    }
+}
