@@ -29,7 +29,6 @@ if(first() | dupefinished()){
         selfDestruct()
     }
     
-    
     if(ColTeam&ColBlu&ColWht&ColBlk&ZeiaOng&ZeiaTBlu&ZeiaMBlu&ZeiaWht&ZeiaBlk){
         #This is to get rid of the annoying warnings of "Unused global variable"
     }
@@ -317,7 +316,12 @@ if(first() | dupefinished()){
     TurretType["spiralwavedisruptor",number] = 13
     TurretType["spiral",number] = 13
     TurretType["cardie",number] = 13
+    
+    if(DriveName&WarpLoc&TransportLoc&TarType&BeamType&TorpType&TurretType){
+        #This is to get rid of the annoying warnings of "Unused global variable"
+    }
 }
+
 
 #o'neill command in vethian :)
 if(clk("whacko")){

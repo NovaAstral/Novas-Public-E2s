@@ -2,7 +2,7 @@
 @inputs [TardisExt,B1,B2,B3,B4,B5,B6,Throttle]:entity
 @outputs [O,T]:entity
 @persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
-@persist Shield HPLow Advt DematPly:entity
+@persist Shield HPLow OwnerHPLow Advt DematPly:entity
 @persist [SiegeMat,SiegeModel]:string STAlpha SCAlpha [SiegeProp,TDoor]:entity
 
 #include "Novas-Public-E2s/library/nova_lib"
@@ -12,7 +12,7 @@
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
 #The Entity inputs are for the Advanced Takeoff of the Legacy TARDIS. 
-#It does not and never will work on the 'Rewrite' TARDIS unless they change how their buttons work
+#Advanced Takeoff does not and never will work on the 'Rewrite' TARDIS unless they change how their buttons work
 
 if(first() | dupefinished()){
     O = owner()
@@ -34,6 +34,7 @@ if(first() | dupefinished()){
     
     HPLow = 0
     Shield = 0
+    OwnerHPLow = 0
 }
 
 
@@ -130,10 +131,12 @@ if(clk("funcsetup")){
                 elseif(T:tardisGetData("handbrake") == "true"){
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The Handbrake is ",ColRed,"Active! ",ColOng,"Cannot Dematerialize")
                 }
+                
+                return JamYes
             }
-            
-            return JamYes
         }
+        
+        return JamNo
     }
 }
 
@@ -179,6 +182,21 @@ if(clk("hpcheck")){
     if(T:tardisHealth() >= 90 & HPLow == 1){
         HPLow = 0
     }
+    
+    #Owner Safety
+    if(owner():health() <= 25 & OwnerHPLow == 0){
+        T:soundPlay(2,0,"tardis/cloisterbell_loop.wav")
+        
+        OwnerHPLow = 1
+        
+        printColor(vec(255,95,215)," [TARDIS] ",vec(230,110,0),"WARNING: Owner Health under 25! (",ColRed,round(owner():health()),"%)")
+    }
+    
+    if(owner():health() >= 26 & OwnerHPLow == 1){
+        OwnerHPLow = 0
+        
+        soundStop(2,2)
+    }
 }
 
 if(clk("sndcreate")){
@@ -193,11 +211,11 @@ if(clk("sndstop")){
     timer("sndcreate",10)
 }
 
-event chat(SaidPly:entity, Said:string,_){
+event chat(SaidPly:entity, Said:string,_:number){
     local OLS = Said:lower():explode(" ")
     
     if(SaidPly == owner()){
-        if(OLS[1,string] == Prefix){
+        if(OLS[1,string] == Prefix | OLS[1,string] == "/tardis"){
             hideChat(1)
             
             if(OLS[2,string] == "help"){
@@ -666,6 +684,21 @@ event chat(SaidPly:entity, Said:string,_){
                     T:tardisTrack(noentity())
                 }
             }
+            
+            if(OLS[2,string] == "comehere" | OLS[2,string] == "come" | OLS[2,string] == "saveme"){
+                T:tardisSetDestination(owner():pos(),T:angles())
+                
+                if(T:tardisInVortex() == 1){
+                    T:tardisMaterialise()
+                }
+                else{
+                    T:tardisFastDemat()
+                }
+                
+                if(dematJamCheck(1,owner():pos()) == 0){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerializing to ",teamColor(owner():team()),"You")
+                }
+            }
         
             #Legacy Advanced Takeoff
             if(OLS[2,string] == "adv"){ #This only works on the Legacy TARDIS, and you must wire the buttons manually
@@ -679,7 +712,7 @@ event chat(SaidPly:entity, Said:string,_){
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Siege Mode",ColGrn," Enabled")
                     
                     SiegeProp = propSpawn(SiegeModel,T:pos()+vec(0,0,10),0)
-                    noCollide(SiegeProp,T)
+                    SiegeProp:noCollide(T)
                     SiegeProp:setAlpha(0)
                     SiegeProp:setMaterial(SiegeMat)
                     
@@ -696,7 +729,7 @@ event chat(SaidPly:entity, Said:string,_){
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Siege Mode",ColRed," Disabled")
                     
                     T:propNotSolid(0)
-                    noCollideAll(TDoor,0)
+                    TDoor:noCollideAll(0)
                     
                     T:soundPlay(2,5600,"drmatt/tardis/repairfinish.wav")
                     T:deparent()
@@ -905,7 +938,7 @@ if(clk("siegedemat")){
     if(STAlpha <= 0){
         stoptimer("siegedemat")
         T:propNotSolid(1)
-        noCollideAll(TDoor,1)
+        TDoor:noCollideAll(1)
     }
 }
 

@@ -1,0 +1,18 @@
+@name Multichat
+@persist Whitelist:table Prefix:string
+
+if(first()){
+    Prefix = "/mc"
+    
+    Whitelist = table()
+    Whitelist["STEAM_0:1:53193910",string] = "Kripalida"
+    Whitelist["STEAM_0:0:53930685",string] = "Nova Astral"
+}
+
+event chat(SaidPly:entity, Said:string, Team:number){
+    local OLS = Said:lower():explode(" ")
+    
+    if(OLS[1,string] == Prefix & Whitelist:exists(SaidPly:steamID())){
+        print("meow")
+    }
+}

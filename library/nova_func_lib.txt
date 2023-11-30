@@ -149,5 +149,7 @@ if(first() | dupefinished()){
         elseif(Smb == "D"){
             return 39
         }
+        
+        return 0
     }
 }

@@ -103,6 +103,7 @@ if(clk("update")){
 }
 
 if(clk("egpcreate")){
+    EGP:egpClear()
     Bank = 1
     
     EGP:egpBox(1,vec2(256),vec2(512)) #Background
@@ -223,9 +224,12 @@ if(~User & User){
         }
         else{
             Play = 1
-            WebA:play()
+            WebA:pause()
+            timer("musicchange",100)
+            timer("playsnd",500)
             
-            timer("musicstop",WebA:getLength()*1000)
+            timer("musicstop",1)
+            timer("resetcolor",1000)
         }
     }
     #[
@@ -442,7 +446,13 @@ if(~User & User){
     
 }
 
+if(clk("playsnd")){
+    WebA:play()
+}
+
 if(clk("resetcolor")){
+    timer("egpcreate",10)
+    
     EGP:egpColor(5,vec(255)) #Bank Selector
     EGP:egpColor(6,vec(255))
     
@@ -547,6 +557,7 @@ if(clk("soundpurge")){
 
 if(clk("musicchange")){
     #timer("soundpurge",10)
+    WebA:destroy()
     
     Play = 0
     

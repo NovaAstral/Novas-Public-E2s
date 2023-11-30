@@ -1,0 +1,33 @@
+@name Find LS Ents
+@persist Radius Ents:array LSEnts:table
+
+if(first()){
+    timer("find",10)
+    Radius = 1000
+    
+    LSEnts = table()
+    LSEnts["resource_node",string] = ""
+    LSEnts["zpm_mk3",string] = ""
+    LSEnts["black_hole_cache_ent",string] = ""
+}
+
+if(clk("find")){
+    findInSphere(entity():pos(),Radius)
+
+    Ents = findToArray()
+    if(Ents:count() > 0){
+        for(I=1,Ents:count()){
+            Ent = Ents[I,entity]
+            
+            if(Ent:owner() == owner() & LSEnts:exists(Ent:type())){
+                print(Ent)
+                print(Ent:type())
+            }
+        }
+    }
+    
+    if(Ents:count() == 0){
+        stopAllTimers()
+        print("nothing found")
+    }
+}

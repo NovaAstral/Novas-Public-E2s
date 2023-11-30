@@ -1,7 +1,7 @@
 @name Gate Dialing Computer EGP
 @inputs [EGP,Stargate]:wirelink ResetRing
 @outputs 
-@persist [GateModel,TopChevModel,ChevModel,Font,Address]:string GateScale:vector IrisW:wirelink
+@persist [GateModel,TopChevModel,ChevModel,RingModel,Font,Address]:string GateScale:vector IrisW:wirelink
 @persist [GateRing,Iris]:entity
 @persist [IrisOn,GateOpen,IrisAlpha,IrisIndex]:number
 
@@ -45,6 +45,7 @@ if(clk("holoCreate")){
         GateModel = "models/madman07/stargate/base.mdl"
         TopChevModel = "models/madman07/stargate/chevron.mdl"
         ChevModel = "models/madman07/stargate/chevron.mdl"
+        RingModel = "models/madman07/stargate/ring_sg1.mdl"
         
         if(Stargate["Earth Point of Origin",number] == 1){
             Font = "Stargate Address Glyphs SG1" #Concept (doesn't seem to work)
@@ -59,6 +60,7 @@ if(clk("holoCreate")){
         GateModel = "models/madman07/stargate/base_movie.mdl"
         TopChevModel = "models/madman07/stargate/chevron_movie.mdl"
         ChevModel = "models/madman07/stargate/chevron.mdl"
+        RingModel = "models/madman07/stargate/ring_sg1.mdl"
         
         if(Stargate["Earth Point of Origin",number] == 1){
             Font = "Stargate Address Glyphs SG1" #Concept (doesn't seem to work)
@@ -109,6 +111,21 @@ if(clk("holoCreate")){
         
         Font = "Stargate Address Glyphs U"
     }
+    elseif(Stargate:entity():type() == "stargate_sg1_hd"){
+        GateModel = "models/kripalida/sg_hd/base_sg1_hd.mdl"
+        TopChevModel = "models/kripalida/sg_hd/chevron_hd.mdl"
+        ChevModel = "models/kripalida/sg_hd/chevron_hd.mdl"
+        RingModel = "models/kripalida/sg_hd/ring_sg1_hd.mdl"
+        
+        if(Stargate["Earth Point of Origin",number] == 1){
+            Font = "Stargate Address Glyphs SG1" #Concept (doesn't seem to work)
+        }
+        else{
+            Font = "Stargate Address Glyphs SG1"
+        }
+        
+        SG1Type = 1
+    }
     
     holoCreate(15,entity():pos()) #Gate Base
     holoModel(15,GateModel)
@@ -127,7 +144,7 @@ if(clk("holoCreate")){
         GateRing = getGateRing(Stargate:entity())
         
         holoCreate(16,holoEntity(15):pos())
-        holoModel(16,"models/madman07/stargate/ring_sg1.mdl")
+        holoModel(16,RingModel)
         holoAng(16,holoEntity(15):angles()+ang(0,0,GateRing:angles():roll()))
         holoScale(16,GateScale)
     }
