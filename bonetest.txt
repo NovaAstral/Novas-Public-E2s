@@ -1,0 +1,112 @@
+@name Kinect Controller
+@inputs [Controller,Head,UpperBody,LeftShoulder,LeftElbow,LeftHand,RightShoulder,RightElbow,RightHand,LeftThigh,LeftKnee,LeftFoot,RightThigh,RightKnee,RightFoot]:entity
+@outputs Dist
+@persist Bones:array [LHandBone,RHandBone]:bone [LHandXWL]:wirelink
+
+if(first()){
+    if(Controller:isValid()){
+        Bones = Controller:bones()
+        
+        if(Bones:count() > 0){
+            for(I=1,Bones:count()){
+                Bone = Bones[I,bone]
+                
+                if(Bone:index() == 10){ #Head
+                    Head:setPos(Bone:pos())
+                    Head:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 1){ #Upper Body
+                    UpperBody:setPos(Bone:pos())
+                    UpperBody:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 3){ #Left Shoulder
+                    LeftShoulder:setPos(Bone:pos())
+                    LeftShoulder:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 4){ #Left Elbow
+                    LeftElbow:setPos(Bone:pos())
+                    LeftElbow:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 5){ #Left Hand
+                    LHandBone = Bone
+                    LeftHand:setPos(LHandBone:pos())
+                    LeftHand:setAng(LHandBone:angles())
+                    LeftHand:weld(LHandBone)
+                }
+                elseif(Bone:index() == 2){ #Right Shoulder
+                    RightShoulder:setPos(Bone:pos())
+                    RightShoulder:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 6){ #Right Elbow
+                    RightElbow:setPos(Bone:pos())
+                    RightElbow:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 7){ #Right Hand - Melee
+                    RHandBone = Bone
+                    
+                    if(!RightHand:isWeldedTo():isValid()){
+                        RightHand:setPos(Bone:pos()+Bone:forward()*50)
+                        RightHand:setAng(Bone:angles())
+                        RightHand:weld(Bone)
+                    }
+                }
+                elseif(Bone:index() == 11){ #Left Thigh
+                    LeftThigh:setPos(Bone:pos())
+                    LeftThigh:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 12){ #Left Knee
+                    LeftKnee:setPos(Bone:pos())
+                    LeftKnee:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 13){ #Left Foot
+                    LeftFoot:setPos(Bone:pos())
+                    LeftFoot:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 8){ #Right Thigh
+                    RightThigh:setPos(Bone:pos())
+                    RightThigh:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 9){ #Right Knee
+                    RightKnee:setPos(Bone:pos())
+                    RightKnee:setAng(Bone:angles())
+                }
+                elseif(Bone:index() == 14){ #Right Foot
+                    RightFoot:setPos(Bone:pos())
+                    RightFoot:setAng(Bone:angles())
+                }
+            }
+        }
+        
+        if(LeftHand:isValid()){
+            LHandXWL = LeftHand:wirelink()
+        }
+    }
+}
+
+event tick(){
+    if(LeftHand:isWeldedTo():isValid()){
+        Dist = LHandBone:pos():distance(RHandBone:pos())
+        if(LHandBone:pos():distance(RHandBone:pos()) < 5){
+            LHandXWL["Fire",number] = 1
+        }
+        else{
+            LHandXWL["Fire",number] = 0
+        }
+    }
+}
+
+#index 0 = nothing
+#index 1 = upper body
+#index 2 = right shoulder
+#index 3 = left shoulder
+#index 4 = left elbow
+#index 5 = left hand
+#index 6 = right elbow
+#index 7 = right hand
+#index 8 = right thigh
+#index 9 = right knee
+#index 10 = head
+#index 11 = left thigh
+#index 12 = left knee
+#index 13 = left foot
+#index 14 = right foot

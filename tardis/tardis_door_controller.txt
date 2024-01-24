@@ -1,0 +1,33 @@
+@name TARDIS Door Controller
+@inputs [IntSeat,ExtSeat]:entity Lock
+@outputs [IntPos,ExtPos]:vector
+@persist 
+
+event tick(){
+    if(IntSeat:driver():isValid()){
+        timer("eject",10)
+        
+        if(Lock == 1){
+            ExtPos = IntSeat:pos() + IntSeat:forward()*25
+        }
+        else{
+            ExtPos = ExtSeat:pos() + ExtSeat:forward()*25
+        }
+    }
+    
+    if(ExtSeat:driver():isValid()){
+        timer("eject",10)
+        
+        if(Lock == 1){
+            IntPos = ExtSeat:pos() + ExtSeat:forward()*25
+        }
+        else{
+            IntPos = IntSeat:pos() + IntSeat:forward()*25
+        }
+    }
+}
+
+if(clk("eject")){
+    IntSeat:ejectPod()
+    ExtSeat:ejectPod()
+}

@@ -1,0 +1,96 @@
+@name TARDIS WebAudio
+@inputs Mat Demat Fast Fail Forced Cloak Ext:entity Siege
+@outputs Play URL:string Pos:vector Volume FadeStart FadeEnd Mono
+@persist [Snd1,Snd2,CloakSnd]:string
+#This links to an SF that only works on TSCM
+
+function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
+    URL = Audio
+    Pos = Vec
+    Volume = Vol
+    FadeStart = FadeS
+    FadeEnd = FadeE
+    Mono = MonoEnable
+    timer("play",10)
+    timer("noplay",20)
+}
+
+if(clk("play")){
+    Play = 1
+}
+
+if(clk("noplay")){
+    Play = 0
+}
+
+if(~Cloak & Cloak > 0 & !first()){
+    if(Cloak == 1){#Enable
+        CloakSnd = "https://cdn.discordapp.com/attachments/915811722646925312/1191878353263800472/phase_enable.wav"
+    }
+    elseif(Cloak == 2){#Disable
+        CloakSnd = "https://cdn.discordapp.com/attachments/915811722646925312/1191878353603534918/phase_disable.wav"
+    }
+    
+    playsound(
+    CloakSnd,
+    Ext:pos(),
+    2,
+    500,
+    1000000000,
+    0
+    )
+}
+
+if(~Mat & Mat & !first()){
+    if(Fail == 1){
+        Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191870883082547211/demat_fail_int.wav"
+    }
+    elseif(Forced == 1){
+        Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191874285975900160/mat_damaged.wav"
+    }
+    else{
+        if(Fast == 1){
+            Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191217333985878126/tardis_land_fast.ogg"
+        }
+        else{
+            Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191865926031773706/tardismat.wav"
+        }
+    }
+    
+    playsound(
+    Snd1, #URL
+    Ext:pos(), #Audio Pos
+    2, #Volume
+    500, #Fade Start
+    1000000000, #Fade End, leave this absurdly high unless you want everyone on the map to hear your sound
+    0 #Mono. Leave this as 0 unless you get an error when the sound tries to play
+    )
+}
+
+if(~Demat & Demat & !first()){
+    if(Fail == 1){
+        Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191870883082547211/demat_fail_int.wav"
+    }
+    elseif(Forced == 1){
+        Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191874115607478302/demat_damaged.wav"
+    }
+    else{
+        if(Fast == 1){
+            Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191217164758290503/fast_demat.wav"
+        }
+        else{
+            #https://cdn.discordapp.com/attachments/915811722646925312/1132411635110252634/demat.wav
+            #
+            Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191221235330338866/tardis_takeoff.ogg"
+        }
+    }
+    
+    playsound(
+    Snd2,
+    Ext:pos(),
+    2,
+    500,
+    1000000000,
+    0
+    )
+}

@@ -1,0 +1,14 @@
+@name Energy Time Left
+@inputs ZPMEnergy
+@outputs TimeLeft
+@persist OldEng Consumed
+
+event tick(){
+    OldEng = ZPMEnergy
+    
+    if(changed(OldEng)){
+        Consumed = OldEng - ZPMEnergy
+        
+        TimeLeft = ZPMEnergy / Consumed
+    }
+}

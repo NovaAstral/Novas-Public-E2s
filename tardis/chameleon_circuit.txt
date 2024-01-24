@@ -1,0 +1,48 @@
+@name Chameleon Circuit
+@inputs [ExtModel,ExtModel2]:string DefaultExtPos:vector Offset
+@outputs ExtOut:entity ModelString:string
+@persist OldExt:entity IgnoreArray:array
+
+if(first() | dupefinished()){
+    if(ExtModel != "" & DefaultExtPos != vec(0)){
+        ExtOut = propSpawn("models/props_interiors/VendingMachineSoda01a.mdl",DefaultExtPos+vec(0,0,48),1)
+    }
+}
+
+function void changeModel(Mdl:string){
+    if(Mdl != ""){
+        if(ExtOut:isValid()){
+            OldExt = ExtOut
+            
+            ExtOut = propSpawn(ExtModel,OldExt:pos()+vec(0,0,Offset),1)
+            
+            IgnoreArray = array(ExtOut,OldExt)
+            
+            rangerFilter(IgnoreArray)
+            local RangerData = rangerOffset(ExtOut:pos(),ExtOut:pos() + vec(0,0,-10) * 10000)
+            
+            ExtOut:setPos(RangerData:pos()+vec(0,0,Offset))
+            
+            OldExt:propDelete()
+        }
+        else{
+            ExtOut = propSpawn(ExtModel,DefaultExtPos+vec(0,0,Offset),1)
+        }
+    }
+}
+
+if(~ExtModel){
+    if(ExtModel != ""){
+        ModelString = ExtModel
+        
+        changeModel(ModelString)
+    }
+}
+
+if(~ExtModel2){
+    if(ExtModel2 != ""){
+        ModelString = ExtModel2
+        
+        changeModel(ModelString)
+    }
+}

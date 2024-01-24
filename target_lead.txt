@@ -1,0 +1,28 @@
+@name Target Lead
+@inputs Active Target:entity Cannon:entity FEnt:entity Lead Offset
+@outputs TargetPos:vector
+@persist TargetPos:vector WepVel
+
+if(first()){
+    Target = noentity()
+    WepVel = 3000 #Ship Cannon velocity = 3000
+}
+
+if(~Active){
+    if(Active == 0){
+        Cannon:setAng(FEnt:angles())
+    }
+}
+
+event tick(){
+    if(Active & Target:isValid()){
+        if(Lead >= 1){
+            TargetPos = Target:pos()+Target:up()*Offset + Target:vel() * Target:pos():distance(Cannon:pos()) / WepVel
+        }
+        else{
+            TargetPos = Target:pos()+Target:up()*Offset
+        }
+        
+        Cannon:setAng((TargetPos - Cannon:pos()):toAngle())
+    }
+}

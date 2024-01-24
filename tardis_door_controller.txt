@@ -1,0 +1,52 @@
+@name TARDIS Door Controller
+@inputs [IntDoor,ExtDoor]:entity Transporter:wirelink Lock
+@outputs
+@persist # [IntPos,ExtPos]:vector
+
+if(first() | dupefinished()){
+    function beamPly(Ply:entity,Pos:vector){
+        if(Transporter:entity():isValid()){
+            Transporter["Radius",number] = 10
+            Transporter["Origin",vector] = Ply:pos()
+            Transporter["Dest",vector] = Pos
+            
+            timer("beam",10)
+        }
+    }
+}
+
+if(clk("beam")){
+    Transporter["Send",number] = 1
+    timer("beam2",100)
+}
+
+if(clk("beam2")){
+    Transporter["Send",number] = 0
+}
+
+event keyPressed(Ply:entity,_:string,Down:number,KeyBind:string){
+    if(KeyBind == "use" & Down == 0){
+        if(Ply:aimEntity() == IntDoor){
+            if(Ply:pos():distance(IntDoor:pos()) <= 100){
+                if(Lock == 1){
+                    IntDoor:soundPlay(1,1,"doors/default_locked.wav")
+                    ExtDoor:soundPlay(2,1,"doors/default_locked.wav")
+                }
+                else{
+                    beamPly(Ply,ExtDoor:pos()+vec(0,0,-20) + ExtDoor:forward()*50)
+                }
+            }
+        }
+        elseif(Ply:aimEntity() == ExtDoor){
+            if(Ply:pos():distance(ExtDoor:pos()) <= 100){
+                if(Lock == 1){
+                    IntDoor:soundPlay(1,1,"doors/default_locked.wav")
+                    ExtDoor:soundPlay(2,1,"doors/default_locked.wav")
+                }
+                else{
+                    beamPly(Ply,IntDoor:pos()+vec(0,0,-20) + IntDoor:forward()*-50)
+                }
+            }
+        }
+    }
+}

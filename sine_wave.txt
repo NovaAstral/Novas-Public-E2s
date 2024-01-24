@@ -1,0 +1,16 @@
+@name 
+@inputs E:wirelink
+@outputs 
+@persist 
+@trigger 
+@strict
+
+if(first()){
+    for(I = 1,100){
+        local Wave = 50*sin(I*5)
+        E:egpCircle(I,vec2(1),vec2(5))
+        E:egpPos(I,vec2(I*5,256+Wave))
+    }
+}
+
+

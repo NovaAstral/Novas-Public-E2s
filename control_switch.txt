@@ -1,0 +1,48 @@
+@name Control Switch
+@inputs Reset
+@outputs Number User:entity
+@persist User:entity State
+@model models/bull/buttons/rocker_switch.mdl
+
+if(first()){
+    Number = 0
+    State = 0
+    
+    User = noentity()
+}
+
+
+event keyPressed(Ply:entity,Key:string,Down:number,_:string){
+    if(Ply:aimEntity() == entity() & Ply:pos():distance(entity():pos()) <= 100){
+        if(!User:isValid() | User == noentity()){
+            User = Ply
+        }
+        
+        if(User:isValid()){
+            if(Key == "e" & Down == 1){
+                State = !State
+                entity():soundPlay(1,0.1,"buttons/lightswitch2.wav")
+                if(State == 1){
+                    Number = 1
+                    entity():propAnim(1)
+                }
+                else{
+                    Number = 0
+                    entity():propAnim(0)
+                }
+            }
+            
+            if(Down == 0){
+                User = noentity()
+            }
+        }
+        else{
+            User = noentity()
+        }
+    }
+}
+
+if(~Reset & Reset){
+    Number = 0
+    State = 0
+}

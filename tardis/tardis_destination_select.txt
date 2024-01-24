@@ -1,0 +1,163 @@
+@name Tardis Destination Select
+@inputs Activate Exterior:entity [CamCont,PodCont]:wirelink OffsetIn
+@outputs SpeedMult PosOut:vector AngOut:angle Active [ChameleonModel,ChameleonMat]:string ChameleonColor:vector4 Offset
+@persist SpeedMult AMoveDelay Active Plys:array Offset CamDist
+
+if(first() | dupefinished()){
+    holoCreate(1)
+    holoModel(1,Exterior:model())
+    holoPos(1,Exterior:pos())
+    holoAng(1,Exterior:angles())
+    holoAlpha(1,0)
+    
+    SpeedMult = 10
+    AMoveDelay = 0
+    
+    Offset = 48
+    
+    CamDist = 100
+}
+
+if(~OffsetIn){
+    Offset = OffsetIn
+}
+
+if(~Activate & !first()){
+    if(Activate == 1){
+        Plys = players()
+        for(I=1,Plys:count()){
+            Ply = Plys[I,entity]
+            holoVisible(1,Ply,1)
+            if(Ply != PodCont["Driver",entity]){
+                holoVisible(1,Ply,0)
+            }
+        }
+        
+        holoModel(1,Exterior:model())
+        holoPos(1,Exterior:pos())
+        holoAng(1,Exterior:angles())
+        
+        CamCont["Distance",number] = CamDist
+        CamCont["Position",vector] = holoEntity(1):pos()
+        CamCont["Parent",entity] = holoEntity(1)
+        
+        holoAlpha(1,150)
+        Active = 1
+    }
+    else{
+        holoAlpha(1,0)
+        Active = 0
+    }
+}
+
+event tick(){
+    if(Active == 1){ #Flight / Destination Select
+        if(PodCont["W",number] == 1){
+            holoPos(1,holoEntity(1):pos() + CamCont["CamAng",angle]:forward()*SpeedMult)
+        }
+        
+        if(PodCont["A",number] == 1){
+            if(PodCont["Mouse2",number] == 1){
+                holoAng(1,holoEntity(1):angles() + ang(0,SpeedMult,0))
+            }
+            else{
+                holoPos(1,holoEntity(1):pos() + CamCont["CamAng",angle]:right()*-SpeedMult)
+            }
+        }
+        
+        if(PodCont["S",number] == 1){
+            holoPos(1,holoEntity(1):pos() + CamCont["CamAng",angle]:forward()*-SpeedMult)
+        }
+        
+        if(PodCont["D",number] == 1){
+            if(PodCont["Mouse2",number] == 1){
+                holoAng(1,holoEntity(1):angles() + ang(0,-SpeedMult,0))
+            }
+            else{
+                holoPos(1,holoEntity(1):pos() + CamCont["CamAng",angle]:right()*SpeedMult)
+            }
+        }
+        
+        if(PodCont["Space",number] == 1){ #go up
+            holoPos(1,holoEntity(1):pos() + vec(0,0,1)*SpeedMult)
+        }
+        
+        if(PodCont["Duck",number] == 1){ #go down
+            holoPos(1,holoEntity(1):pos() + vec(0,0,1)*-SpeedMult)
+        }
+        
+        if(PodCont["Shift",number] == 1 & PodCont["Alt",number] == 1){ #change speed
+            SpeedMult = 100
+        }
+        elseif(PodCont["Shift",number] == 1){
+            SpeedMult = 20
+        }
+        elseif(PodCont["Alt",number] == 1){
+            SpeedMult = 2
+        }
+        else{
+            SpeedMult = 10
+        }
+        
+        if(PodCont["R",number] == 1){ #Move the holo to where the camera is looking
+            if(AMoveDelay != 1){
+                AMoveDelay = 1
+                    
+                holoPos(1,CamCont["HitPos",vector]+vec(0,0,Offset))
+                    
+                timer("aimmovedelay",500)
+            }
+        }
+        if(PodCont["Mouse1",number] == 1){ #set the destination to the holo pos/angles
+            PosOut = holoEntity(1):pos()
+            AngOut = holoEntity(1):angles()
+            holoAlpha(1,0)
+            Active = 0
+        }
+        
+        if(PodCont["Noclip",number] == 1){ #Set holo to pos and angles of the entity under it
+            IgnoreArray = array(Exterior,holoEntity(1))
+            
+            rangerFilter(IgnoreArray)
+            local RangerData = rangerOffset(holoEntity(1):pos(),holoEntity(1):pos() + vec(0,0,-10) * 10000)
+            
+            local RangerEnt = RangerData:entity()
+            
+            if(RangerEnt:isValid()){
+                if(PodCont["Alt",number] == 1){
+                    ChameleonModel = RangerEnt:model()
+                    ChameleonMat = RangerEnt:getMaterial()
+                    ChameleonColor = RangerEnt:getColor4()
+                    
+                    timer("unsetmatcol",1000) #so the mat/col of the exterior isn't set if the chameleon is set with other means
+                    
+                    holoModel(1,RangerEnt:model())
+                    
+                    Offset = 0
+                }
+                
+                holoPos(1,RangerEnt:pos())
+                holoAng(1,RangerEnt:angles())
+            }
+        }
+        
+        if(PodCont["NextWeapon",number] == 1){
+            CamDist = CamDist+5
+            CamCont["Distance",number] = CamDist
+        }
+        
+        if(PodCont["PrevWeapon",number] == 1){
+            CamDist = CamDist-5
+            CamCont["Distance",number] = CamDist
+        }
+    }
+}
+
+if(clk("aimmovedelay")){
+    AMoveDelay = 0
+}
+
+if(clk("unsetmatcol")){
+    ChameleonMat = ""
+    ChameleonColor = vec4(0)
+}

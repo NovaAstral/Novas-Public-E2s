@@ -1,0 +1,47 @@
+@name Rotor Spin
+@inputs Activate
+@outputs Move Speed Acceleration Direction Reset
+
+#include "Novas-Public-E2s/library/nova_lib"
+
+#This links to Princess Nova's Motor SF
+
+if(first() | dupefinished()){
+    Speed = 50
+    Acceleration = 10
+    Direction = -1
+    Move = 0
+    
+    Reset = 0
+}
+
+if(~Activate){
+    if(Activate == 1){
+        Move = 1
+        timer("SpinOn",10)
+    }
+    else{
+        stoptimer("SpinOn")
+        timer("SpinOff",10)
+    }
+}
+
+if(clk("SpinOn")){
+    
+}
+
+if(clk("SpinOff")){
+    Move = 0
+    
+    timer("SpinOff2",5000)
+}
+
+if(clk("SpinOff2")){
+    Reset = 1
+    
+    timer("reset",100)
+}
+
+if(clk("reset")){
+    Reset = 0
+}

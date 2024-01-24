@@ -1,7 +1,7 @@
 @name Simple WebAudio E2 Control
-@inputs B1 B2 B3
+@inputs B1 B2 Fast Ext:entity
 @outputs Play URL:string Pos:vector Volume FadeStart FadeEnd Mono
-
+@persist [Snd1,Snd2]:string
 #This links to an SF that only works on TSCM
 
 if(first() | dupefinished()){
@@ -22,9 +22,16 @@ if(clk("noplay")){
 }
 
 if(~B1 & B1){
+    if(Fast == 1){
+        Snd1 = ""
+    }
+    else{
+        Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191111399791927377/mat.wav"
+    }
+    
     playsound(
-    "https://cdn.discordapp.com/attachments/915811722646925312/1115682746950488094/tardis_takeoff.ogg", #URL
-    entity():pos(), #Audio Pos
+    Snd1, #URL
+    Ext:pos(), #Audio Pos
     1, #Volume
     1000, #Fade Start
     2000, #Fade End
@@ -33,21 +40,17 @@ if(~B1 & B1){
 }
 
 if(~B2 & B2){
+    if(Fast == 1){
+        Snd2 = ""
+    }
+    else{
+        Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191111400102301777/demat.wav"
+    }
+    
     playsound(
-    "https://cdn.discordapp.com/attachments/915811722646925312/1115626230075633744/control_throttle.wav",
-    owner():pos(),
+    Snd2,
+    Ext:pos(),
     1,
-    100,
-    200,
-    1
-    )
-}
-
-if(~B3 & B3){
-    playsound(
-    "https://cdn.discordapp.com/attachments/915811722646925312/1115626229614247936/control_handbrake.wav",
-    entity():pos(),
-    0.5,
     1000,
     2000,
     1

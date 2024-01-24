@@ -1,0 +1,337 @@
+@name TARDIS DeRemat
+@inputs Throttle Fast Cloak EngineRelease Ext:entity Loc:vector Ang:angle Siege
+@outputs MatSnd DematSnd MatFail ForceDemat CloakSnd Alpha SiegeSnd RotorMoving
+@persist Dematted Moving Alpha MoveState TimerTime MatTimer DematTimer ForceDemat Cloaked
+
+if(first() | dupefinished()){
+    Dematted = 0
+    Moving = 0
+    MoveState = 0
+    Cloaked = 0
+    RotorMoving = 0
+    
+    function number mathApproach(Cur:number,Tar:number,Change:number){
+        if(Tar > Cur){
+            return clamp(Cur+Change,Cur,Tar)
+        }
+        elseif(Tar < Cur){
+            return clamp(Cur-Change,Tar,Cur)
+        }
+        else{
+            return Cur
+        }
+    }
+    
+    Ext:setAlpha(255)
+    Alpha = 255
+    
+    ForceDemat = 0
+}
+
+if(~Fast | first()){
+    if(Fast == 1){
+        TimerTime = 1
+        MatTimer = 1100
+        DematTimer = 1000
+    }
+    else{
+        if(ForceDemat == 0){
+            TimerTime = 30
+            MatTimer = 11000
+            DematTimer = 7000
+        }
+        else{
+            TimerTime = 30
+            MatTimer = 9000
+            DematTimer = 5000
+        }
+    }
+}
+
+if(~Throttle & Throttle == 1){
+    if(Moving == 0 & Dematted == 0){
+        if(isJammed(Loc) | isJammed(Ext:pos())){
+            if(EngineRelease == 0){
+                ForceDemat = 0
+                MatFail = 1
+                timer("dematsndwait",100)
+                timer("sndreset",1100)
+            }
+            else{
+                ForceDemat = 1
+                
+                Moving = 1
+                RotorMoving = 1
+                
+                timer("dematsndwait",10)
+                timer("demat",DematTimer)
+                timer("sndreset",1000)
+            }
+        }
+        else{
+            ForceDemat = 0
+            Moving = 1
+            RotorMoving = 1
+            
+            timer("dematsndwait",10)
+            timer("demat",DematTimer)
+            timer("sndreset",1000)
+        }
+    }
+    elseif(Moving == 0 & Dematted == 1){
+        if(isJammed(Loc) | isJammed(Ext:pos())){
+            if(EngineRelease == 0){
+                ForceDemat = 0
+                MatFail = 1
+                timer("matsndwait",100)
+                timer("sndreset",1100)
+            }
+            else{
+                ForceDemat = 1
+                
+                Moving = 1
+                RotorMoving = 1
+                
+                Ext:setPos(Loc+vec(0,0,48))
+                Ext:setAng(Ang)
+                
+                timer("mat",MatTimer)
+                timer("matsndwait",100)
+                timer("sndreset",1100)
+            }
+        }
+        else{
+            ForceDemat = 0
+            Moving = 1
+            RotorMoving = 1
+                
+            Ext:setPos(Loc+vec(0,0,48))
+            Ext:setAng(Ang)
+            
+            timer("mat",MatTimer)
+            timer("matsndwait",100)
+            timer("sndreset",1100)
+        }
+    }
+}
+
+if(clk("dematsndwait")){
+    if(Cloaked == 0){
+        DematSnd = 1
+    }
+}
+
+if(clk("matsndwait")){ #so the sound is at the new location
+    if(Cloaked == 0){
+        MatSnd = 1
+    }
+}
+
+if(clk("sndreset")){
+    DematSnd = 0
+    MatSnd = 0
+    MatFail = 0
+    CloakSnd = 0
+}
+
+if(clk("demat")){
+    timer("demat",TimerTime)
+    
+    noCollideAll(Ext,1)
+    
+    if(MoveState == 0){
+        Alpha = mathApproach(Ext:getAlpha(),150,2)
+            
+        if(Alpha <= 150){
+            MoveState = 1
+        }
+    }
+    elseif(MoveState == 1){
+        Alpha = mathApproach(Ext:getAlpha(),200,2)
+            
+        if(Alpha >= 200){
+            MoveState = 2
+        }
+    }
+    elseif(MoveState == 2){
+        Alpha = mathApproach(Ext:getAlpha(),100,2)
+            
+        if(Alpha <= 100){
+            MoveState = 3
+        }
+    }
+    elseif(MoveState == 3){
+        Alpha = mathApproach(Ext:getAlpha(),150,2)
+            
+        if(Alpha >= 150){
+            MoveState = 4
+        }
+    }
+    elseif(MoveState == 4){
+        Alpha = mathApproach(Ext:getAlpha(),50,2)
+            
+        if(Alpha <= 50){
+            if(Fast == 1){
+                MoveState = 6
+            }
+            else{
+                MoveState = 5
+            }
+        }
+    }
+    elseif(MoveState == 5){
+        Alpha = mathApproach(Ext:getAlpha(),100,2)
+            
+        if(Alpha >= 100){
+            MoveState = 6
+        }
+    }
+    elseif(MoveState == 6){
+        Alpha = mathApproach(Ext:getAlpha(),0,2)
+            
+        if(Alpha <= 0){
+            stoptimer("demat")
+            MoveState = 0
+            Dematted = 1
+            Moving = 0
+        }
+    }
+    
+    if(Cloaked == 0){
+        if(ForceDemat == 0){
+            Ext:setAlpha(Alpha)
+        }
+        else{
+            if(Alpha <= 0){
+                Ext:setAlpha(0)
+            }
+            else{
+                Ext:setAlpha(randint(Alpha-10,Alpha+10))
+            }
+        }
+    }
+}
+
+if(clk("mat")){
+    timer("mat",TimerTime)
+    
+    if(MoveState == 0){
+        Alpha = mathApproach(Ext:getAlpha(),100,2)
+        
+        if(Alpha >= 100){
+            MoveState = 1
+        }
+    }
+    elseif(MoveState == 1){
+        Alpha = mathApproach(Ext:getAlpha(),50,2)
+        
+        if(Alpha <= 50){
+            MoveState = 2
+        }
+    }
+    elseif(MoveState == 2){
+        Alpha = mathApproach(Ext:getAlpha(),150,2)
+        
+        if(Alpha >= 150){
+            MoveState = 3
+        }
+    }
+    elseif(MoveState == 3){
+        Alpha = mathApproach(Ext:getAlpha(),100,2)
+        
+        if(Alpha <= 100){
+            MoveState = 4
+        }
+    }
+    elseif(MoveState == 4){
+        Alpha = mathApproach(Ext:getAlpha(),200,2)
+        
+        if(Alpha >= 200){
+            if(Fast == 1){
+                MoveState = 6
+            }
+            else{
+                MoveState = 5
+            }
+        }
+    }
+    elseif(MoveState == 5){
+        Alpha = mathApproach(Ext:getAlpha(),150,2)
+        
+        if(Alpha <= 150){
+            MoveState = 6
+        }
+    }
+    elseif(MoveState == 6){
+        Alpha = mathApproach(Ext:getAlpha(),255,2)
+        
+        if(Alpha >= 255){
+            stoptimer("mat")
+            MoveState = 0
+            Dematted = 0
+            Moving = 0
+            RotorMoving = 0
+            
+            
+            noCollideAll(Ext,0)
+        }
+    }
+    
+    if(Cloaked == 0){
+        if(ForceDemat == 0){
+            Ext:setAlpha(Alpha)
+        }
+        else{
+            if(Alpha >= 255){
+                Ext:setAlpha(255)
+            }
+            else{
+                Ext:setAlpha(randint(Alpha-10,Alpha+10))
+            }
+        }
+    }
+}
+
+if(~Cloak & !first()){
+    timer("cloak",1000)
+    timer("sndreset",1000)
+    
+    if(Cloak == 1){
+        CloakSnd = 1
+    }
+    else{
+        CloakSnd = 2
+    }
+}
+
+if(clk("cloak")){
+    timer("cloak",1)
+    
+    if(Cloak == 1){
+        Alpha = Alpha-2
+        
+        if(Alpha <= 0){
+            stoptimer("cloak")
+            Cloaked = 1
+        }
+    }
+    else{
+        Alpha = Alpha+2
+        
+        if(Alpha >= 255){
+            stoptimer("cloak")
+            Cloaked = 0
+        }
+    }
+    
+    Ext:setAlpha(Alpha)
+}
+
+if(~Siege & !first()){
+    if(Siege == 1){
+        SiegeSnd = 1
+    }
+    else{
+        SiegeSnd = 2
+    }
+}

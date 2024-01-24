@@ -1,0 +1,17 @@
+@name EGP Circle Color Thing
+@inputs E:wirelink
+@outputs 
+@persist
+
+if(first()){
+    E:egpClear()
+    timer("t1",1000)
+}
+
+if(clk("t1")){
+    for(I=1,128){
+        E:egpCircle(I,vec2(256),vec2(I*2))
+        E:egpColor(I,vec(I))
+        E:egpOrderBelow(I,I-2)
+    }
+}

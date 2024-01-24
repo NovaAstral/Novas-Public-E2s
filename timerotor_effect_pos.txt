@@ -1,0 +1,75 @@
+@name Timerotor Effect Pos
+@inputs Activate
+@outputs Pos1 Pos2 Reverse PosNum
+@persist PosNum Reverse
+
+if(first()){
+    PosNum = 0
+    Reverse = 0
+}
+
+if(~Activate & !first()){
+    if(Activate == 1){
+        timer("active",10)
+    }
+    else{
+        timer("deactivate",10)
+    }
+}
+
+if(clk("active")){
+    timer("active",33)
+    
+    if(Reverse == 0){
+        if(PosNum < 80){
+            PosNum = PosNum+5
+        }
+        elseif(PosNum >= 80 & PosNum < 85){
+            PosNum = PosNum+4
+        }
+        elseif(PosNum >= 85 & PosNum < 90){
+            PosNum = PosNum+3
+        }
+        elseif(PosNum >= 90 & PosNum < 95){
+            PosNum = PosNum+2
+        }
+        elseif(PosNum >= 95 & PosNum < 100){
+            PosNum = PosNum+1
+        }
+        elseif(PosNum >= 100){
+            PosNum = 100
+            Reverse = 1
+        }
+    }
+    elseif(Reverse == 1){
+        if(PosNum <= 100 & PosNum > 95){
+            PosNum = PosNum-1
+        }
+        elseif(PosNum <= 95 & PosNum > 90){
+            PosNum = PosNum-2
+        }
+        elseif(PosNum <= 90 & PosNum > 85){
+            PosNum = PosNum-3
+        }
+        elseif(PosNum <= 85 & PosNum > 80){
+            PosNum = PosNum-4
+        }
+        elseif(PosNum <= 80 & PosNum > 0){
+            PosNum = PosNum-5
+        }
+        elseif(PosNum <= 0){
+            PosNum = 0
+            Reverse = 0
+        }
+    }
+    
+    Pos1 = PosNum
+    Pos2 = -PosNum
+}
+
+if(clk("deactivate")){
+    #timer("deactivate",33)
+    
+    stoptimer("active")
+    PosNum = 0
+}

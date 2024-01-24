@@ -1,7 +1,7 @@
 @name Chat Target
-@inputs
-@outputs TarPos:vector Tar:entity TargetOwner:entity TargetLocked
-@persist Prefix:string FEnt:entity FEnts:array Color:vector AutoTarget AutoTargetPrint
+@inputs LeadingWep:entity #What weapon should attempt to lead the target, limitation of 1 for now
+@outputs TarPos:vector Tar:entity TargetOwner:entity TargetLocked Leading
+@persist Prefix:string FEnt:entity FEnts:array Color:vector AutoTarget AutoTargetPrint Offset Leading WepVel
 
 #include "Novas-Public-E2s/library/nova_lib"
 
@@ -12,7 +12,13 @@ if(first() | dupefinished()){
     
     AutoTargetPrint = 0 #Print in chat when AutoTarget targets a new entity
     
+    Leading = 0 #Default target leading setting, can be toggled with '/t lead'
+    
     timer("functionsetup",10)
+    
+    
+    WepVel = 3000 #Temp value for leading, 3000 is ship cannon projectile speed, will automate the values later:tm:
+    #Weapon leading is very wip and will fuck up every weapon that isn't the LeadingWep
 }
 
 if(clk("functionsetup")){
@@ -43,6 +49,13 @@ if(clk("functionsetup")){
                 printColor(ColPink,"[Target] ",ColOng,"Targetting ",ColGrn,Ent:type(),ColOng," Owned by: ",Color,Ent:owner():name())
             }
         }
+        
+        if(Tar:type() == "st_shuttle_type11"){
+            Offset = 200
+        }
+        else{
+            Offset = 0
+        }
     }
 }
 
@@ -50,8 +63,15 @@ if(clk("target")){
     timer("target",10)
     
     if(Tar:isValid()){
-        TarPos = Tar:boxCenterW()
-            
+        if(Leading == 1){
+            TarPos = Tar:pos()+Tar:up()*Offset + Tar:vel() * Tar:pos():distance(LeadingWep:pos()) / WepVel
+            LeadingWep:setAng((TarPos - LeadingWep:pos()):toAngle())
+        }
+        else{
+            TarPos = Tar:boxCenterW()+Tar:up()*Offset
+            LeadingWep:setAng((TarPos - LeadingWep:pos()):toAngle())
+        }
+        
         TargetLocked = 1
     }
     else{
@@ -128,6 +148,16 @@ event chat(SaidPly:entity, Said:string,_){
                 stoptimer("target")
                 
                 printColor(ColPink,"[Target] ",ColOng,"Disabling Targetting")
+            }
+            elseif(OLS[2,string] == "lead"){
+                Leading = !Leading
+                
+                if(Leading == 1){
+                    printColor(ColPink,"[Target] ",ColGrn,"Enabling",ColOng," Target Leading")
+                }
+                else{
+                    printColor(ColPink,"[Target] ",ColRed,"Disabling",ColOng," Target Leading")
+                }
             }
             else{
                 local Ply = findPlayerByName(OLS[2,string])
