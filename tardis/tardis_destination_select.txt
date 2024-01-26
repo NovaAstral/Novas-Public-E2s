@@ -14,7 +14,6 @@ if(first() | dupefinished()){
     AMoveDelay = 0
     
     Offset = 48
-    
     CamDist = 100
 }
 
@@ -36,7 +35,7 @@ if(~Activate & !first()){
         holoModel(1,Exterior:model())
         holoPos(1,Exterior:pos())
         holoAng(1,Exterior:angles())
-        
+
         CamCont["Distance",number] = CamDist
         CamCont["Position",vector] = holoEntity(1):pos()
         CamCont["Parent",entity] = holoEntity(1)
@@ -102,12 +101,13 @@ event tick(){
         if(PodCont["R",number] == 1){ #Move the holo to where the camera is looking
             if(AMoveDelay != 1){
                 AMoveDelay = 1
-                    
+                
                 holoPos(1,CamCont["HitPos",vector]+vec(0,0,Offset))
-                    
+                
                 timer("aimmovedelay",500)
             }
         }
+        
         if(PodCont["Mouse1",number] == 1){ #set the destination to the holo pos/angles
             PosOut = holoEntity(1):pos()
             AngOut = holoEntity(1):angles()
@@ -115,11 +115,11 @@ event tick(){
             Active = 0
         }
         
-        if(PodCont["Noclip",number] == 1){ #Set holo to pos and angles of the entity under it
+        if(PodCont["Noclip",number] == 1){ #Set holo to pos and angles of the entity the camera is looking at
             IgnoreArray = array(Exterior,holoEntity(1))
             
             rangerFilter(IgnoreArray)
-            local RangerData = rangerOffset(holoEntity(1):pos(),holoEntity(1):pos() + vec(0,0,-10) * 10000)
+            local RangerData = CamCont["Trace",ranger]
             
             local RangerEnt = RangerData:entity()
             
@@ -140,7 +140,7 @@ event tick(){
                 holoAng(1,RangerEnt:angles())
             }
         }
-        
+
         if(PodCont["NextWeapon",number] == 1){
             CamDist = CamDist+5
             CamCont["Distance",number] = CamDist

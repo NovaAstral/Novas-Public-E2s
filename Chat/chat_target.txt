@@ -182,7 +182,7 @@ event chat(SaidPly:entity, Said:string,_){
                                 printColor(ColPink,"[Target] ",ColOng,"The Player ",teamColor(Ply2:owner():team()),Ply2:owner():name(),ColOng," Does not own a ",ColRed,OLS[2,string])
                             }
                             else{
-                                printColor(ColPink,"[Target] ",ColOng,"Invalid Target!")
+                                printColor(ColPink,"[Target] ",ColOng,"There is no player with the name: ",OLS[3,string])
                             }
                         }
                     }
