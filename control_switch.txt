@@ -2,7 +2,9 @@
 @inputs Reset
 @outputs Number User:entity
 @persist User:entity State
-@model models/bull/buttons/rocker_switch.mdl
+@model models/bull/buttons/toggle_switch.mdl
+#models/bull/buttons/toggle_switch.mdl
+#models/bull/buttons/rocker_switch.mdl
 
 if(first()){
     Number = 0

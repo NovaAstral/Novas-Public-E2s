@@ -1,0 +1,94 @@
+@name Custom TARDIS Mainframe
+@inputs IntDrive:wirelink RotorMoving Offset
+@outputs DeMatPos:vector Throttle
+@persist Prefix:string
+
+#include "Novas-Public-E2s/library/color_lib"
+
+if(first() | dupefinished()){
+    Prefix = "/t"
+}
+
+event chat(SaidPly:entity, Said:string,_:number){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner()){
+        if(OLS[1,string] == Prefix | OLS[1,string] == "/tardis"){
+            hideChat(1)
+            
+            if(OLS[2,string] == "mat"){
+                if(RotorMoving == 1){
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Materialising the TARDIS")
+                    Throttle = 1
+                    timer("reset",100)
+                }
+                else{
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already materialised!")
+                }
+            }
+            elseif(OLS[2,string] == "demat"){
+                if(OLS[3,string] == "here"){
+                    DeMatPos = owner():aimPos()+vec(0,0,Offset)
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerialising to aimpos")
+                    
+                    Throttle = 1
+                    timer("reset",100)
+                }
+                else{
+                    if(RotorMoving == 0){
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerialising the TARDIS")
+                        Throttle = 1
+                        timer("reset",100)
+                    }
+                    else{
+                        printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"The TARDIS is already dematerialised!")
+                    }
+                }
+            }
+            elseif(OLS[2,string] == "int"){ #move the interior
+                if(OLS[3,string] == "here"){
+                    IntDrive["Destination",vector] = owner():pos()
+                    timer("warp",100)
+                    
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to you.")
+                    
+                    timer("reset",1000)
+                }
+                if(OLS[3,string] == "uni"){
+                    IntDrive["Destination",vector] = vec(10588,-10829,-12747)
+                    timer("warp",100)
+                    
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Universe")
+                    
+                    timer("reset",1000)
+                }
+                elseif(OLS[3,string] == "pegasus"){
+                    IntDrive["Destination",vector] = vec(7577,-3683,4129)
+                    timer("warp",100)
+                    
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Pegasus")
+                    
+                    timer("reset",1000)
+                }
+                elseif(OLS[3,string] == "milk" | OLS[3,string] == "milky" | OLS[3,string] == "earth"){
+                    IntDrive["Destination",vector] = vec(203,8026,4747)
+                    timer("warp",100)
+                    
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Milkyway")
+                    
+                    timer("reset",1000)
+                }
+            }
+        }
+    }
+}
+
+if(clk("warp")){
+    IntDrive["Activate",number] = 1
+}
+
+if(clk("reset")){
+    Throttle = 0
+    IntDrive["Destination",vector] = vec(0)
+    IntDrive["Activate",number] = 0
+}

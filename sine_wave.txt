@@ -1,14 +1,44 @@
 @name 
 @inputs E:wirelink
-@outputs 
-@persist 
+@outputs Wiggle WiggleUp
+@persist Wiggle WiggleUp
 @trigger 
 @strict
 
 if(first()){
+    E:egpClear()
+    
     for(I = 1,100){
-        local Wave = 50*sin(I*5)
+        local Wave = 10*sin(I*5)
         E:egpCircle(I,vec2(1),vec2(5))
+        E:egpPos(I,vec2(I*5,256+Wave))
+    }
+    
+    timer("wiggle",1)
+    
+    Wiggle = 10
+    WiggleUp = 1
+}
+
+if(clk("wiggle")){
+    timer("wiggle",50)
+    
+    if(Wiggle <= 10 & WiggleUp == 0){
+        WiggleUp = 1
+    }
+    elseif(Wiggle >= 100 & WiggleUp == 1){
+        WiggleUp = 0
+    }
+    
+    if(WiggleUp == 1){
+        Wiggle = Wiggle+1
+    }
+    else{
+        Wiggle = Wiggle-1
+    }
+    
+    for(I = 1,100){
+        local Wave = Wiggle*sin(I*5)
         E:egpPos(I,vec2(I*5,256+Wave))
     }
 }

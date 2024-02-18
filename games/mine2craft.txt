@@ -1,0 +1,245 @@
+@name MinE2Craft
+@inputs [CamCont,PodCont]:wirelink
+@outputs ColSel HoloAmount MaxAmount
+@persist MainBlock:entity BlockSize CamDist Dirs:array
+@persist MoveW MoveA MoveS MoveD MoveUp MoveDown Place Break Align ColSel BlockCount
+@persist BlockCols:array BlockCol:vector
+
+if(first() | dupefinished()){
+    BlockSize = 1
+    
+    MainBlock = holoCreate(1,entity():pos(),vec(BlockSize/2),ang(0,0,0))
+
+    CamDist = 50
+    
+    CamCont["Position",vector] = MainBlock:pos()
+    CamCont["Parent",entity] = MainBlock
+    CamCont["Distance",number] = CamDist
+    
+    MoveW = 0 #I hate E2's warning system
+    MoveA = 0
+    MoveS = 0
+    MoveD = 0
+    MoveUp = 0
+    MoveDown = 0
+    Place = 0
+    Break = 0
+    Align = 0
+    
+    BlockCount = 1
+    
+    HoloAmount = holoAmount()
+    MaxAmount = holoMaxAmount()
+    
+    Dirs = array(
+        vec(1,0,0),vec(-1,0,0),
+		      vec(0,1,0),vec(0,-1,0)
+    )
+    
+    function vector getGridDirection(Direction:vector){
+        Direction = Direction:normalized()
+        
+        CurrentDot = -1
+        CurrentDirection = vec()
+        
+        for(I=0,Dirs:count()){
+            Dot = Dirs[I, vector]:dot(Direction)
+            if (Dot > CurrentDot){
+                CurrentDot = Dot
+                CurrentDirection = Dirs[I,vector]
+            }
+        }
+        
+        return CurrentDirection
+    }
+    
+    ColSel = 1 #Selected color
+    BlockCol = vec(255,255,255)
+    
+    BlockCols = array(
+        vec(255,255,255), #White
+        vec(0,0,0), #Black
+        vec(255,0,0), #Red
+        vec(0,255,0), #Green
+        vec(0,0,255), #Blue
+        vec(255,90,0), #Orange
+        vec(0,130,30), #Light-Dark Green
+        vec(255,230,130), #Yellow (Sand)
+        vec(130,95,0), #Brown
+        vec(0,160,255), #Lighter Blue
+        vec(0,255,255), #Aqua
+        vec(130,255,255), #Sky Blue
+        vec(0,30,130), #Dark Blue
+        vec(70,70,70), #Dark Gray
+        vec(150,150,150), #Light Gray
+        vec(255,130,220), #Pink
+        vec(130,0,255) #Purple
+    )
+}
+
+event tick(){
+    if(PodCont["Active",number] == 1){
+        if(PodCont["W",number] == 1 & MoveW == 0){
+            MoveW = 1
+            
+            if(PodCont["Shift",number] == 1){
+                local MoveDir = getGridDirection(CamCont["CamAng",angle]:forward())
+                holoScaleUnits(1,MainBlock:toWorld(MoveDir*6*BlockSize))
+            }
+            else{
+                local MoveDir = getGridDirection(CamCont["CamAng",angle]:forward())
+                holoPos(1,MainBlock:toWorld(MoveDir*6*BlockSize))
+            }
+        }
+        
+        if(PodCont["A",number] == 1 & MoveA == 0){
+            MoveA = 1
+            
+            local MoveDir = getGridDirection(CamCont["CamAng",angle]:right())
+            holoPos(1,MainBlock:toWorld(MoveDir*-6*BlockSize))
+        }
+        
+        if(PodCont["S",number] == 1 & MoveS == 0){
+            MoveS = 1
+            
+            local MoveDir = getGridDirection(CamCont["CamAng",angle]:forward())
+            holoPos(1,MainBlock:toWorld(MoveDir*-6*BlockSize))
+        }
+        
+        if(PodCont["D",number] == 1 & MoveD == 0){
+            MoveD = 1
+            
+            local MoveDir = getGridDirection(CamCont["CamAng",angle]:right())
+            holoPos(1,MainBlock:toWorld(MoveDir*6*BlockSize))
+        }
+        
+        if(PodCont["Space",number] == 1 & MoveUp == 0){
+            MoveUp = 1
+            
+            holoPos(1,MainBlock:pos()+vec(0,0,6*BlockSize))
+            
+        }
+        
+        if(PodCont["Duck",number] == 1 & MoveDown == 0){
+            MoveDown = 1
+            
+            holoPos(1,MainBlock:pos()+vec(0,0,-6*BlockSize))
+        }
+        
+        if(PodCont["Mouse1",number] == 1 & Place == 0){
+            Place = 1
+            
+            if(PodCont["Alt",number] == 1){
+                if(ColSel >= BlockCols:count()){
+                    ColSel = 1
+                }
+                else{
+                    ColSel = ColSel+1
+                }
+                
+                BlockCol = BlockCols[ColSel,vector]
+                holoColor(1,BlockCol)
+            }
+            else{
+                if(holoAmount() == holoMaxAmount()){
+                    PodCont["Driver",entity]:printColorDriver(vec(255,95,215),"[MinE2Craft]",vec(230,110,0)," You've reached the hologram limit of ",vec(255,0,0),holoMaxAmount(),vec(230,110,0)," You cannot make more blocks!")
+                }
+                else{
+                    findExcludeEntity(MainBlock)
+                    findInSphere(MainBlock:pos(),0.1)
+                    findSortByDistance(MainBlock:pos())
+                    
+                    Ents = findToArray()
+                    
+                    BlockCount = BlockCount+1
+                    
+                    HoloAmount = holoAmount()
+        
+                    if(Ents[1,entity]:pos():distance(MainBlock:pos()) != 0){
+                        holoCreate(BlockCount,MainBlock:pos(),vec(BlockSize/2),ang(0,0,0),BlockCol)
+                    }
+                }
+            }
+        }
+        
+        if(PodCont["Mouse2",number] == 1 & Break == 0){
+            Break = 1
+            
+            if(PodCont["Alt",number] == 1){
+                if(ColSel <= 1){
+                    ColSel = BlockCols:count()
+                }
+                else{
+                    ColSel = ColSel-1
+                }
+                
+                BlockCol = BlockCols[ColSel,vector]
+                holoColor(1,BlockCol)
+            }
+            else{
+                findExcludeEntity(MainBlock)
+                findInSphere(MainBlock:pos(),0.1)
+                findSortByDistance(MainBlock:pos())
+                
+                Ents = findToArray()
+                
+                HoloAmount = holoAmount()
+    
+                if(Ents[1,entity]:pos():distance(MainBlock:pos()) == 0){
+                    holoDelete(holoIndex(Ents[1,entity]))
+                }
+            }
+        }
+        
+        if(PodCont["R",number] == 1 & Align == 0){
+            Align = 1
+            
+            findExcludeEntity(MainBlock)
+            findIncludeClass("gmod_wire_hologram")
+            findInSphere(MainBlock:pos(),0.5)
+            
+            Ents = findToArray()
+            findSortByDistance(MainBlock:pos())
+            
+            holoPos(1,Ents[1,entity]:pos())
+        }
+        
+        
+########Reset things########
+        if(PodCont["W",number] == 0 & MoveW == 1){
+            MoveW = 0
+        }
+        
+        if(PodCont["A",number] == 0 & MoveA == 1){
+            MoveA = 0
+        }
+        
+        if(PodCont["S",number] == 0 & MoveS == 1){
+            MoveS = 0
+        }
+        
+        if(PodCont["D",number] == 0 & MoveD == 1){
+            MoveD = 0
+        }
+        
+        if(PodCont["Space",number] == 0 & MoveUp == 1){
+            MoveUp = 0
+        }
+        
+        if(PodCont["Duck",number] == 0 & MoveDown == 1){
+            MoveDown = 0
+        }
+        
+        if(PodCont["Mouse1",number] == 0 & Place == 1){
+            Place = 0
+        }
+        
+        if(PodCont["Mouse2",number] == 0 & Break == 1){
+            Break = 0
+        }
+        
+        if(PodCont["Reload",number] == 0 & Align == 1){
+            Align = 0
+        }
+    }
+}

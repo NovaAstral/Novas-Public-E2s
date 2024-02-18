@@ -84,11 +84,11 @@ if(first() | duped()){
     B2V3 = 0
     B2A3 = ang(0,0,0)
     
-    B2N4 = ""
+    B2N4 = "models/props_foliage/tree_pine05.mdl|Tree 1"
     B2V4 = 0
     B2A4 = ang(0,0,0)
     
-    B2N5 = ""
+    B2N5 = "models/props_foliage/tree_pine06.mdl|Tree 2"
     B2V5 = 0
     B2A5 = ang(0,0,0)
     

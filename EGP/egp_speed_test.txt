@@ -1,0 +1,59 @@
+@name EGP Speed Test
+@inputs E:wirelink
+@outputs 
+@persist Pos MoveDir Pos2 MoveDir2
+
+if(first()){
+    E:egpClear()
+    E:egpBox(1,vec2(256),vec2(50,100))
+    E:egpBox(2,vec2(200,256),vec2(50,100))
+    
+    timer("move",1)
+    
+    Pos = 256
+    MoveDir = 1
+    
+    Pos2 = 256
+    MoveDir2 = 1
+}
+
+if(clk("move")){ #this triggers on tick, which is 15ms (66.6tps) by default
+    timer("move",1)
+    Pos = Pos + MoveDir
+    
+    if(Pos >= 400){
+        MoveDir = -1
+    }
+    elseif(Pos <= 144){
+        MoveDir = 1
+    }
+    
+    E:egpPos(1,vec2(256,Pos))
+    
+    if(Pos == Pos2){
+        E:egpColor(1,vec(0,255,0))
+    }
+    else{
+        E:egpColor(1,vec(255,0,0))
+    }
+}
+
+event tick(){
+    Pos2 = Pos2 + MoveDir2
+    
+    if(Pos2 >= 286){
+        MoveDir2 = -1
+    }
+    elseif(Pos2 <= 226){
+        MoveDir2 = 1
+    }
+    
+    E:egpPos(2,vec2(200,Pos2))
+    
+    if(Pos == Pos2){
+        E:egpColor(2,vec(0,255,0))
+    }
+    else{
+        E:egpColor(2,vec(255,0,0))
+    }
+}

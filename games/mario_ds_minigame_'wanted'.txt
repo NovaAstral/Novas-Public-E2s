@@ -52,11 +52,13 @@ if(first()){
     
     InnoAmount = 20 #Limit is around 190 before the e2 crashes
     CharSize = 20
-    MemeChance = 20 #chance to have the wanted be black lol
+    MemeChance = 0 #chance to have the wanted be black lol
     
     timer("BoxSize",1)
     
     #timer("startgame",1)
+    
+    PrevScore = 0
 }
 
 if(clk("BoxSize")){
@@ -204,12 +206,16 @@ if(clk("resetgame")){
 }
 
 if(clk("wantedcreate")){
-    
-    if(randint(1,MemeChance) == MemeChance){
-        WantedCol = vec(0)
+    if(MemeChance == 0){
+        WantedCol = vec(randint(75,255),randint(75,255),randint(75,255))
     }
     else{
-        WantedCol = vec(randint(75,255),randint(75,255),randint(75,255))
+        if(randint(0,MemeChance) == MemeChance){
+            WantedCol = vec(0)
+        }
+        else{
+            WantedCol = vec(randint(75,255),randint(75,255),randint(75,255))
+        }
     }
     
     EGP:egpCircle(8,vec2(477,228),vec2(10,10)) #Find dot on the sidebar
