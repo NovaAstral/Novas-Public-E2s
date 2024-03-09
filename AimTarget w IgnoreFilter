@@ -1,0 +1,19 @@
+@name AimTarget w IgnoreFilter
+@inputs [Ent1,Ent2,Ent3,Ent4,Ent5,Ent6]:entity
+@outputs Target:vector
+@persist IgnoreArray:array
+
+if(first() | dupefinished()){
+    IgnoreArray = array(owner(),Ent1,Ent2,Ent3,Ent4,Ent5,Ent6)
+}
+
+if(~Ent1 | ~Ent2 | ~Ent3 | ~Ent4 | ~Ent5 | ~Ent6){
+    IgnoreArray = array(owner(),Ent1,Ent2,Ent3,Ent4,Ent5,Ent6)
+}
+
+event tick(){
+    rangerFilter(IgnoreArray)
+    local RangerData =  rangerOffset(16384,owner():shootPos(),owner():eye())
+
+    Target = RangerData:pos()
+}

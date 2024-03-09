@@ -25,10 +25,10 @@ if(clk("noplay")){
 
 if(~Cloak & Cloak > 0 & !first()){
     if(Cloak == 1){#Enable
-        CloakSnd = "https://cdn.discordapp.com/attachments/915811722646925312/1191878353263800472/phase_enable.wav"
+        CloakSnd = "https://cdn.discordapp.com/attachments/915811722646925312/1191878353263800472/phase_enable.wav?ex=65e7a3b7&is=65d52eb7&hm=0d1fadd4aa84604a092529976f9fa555e5dcd4c25afbef21956642bdedb0ecd1&"
     }
     elseif(Cloak == 2){#Disable
-        CloakSnd = "https://cdn.discordapp.com/attachments/915811722646925312/1191878353603534918/phase_disable.wav"
+        CloakSnd = "https://cdn.discordapp.com/attachments/915811722646925312/1191878353603534918/phase_disable.wav?ex=65e7a3b7&is=65d52eb7&hm=97b0cb170a1281c58eab18260d2afb54f8d41a1125e6cee21adea25e3cfce817&"
     }
     
     playsound(
@@ -43,17 +43,17 @@ if(~Cloak & Cloak > 0 & !first()){
 
 if(~Mat & Mat & !first()){
     if(Fail == 1){
-        Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191870883082547211/demat_fail_int.wav"
+        Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191870883082547211/demat_fail_int.wav?ex=65e79cc2&is=65d527c2&hm=6858dba8890a79fda49aed9ef28707be83fa2868dd5329820124cfd27b2bab5d&"
     }
     elseif(Forced == 1){
-        Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191874285975900160/mat_damaged.wav"
+        Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191874285975900160/mat_damaged.wav?ex=65e79fed&is=65d52aed&hm=ffa1b92cafee304a44716cf6babaae220a51f53933739ea2483ea07c64f22ddf&"
     }
     else{
         if(Fast == 1){
-            Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191217333985878126/tardis_land_fast.ogg"
+            Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191217333985878126/tardis_land_fast.ogg?ex=65e53c18&is=65d2c718&hm=2abcebef54142f17fdd88deeee07ff24ed44bb57df2b8d5ace09115b3fc99e05&"
         }
         else{
-            Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191865926031773706/tardismat.wav"
+            Snd1 = "https://cdn.discordapp.com/attachments/915811722646925312/1191865926031773706/tardismat.wav?ex=65e79824&is=65d52324&hm=c7dfb9149a45e791ec46126362c73e4bc7fd1641bd139467b01b15cc8eaf7643&"
         }
     }
     
@@ -69,19 +69,19 @@ if(~Mat & Mat & !first()){
 
 if(~Demat & Demat & !first()){
     if(Fail == 1){
-        Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191870883082547211/demat_fail_int.wav"
+        Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191870883082547211/demat_fail_int.wav?ex=65e79cc2&is=65d527c2&hm=6858dba8890a79fda49aed9ef28707be83fa2868dd5329820124cfd27b2bab5d&"
     }
     elseif(Forced == 1){
-        Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191874115607478302/demat_damaged.wav"
+        Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191874115607478302/demat_damaged.wav?ex=65e79fc5&is=65d52ac5&hm=3de6976fcd0400fc33e6d9c12a583ad9a5bbd4b887ea43d0d493e56c489430f6&"
     }
     else{
         if(Fast == 1){
-            Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191217164758290503/fast_demat.wav"
+            Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191217164758290503/fast_demat.wav?ex=65e53bef&is=65d2c6ef&hm=aa2f48d011918260303bc538d0bcb07263e58b48758f76aa045eca941119cbe6&"
         }
         else{
-            #https://cdn.discordapp.com/attachments/915811722646925312/1132411635110252634/demat.wav
+            #https://cdn.discordapp.com/attachments/915811722646925312/1191111400102301777/demat.wav?ex=65ee13ef&is=65db9eef&hm=afe2b9ee4cf8c588683d338fdac5d0f1349ecb3e334cfb3ef24cb64a527e998b&
             #
-            Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191221235330338866/tardis_takeoff.ogg"
+            Snd2 = "https://cdn.discordapp.com/attachments/915811722646925312/1191221235330338866/tardis_takeoff.ogg?ex=65e53fba&is=65d2caba&hm=9d59b27b0fc8e7f6bef1090ec0a875d28d907ba4b17a8df732cf787ab98ad87f&"
         }
     }
     
