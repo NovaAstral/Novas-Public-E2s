@@ -1,0 +1,104 @@
+@name TARDIS WebAudio
+@inputs Mat Demat Fast Fail Forced Cloak Ext:entity ToiletMode WebAudioSF:wirelink
+@outputs 
+@persist [Snd1,Snd2,CloakSnd]:string
+#This links to an SF that only works on TSCM
+
+function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
+    WebAudioSF["URL",string] = Audio
+    WebAudioSF["Pos",vector] = Vec
+    WebAudioSF["Volume",number] = Vol
+    WebAudioSF["FadeStart",number] = FadeS
+    WebAudioSF["FadeEnd",number] = FadeE
+    WebAudioSF["Mono",number] = MonoEnable
+    timer("play",10)
+    timer("noplay",20)
+}
+
+if(clk("play")){
+    WebAudioSF["Play",number] = 1
+}
+
+if(clk("noplay")){
+    WebAudioSF["Play",number] = 0
+}
+
+if(~Cloak & Cloak > 0 & !first()){
+    if(Cloak == 1){#Enable
+        CloakSnd = "https://cloud.the17thdoctor.fr/s/ugRR3108Ahrcade/download" #cloak
+    }
+    elseif(Cloak == 2){#Disable
+        CloakSnd = "https://cloud.the17thdoctor.fr/s/MhXFVagkag9A7dl/download" #uncloak
+    }
+    
+    playsound(
+    CloakSnd,
+    Ext:pos(),
+    2,
+    500,
+    1000000000,
+    0
+    )
+}
+
+if(~Mat & Mat & !first()){
+    if(Fail == 1){
+        Snd1 = "https://cloud.the17thdoctor.fr/s/7Rol1sDci7tJs4q/download" #fail sound
+    }
+    elseif(Forced == 1){
+        Snd1 = "https://cloud.the17thdoctor.fr/s/QE1hClvs3l2f1K7/download" #forced mat
+    }
+    else{
+        if(Fast == 1){
+            Snd1 = "https://cloud.the17thdoctor.fr/s/5P2W9IA6o23AVMF/download" #fast mat
+        }
+        else{
+            if(ToiletMode == 1){
+                Snd1 = "https://cloud.the17thdoctor.fr/s/QeQnGlV1xYMm3FZ/download" #toilet mat
+            }
+            else{
+                Snd1 = "https://cloud.the17thdoctor.fr/s/QL0hqCJpkhRqYpc/download" #mat
+            }
+        }
+    }
+    
+    playsound(
+    Snd1, #URL
+    Ext:pos(), #Audio Pos
+    2, #Volume
+    500, #Fade Start
+    1000000000, #Fade End
+    0 #Mono. Leave this as 0 unless you get an error when the sound tries to play
+    )
+}
+
+if(~Demat & Demat & !first()){
+    if(Fail == 1){
+        Snd2 = "https://cloud.the17thdoctor.fr/s/7Rol1sDci7tJs4q/download" #fail
+    }
+    elseif(Forced == 1){
+        Snd2 = "https://cloud.the17thdoctor.fr/s/Mk5sjFH1uAlVr8Z/download" #force demat
+    }
+    else{
+        if(Fast == 1){
+            Snd2 = "https://cloud.the17thdoctor.fr/s/6B9fBD3kCEAyMrR/download" #fast demat
+        }
+        else{
+            if(ToiletMode == 1){
+                Snd2 = "https://cloud.the17thdoctor.fr/s/c1bvRDlkaNJuWFC/download" #toilet demat
+            }
+            else{
+                Snd2 = "https://cloud.the17thdoctor.fr/s/PrM4qyTbQ57QPoH/download" #demat
+            }
+        }
+    }
+    
+    playsound(
+    Snd2,
+    Ext:pos(),
+    2,
+    500,
+    1000000000,
+    0
+    )
+}

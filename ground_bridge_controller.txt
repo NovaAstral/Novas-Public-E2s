@@ -1,7 +1,7 @@
 @name Ground Bridge Controller
 @inputs BridgeController:wirelink
 @outputs Size Active Distance [Color,Br1,Br2]:vector
-@persist Prefix:string Distance AutoReset
+@persist Prefix:string Distance AutoReset TSCMBridge
 
 #include "Novas-Public-E2s/library/nova_lib"
 
@@ -16,6 +16,15 @@ if(first() | dupefinished()){
     Distance = 100
     
     AutoReset = 0 #Reset automatically when activating
+    
+    if(map() == "sb_galaxies_2018_v2"){
+        TSCMBridge = 1
+    }
+    else{
+        TSCMBridge = 0
+    }
+    
+    TSCMBridge = 1 #If you're on the TSCM Spacebuild server, set this to 1
     
     if(BridgeController:entity():isValid()){
         BridgeController["Bridge1 Pos",vector] = holoEntity(1):pos()
@@ -113,16 +122,21 @@ event chat(SaidPly:entity, Said:string,_){
                     
                     local HoloPos = RangerData:pos() + RangerData:hitNormal() * Distance
                     
-                    local HoloAng = (HoloPos - owner():pos()):toAngle():setPitch(0) + ang(-90,0,0)
+                    if(TSCMBridge == 1){
+                        HoloAng1 = (HoloPos - owner():pos()):toAngle():setYaw(0) + ang(-90,0,0)
+                    }
+                    else{
+                        HoloAng1 = (HoloPos - owner():pos()):toAngle():setPitch(0) + ang(-90,0,0)
+                    }
                     
                     holoPos(HoloNum,HoloPos)
-                    holoAng(HoloNum,HoloAng)
+                    holoAng(HoloNum,HoloAng1)
                     
                     local BridgePos = "Bridge"+HoloNum:toString()+" Pos"
                     local BridgeAng = "Bridge"+HoloNum:toString()+" Angle"
                     
                     BridgeController[BridgePos,vector] = HoloPos
-                    BridgeController[BridgeAng,angle] = HoloAng
+                    BridgeController[BridgeAng,angle] = HoloAng1
                     
                     if(HoloNum == 1){
                         Br1 = HoloPos
@@ -148,10 +162,15 @@ event chat(SaidPly:entity, Said:string,_){
                     
                         local HoloPos = RangerData:pos() + Ply:eye() * 300
                         
-                        local HoloAng = (HoloPos - Ply:pos()):toAngle():setPitch(0) + ang(-90,0,0)
+                        if(TSCMBridge == 1){
+                            HoloAng2 = (HoloPos - Ply:pos()):toAngle():setYaw(0) + ang(0,0,0)
+                        }
+                        else{
+                            HoloAng2 = (HoloPos - Ply:pos()):toAngle():setPitch(0) + ang(-90,0,0)
+                        }
                         
                         holoPos(HoloNum,HoloPos)
-                        holoAng(HoloNum,HoloAng)
+                        holoAng(HoloNum,HoloAng2)
                         
                         if(HoloNum == 1){
                             Br1 = HoloPos

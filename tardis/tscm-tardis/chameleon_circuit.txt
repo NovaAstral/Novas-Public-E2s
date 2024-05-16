@@ -1,0 +1,87 @@
+@name Chameleon Circuit
+@inputs [ExtModel,ExtModel2]:string DefaultExtPos:vector PBox:entity PBoxDefaultPos:vector Offset ModelName:string BoxDoor:entity
+@outputs ExtOut:entity ModelString:string ToiletMode DoorEnt:entity
+@persist OldExt:entity IgnoreArray:array
+
+if(first() | dupefinished()){
+    if(ExtModel != "" & DefaultExtPos != vec(0)){
+        ExtOut = propSpawn("models/props_interiors/VendingMachineSoda01a.mdl",DefaultExtPos+vec(0,0,48),1)
+    }
+}
+
+function void changeModel(Mdl:string){
+    if(Mdl != ""){
+        if(ExtOut:isValid()){
+            OldExt = ExtOut
+                
+            ExtOut = propSpawn(ExtModel,OldExt:pos()+vec(0,0,Offset),1)
+            DoorEnt = ExtOut
+                
+            IgnoreArray = array(ExtOut,OldExt,PBox)
+                
+            rangerFilter(IgnoreArray)
+            local RangerData = rangerOffset(ExtOut:pos(),ExtOut:pos() + vec(0,0,-10) * 10000)
+                
+            ExtOut:setPos(RangerData:pos()+vec(0,0,Offset))
+                
+            if(OldExt == PBox){
+                PBox:setPos(PBoxDefaultPos)
+            }
+            else{
+                OldExt:propDelete()
+            }
+        }
+        else{
+            ExtOut = propSpawn(ExtModel,DefaultExtPos+vec(0,0,Offset),1)
+            DoorEnt = ExtOut
+        }
+    }
+}
+
+if(~ExtModel){
+    if(ExtModel != ""){
+        if(ExtModel == "models/sprops/rectangles/size_66/rect_66x66x3.mdl" & ModelName == "Police Box"){
+            if(PBox:isValid()){
+                OldExt = ExtOut
+                
+                ExtOut = PBox
+                
+                ExtOut:setPos(OldExt:pos())
+                DoorEnt = BoxDoor
+                
+                timer("movebox",100)
+            }
+        }
+        else{
+            ModelString = ExtModel
+            
+            changeModel(ModelString)
+            
+            if(ModelString == "models/props_c17/FurnitureToilet001a.mdl"){
+                ToiletMode = 1
+            }
+            else{
+                ToiletMode = 0
+            }
+        }
+    }
+}
+
+if(clk("movebox")){
+    IgnoreArray = array(ExtOut,OldExt,PBox)
+                
+    rangerFilter(IgnoreArray)
+    local RangerData = rangerOffset(ExtOut:pos(),ExtOut:pos() + vec(0,0,-10) * 10000)
+                
+    ExtOut:setPos(RangerData:pos()+vec(0,0,Offset))
+                
+    OldExt:propDelete()
+}
+
+if(~ExtModel2){
+    if(ExtModel2 != ""){
+        ModelString = ExtModel2
+        
+        changeModel(ModelString)
+    }
+}

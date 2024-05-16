@@ -102,34 +102,20 @@ if(OLS[2,string] == "model"){
         printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"You must provide a model path for replication.")
     }
     else{
-    Ent = propSpawn(OLS[3,string],SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,8)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating Custom Model: " +OLS[3,string])
-    Text = "Replicating Custom Model: "+OLS[3,string]
-    timer("Rep1",10)
-}}
+        Ent = propSpawn(OLS[3,string],SpawnPos,0)
+        PadTargetLoc = Rep:pos() + vec(0,0,8)
+        printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating Custom Model: " +OLS[3,string])
+        Text = "Replicating Custom Model: \n"+OLS[3,string]
+        timer("Rep1",10)
+    }
+}
 
-if(OLS[2,string] == "ember"){ #This is a reference to my girlfriend
+if(OLS[2,string] == "ember"){ #This is a reference to my partner
     printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Error: Cannot replicate 'Ember'") 
     Text = "Error: Cannot replicate 'Ember'"
     Rep:soundPlay(2,1500,"st/shuttlecraft/computer_deny.wav")
     timer("soundstop",1500)
 }
-
-if(OLS[2,string] == "alice"){ #This is a reference to my girlfriend
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Error: Cannot replicate 'Alice'")
-    Text = "Error: Cannot replicate 'Alice'"
-    Rep:soundPlay(2,1500,"st/shuttlecraft/computer_deny.wav")
-    timer("soundstop",1500)
-}
-
-if(OLS[2,string] == "glimmy"){ #This is a reference to my girlfriend
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Error: Cannot replicate 'Glimmy'")
-    Text = "Error: Cannot replicate 'Glimmy'"
-    Rep:soundPlay(2,1500,"st/shuttlecraft/computer_deny.wav")
-    timer("soundstop",1500)
-}
-#Yes, I have 3 of them<3
 
 if(OLS[2,string] == "burger"){
     Ent = propSpawn("models/food/burger.mdl",SpawnPos,0)

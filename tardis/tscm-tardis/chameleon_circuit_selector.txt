@@ -13,7 +13,7 @@
 @persist [B3A1,B3A2,B3A3,B3A4,B3A5,B3A6,B3A7,B3A8,B3A9,B3A10,B3A11,B3A12]:angle #Bank 3 Angles
 
 if(first() | duped()){
-    ExtModel = "models/props_interiors/VendingMachineSoda01a.mdl|Vending Machine" #Default
+    ExtModel = "models/props_interiors/VendingMachineSoda01a.mdl" #Default
     Offset = 48
     Angle = ang(0,0,0)
     ModelName = "Vending Machine"
@@ -92,8 +92,8 @@ if(first() | duped()){
     B2V5 = 0
     B2A5 = ang(0,0,0)
     
-    B2N6 = ""
-    B2V6 = 0
+    B2N6 = "models/props_c17/FurnitureToilet001a.mdl|Toilet"
+    B2V6 = 48
     B2A6 = ang(0,0,0)
     
     B2N7 = ""
@@ -166,7 +166,7 @@ if(first() | duped()){
     B3V11 = 0
     B3A11 = ang(0,0,0)
     
-    B3N12 = ""
+    B3N12 = "models/sprops/rectangles/size_66/rect_66x66x3.mdl|Police Box"
     B3V12 = 0
     B3A12 = ang(0,0,0)
 }
@@ -334,13 +334,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N1:explode("|")[1,string]
             Offset = B2V1
             Angle = B2A1
-            ModelName = B1N1:explode("|")[2,string]
+            ModelName = B2N1:explode("|")[2,string]
         }
         elseif(Bank == 3){
             ExtModel = B3N1:explode("|")[1,string]
             Offset = B3V1
             Angle = B3A1
-            ModelName = B1N1:explode("|")[2,string]
+            ModelName = B3N1:explode("|")[2,string]
         }
     }
     
@@ -361,13 +361,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N2:explode("|")[1,string]
             Offset = B2V2
             Angle = B2A2
-            ModelName = B1N2:explode("|")[2,string]
+            ModelName = B2N2:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N2:explode("|")[1,string]
             Offset = B3V2
             Angle = B3A2
-            ModelName = B1N2:explode("|")[2,string]
+            ModelName = B3N2:explode("|")[2,string]
         }
     }
     
@@ -388,13 +388,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N3:explode("|")[1,string]
             Offset = B2V3
             Angle = B2A3
-            ModelName = B1N3:explode("|")[2,string]
+            ModelName = B2N3:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N3:explode("|")[1,string]
             Offset = B3V3
             Angle = B3A3
-            ModelName = B1N3:explode("|")[2,string]
+            ModelName = B3N3:explode("|")[2,string]
         }
     }
     
@@ -415,13 +415,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N4:explode("|")[1,string]
             Offset = B2V4
             Angle = B2A4
-            ModelName = B1N4:explode("|")[2,string]
+            ModelName = B2N4:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N4:explode("|")[1,string]
             Offset = B3V4
             Angle = B3A4
-            ModelName = B1N4:explode("|")[2,string]
+            ModelName = B3N4:explode("|")[2,string]
         }
     }
     
@@ -442,13 +442,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N5:explode("|")[1,string]
             Offset = B2V5
             Angle = B2A5
-            ModelName = B1N5:explode("|")[2,string]
+            ModelName = B2N5:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N5:explode("|")[1,string]
             Offset = B3V5
             Angle = B3A5
-            ModelName = B1N5:explode("|")[2,string]
+            ModelName = B3N5:explode("|")[2,string]
         }
     }
     
@@ -469,13 +469,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N6:explode("|")[1,string]
             Offset = B2V6
             Angle = B2A6
-            ModelName = B1N6:explode("|")[2,string]
+            ModelName = B2N6:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N6:explode("|")[1,string]
             Offset = B3V6
             Angle = B3A6
-            ModelName = B1N6:explode("|")[2,string]
+            ModelName = B3N6:explode("|")[2,string]
         }
     }
     
@@ -496,13 +496,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N7:explode("|")[1,string]
             Offset = B2V7
             Angle = B2A7
-            ModelName = B1N7:explode("|")[2,string]
+            ModelName = B2N7:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N7:explode("|")[1,string]
             Offset = B3V7
             Angle = B3A7
-            ModelName = B1N7:explode("|")[2,string]
+            ModelName = B3N7:explode("|")[2,string]
         }
     }
     
@@ -523,13 +523,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N8:explode("|")[1,string]
             Offset = B2V8
             Angle = B2A8
-            ModelName = B1N8:explode("|")[2,string]
+            ModelName = B2N8:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N8:explode("|")[1,string]
             Offset = B3V8
             Angle = B3A8
-            ModelName = B1N8:explode("|")[2,string]
+            ModelName = B3N8:explode("|")[2,string]
         }
     }
     
@@ -550,13 +550,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N9:explode("|")[1,string]
             Offset = B2V9
             Angle = B2A9
-            ModelName = B1N9:explode("|")[2,string]
+            ModelName = B2N9:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N9:explode("|")[1,string]
             Offset = B3V9
             Angle = B3A9
-            ModelName = B1N9:explode("|")[2,string]
+            ModelName = B3N9:explode("|")[2,string]
         }
     }
     
@@ -577,13 +577,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N10:explode("|")[1,string]
             Offset = B2V10
             Angle = B2A10
-            ModelName = B1N10:explode("|")[2,string]
+            ModelName = B2N10:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N10:explode("|")[1,string]
             Offset = B3V10
             Angle = B3A10
-            ModelName = B1N10:explode("|")[2,string]
+            ModelName = B3N10:explode("|")[2,string]
         }
     }
     
@@ -604,13 +604,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N11:explode("|")[1,string]
             Offset = B2V11
             Angle = B2A11
-            ModelName = B1N11:explode("|")[2,string]
+            ModelName = B2N11:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N11:explode("|")[1,string]
             Offset = B3V11
             Angle = B3A11
-            ModelName = B1N11:explode("|")[2,string]
+            ModelName = B3N11:explode("|")[2,string]
         }
     }
     
@@ -631,13 +631,13 @@ if(~User & User & Activate == 1){
             ExtModel = B2N12:explode("|")[1,string]
             Offset = B2V12
             Angle = B2A12
-            ModelName = B1N12:explode("|")[2,string]
+            ModelName = B2N12:explode("|")[2,string]
         }
         if(Bank == 3){
             ExtModel = B3N12:explode("|")[1,string]
             Offset = B3V12
             Angle = B3A12
-            ModelName = B1N12:explode("|")[2,string]
+            ModelName = B3N12:explode("|")[2,string]
         }
     }
     

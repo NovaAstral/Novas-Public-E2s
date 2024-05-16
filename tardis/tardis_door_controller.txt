@@ -8,7 +8,7 @@ if(first() | dupefinished()){
         if(Transporter:entity():isValid()){
             Transporter["Radius",number] = 10
             Transporter["Origin",vector] = Ply:pos()
-            Transporter["Destination",vector] = Pos
+            Transporter["Dest",vector] = Pos
             
             timer("beam",10)
         }

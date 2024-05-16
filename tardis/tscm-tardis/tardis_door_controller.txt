@@ -8,7 +8,7 @@ if(first() | dupefinished()){
         if(Transporter:entity():isValid()){
             Transporter["Radius",number] = 10
             Transporter["Origin",vector] = Ply:pos()
-            Transporter["Dest",vector] = Pos
+            Transporter["Destination",vector] = Pos
             
             timer("beam",10)
         }
@@ -33,7 +33,12 @@ event keyPressed(Ply:entity,_:string,Down:number,KeyBind:string){
                     ExtDoor:soundPlay(2,1,"doors/default_locked.wav")
                 }
                 else{
-                    beamPly(Ply,ExtDoor:pos()+vec(0,0,-20) + ExtDoor:forward()*50)
+                    if(ExtDoor:model() == "models/sprops/cuboids/height48/size_1/cube_48x132x48.mdl"){
+                        beamPly(Ply,ExtDoor:pos()+vec(0,0,-20) + ExtDoor:up()*80)
+                    }
+                    else{
+                        beamPly(Ply,ExtDoor:pos()+vec(0,0,-20) + ExtDoor:forward()*50)
+                    }
                 }
             }
         }
@@ -44,7 +49,7 @@ event keyPressed(Ply:entity,_:string,Down:number,KeyBind:string){
                     ExtDoor:soundPlay(2,1,"doors/default_locked.wav")
                 }
                 else{
-                    beamPly(Ply,IntDoor:pos()+vec(0,0,-20) + IntDoor:forward()*-50)
+                    beamPly(Ply,IntDoor:pos()+vec(0,0,-20) + IntDoor:up()*-100)
                 }
             }
         }

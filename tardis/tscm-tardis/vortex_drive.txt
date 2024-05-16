@@ -1,0 +1,339 @@
+@name Vortex Drive
+@inputs Warp FastMode EngineRelease Parent:entity Destination:vector AngleOffset:angle SoundPlaying WebAudioSF:wirelink
+@outputs ForceDemat Alpha RotorMoving
+@persist Dematted Moving Alpha MoveState TimerTime MatTimer DematTimer ForceDemat DematWait MatWait Snd1:string WarpPos:vector
+
+if(first() | dupefinished()){
+    Dematted = 0
+    Moving = 0
+    MoveState = 0
+    RotorMoving = 0
+    
+    DematWait = 0
+    MatWait = 0
+    
+    function number mathApproach(Cur:number,Tar:number,Change:number){
+        if(Tar > Cur){
+            return clamp(Cur+Change,Cur,Tar)
+        }
+        elseif(Tar < Cur){
+            return clamp(Cur-Change,Tar,Cur)
+        }
+        else{
+            return Cur
+        }
+    }
+    
+    function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
+        
+        WebAudioSF["URL",string] = Audio
+        WebAudioSF["Pos",vector] = Vec
+        WebAudioSF["Volume",number] = Vol
+        WebAudioSF["FadeStart",number] = FadeS
+        WebAudioSF["FadeEnd",number] = FadeE
+        WebAudioSF["Mono",number] = MonoEnable
+        
+        timer("playsnd",10)
+        timer("noplaysnd",20)
+    }
+    
+    Parent:setAlpha(255)
+    Alpha = 255
+    
+    ForceDemat = 0
+}
+
+if(clk("playsnd")){
+    WebAudioSF["Play",number] = 1
+}
+
+if(clk("noplaysnd")){
+    WebAudioSF["Play",number] = 0
+}
+
+if(~Destination & Destination != vec(0)){
+    WarpPos = Destination
+}
+
+if(~FastMode | first()){
+    if(FastMode == 1){
+        TimerTime = 1
+        MatTimer = 100
+        DematTimer = 100
+    }
+    else{
+        if(ForceDemat == 0){
+            TimerTime = 30
+            MatTimer = 10000
+            DematTimer = 6000
+        }
+        else{
+            TimerTime = 30
+            MatTimer = 8000
+            DematTimer = 4000
+        }
+    }
+}
+
+if(~SoundPlaying & SoundPlaying == 1 & DematWait == 1){
+    DematWait = 0
+    
+    RotorMoving = 1
+    Moving = 1
+    
+    timer("demat",DematTimer)
+}
+
+if(~SoundPlaying & SoundPlaying == 1 & MatWait == 1){
+    MatWait = 0
+    
+    RotorMoving = 1
+    Moving = 1
+    
+    timer("mat",MatTimer)
+}
+
+if(~Warp & Warp == 1 & !first() & !dupefinished()){
+    if(Moving == 0 & Dematted == 0){
+        if(isJammed(WarpPos) | isJammed(Parent:pos())){
+            if(EngineRelease == 0){
+                ForceDemat = 0
+                Snd1 = "https://cloud.the17thdoctor.fr/s/7Rol1sDci7tJs4q/download" #fail sound
+            }
+            else{
+                DematWait = 1
+                ForceDemat = 1
+                
+                if(FastMode == 1){
+                    Snd1 = "" #find forced demat sound
+                }
+                else{
+                    Snd1 = "https://cloud.the17thdoctor.fr/s/Mk5sjFH1uAlVr8Z/download" #force demat
+                }
+            }
+        }
+        else{
+            DematWait = 1
+            ForceDemat = 0
+            
+            if(FastMode == 1){
+                Snd1 = "https://cloud.the17thdoctor.fr/s/6B9fBD3kCEAyMrR/download" #fast demat
+            }
+            else{
+                Snd1 = "https://cloud.the17thdoctor.fr/s/PrM4qyTbQ57QPoH/download" #demat
+            }
+        }
+    }
+    
+    timer("sndwait",100)
+}
+
+
+if(clk("sndwait")){ #so the sound is at the new location
+    playsound(
+    Snd1, #URL
+    Parent:pos(), #Audio Pos
+    2, #Volume
+    2000, #Fade Start
+    1000000000, #Fade End
+    0 #Mono. Leave this as 0 unless you get an error when the sound tries to play
+    )
+}
+
+if(clk("demat")){
+    timer("demat",TimerTime)
+    
+    noCollideAll(Parent,1)
+    
+    if(MoveState == 0){
+        Alpha = mathApproach(Parent:getAlpha(),150,2)
+            
+        if(Alpha <= 150){
+            MoveState = 1
+        }
+    }
+    elseif(MoveState == 1){
+        Alpha = mathApproach(Parent:getAlpha(),200,2)
+            
+        if(Alpha >= 200){
+            MoveState = 2
+        }
+    }
+    elseif(MoveState == 2){
+        Alpha = mathApproach(Parent:getAlpha(),100,2)
+            
+        if(Alpha <= 100){
+            MoveState = 3
+        }
+    }
+    elseif(MoveState == 3){
+        Alpha = mathApproach(Parent:getAlpha(),150,2)
+            
+        if(Alpha >= 150){
+            MoveState = 4
+        }
+    }
+    elseif(MoveState == 4){
+        Alpha = mathApproach(Parent:getAlpha(),50,2)
+            
+        if(Alpha <= 50){
+            if(FastMode == 1){
+                MoveState = 6
+            }
+            else{
+                MoveState = 5
+            }
+        }
+    }
+    elseif(MoveState == 5){
+        Alpha = mathApproach(Parent:getAlpha(),100,2)
+            
+        if(Alpha >= 100){
+            MoveState = 6
+        }
+    }
+    elseif(MoveState == 6){
+        Alpha = mathApproach(Parent:getAlpha(),0,2)
+            
+        if(Alpha <= 0){
+            stoptimer("demat")
+            MoveState = 0
+            Dematted = 1
+            Moving = 0
+            
+            timer("remattimer",2000)
+        }
+    }
+
+    if(ForceDemat == 0){
+        Parent:setAlpha(Alpha)
+    }
+    else{
+        if(Alpha <= 0){
+            Parent:setAlpha(0)
+        }
+        else{
+            Parent:setAlpha(randint(Alpha-10,Alpha+10))
+        }
+    }
+}
+
+if(clk("remattimer")){
+    if(isJammed(WarpPos) | isJammed(Parent:pos())){
+        if(EngineRelease == 0){
+            ForceDemat = 0
+                
+            Snd1 = "https://cloud.the17thdoctor.fr/s/7Rol1sDci7tJs4q/download" #fail sound
+        }
+        else{
+            MatWait = 1
+            ForceDemat = 1
+                
+            if(FastMode == 1){
+                Snd1 = "" #find a force mat sound
+            }
+            else{
+                Snd1 = "https://cloud.the17thdoctor.fr/s/QE1hClvs3l2f1K7/download" #forced mat
+            }
+                
+            Parent:setPos(WarpPos+vec(0,0,0))
+            Parent:setAng(Parent:angles()+AngleOffset)
+                
+            timer("mat",MatTimer)
+        }
+    }
+    else{
+        ForceDemat = 0
+        MatWait = 1
+            
+        if(FastMode == 1){
+            Snd1 = "https://cloud.the17thdoctor.fr/s/5P2W9IA6o23AVMF/download" #fast mat
+        }
+        else{
+            Snd1 = "https://cloud.the17thdoctor.fr/s/QL0hqCJpkhRqYpc/download" #mat
+        }
+                
+        Parent:setPos(WarpPos+vec(0,0,0))
+        Parent:setAng(Parent:angles()+AngleOffset)
+    }
+    
+    timer("sndwait",100)
+}
+
+if(clk("mat")){
+    timer("mat",TimerTime)
+    
+    if(MoveState == 0){
+        Alpha = mathApproach(Parent:getAlpha(),100,2)
+        
+        if(Alpha >= 100){
+            MoveState = 1
+        }
+    }
+    elseif(MoveState == 1){
+        Alpha = mathApproach(Parent:getAlpha(),50,2)
+        
+        if(Alpha <= 50){
+            MoveState = 2
+        }
+    }
+    elseif(MoveState == 2){
+        Alpha = mathApproach(Parent:getAlpha(),150,2)
+        
+        if(Alpha >= 150){
+            MoveState = 3
+        }
+    }
+    elseif(MoveState == 3){
+        Alpha = mathApproach(Parent:getAlpha(),100,2)
+        
+        if(Alpha <= 100){
+            MoveState = 4
+        }
+    }
+    elseif(MoveState == 4){
+        Alpha = mathApproach(Parent:getAlpha(),200,2)
+        
+        if(Alpha >= 200){
+            if(FastMode == 1){
+                MoveState = 6
+            }
+            else{
+                MoveState = 5
+            }
+        }
+    }
+    elseif(MoveState == 5){
+        Alpha = mathApproach(Parent:getAlpha(),150,2)
+        
+        if(Alpha <= 150){
+            MoveState = 6
+        }
+    }
+    elseif(MoveState == 6){
+        Alpha = mathApproach(Parent:getAlpha(),255,2)
+        
+        if(Alpha >= 255){
+            stoptimer("mat")
+            MoveState = 0
+            Dematted = 0
+            Moving = 0
+            RotorMoving = 0
+            
+            
+            noCollideAll(Parent,0)
+        }
+    }
+    
+    if(ForceDemat == 0){
+        Parent:setAlpha(Alpha)
+    }
+    else{
+        if(Alpha >= 255){
+            Parent:setAlpha(255)
+        }
+        else{
+            Parent:setAlpha(randint(Alpha-10,Alpha+10))
+        }
+    }
+}

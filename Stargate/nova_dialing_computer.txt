@@ -1,0 +1,70 @@
+@name Nova Dialing Computer
+@inputs TextEntry:string DialMode Stargate:wirelink RingSpeed
+@outputs MainTextOut:string
+@persist DialedChev Address:array DialLength
+
+if(first() | dupefinished()){
+    DialedChev = 0
+    Address = array()
+}
+
+if(~TextEntry){
+    local Str = TextEntry
+    
+    local StrTest = Str:explode("")
+    
+    if(DialMode == 1){
+        Address = StrTest
+        timer("diallong",10)
+    }
+    else{
+        Stargate["Dial String",string] = Str
+        Stargate["Dial Mode",number] = 1
+        timer("dial",1000)
+    }
+    
+    if(Str:length() == 7){
+        MainTextOut = "Dialing Intergalactic Address"
+        DialLength = 7
+    }
+    elseif(Str:length() == 8){
+        MainTextOut = "Dialing Extragalactic Address"
+        DialLength = 8
+    }
+    elseif(Str:length() == 9){
+        MainTextOut = "Dialing Universe Address"
+        DialLength = 9
+    }
+    else{
+        MainTextOut = "Invalid Address"
+        
+        timer("undial",10)
+    }
+}
+
+if(clk("diallong")){
+    timer("chevcheck",10)
+    DialedChev = Stargate["Chevron",number]
+    Stargate["Rotate Ring",number] = RingSpeed
+}
+
+if(clk("chevcheck")){
+    timer("chevcheck",15)
+    
+    if(Stargate["Ring Symbol",string] == Address[1,string]){
+        
+    }
+}
+
+
+if(clk("dial")){
+    Stargate["Start String Dial",number] = 1
+    
+    timer("undial",5000)
+}
+
+if(clk("undial")){
+    Stargate["Dial String",string] = ""
+    Stargate["Dial Mode",number] = 0
+    Stargate["Start String Dial",number] = 0
+}

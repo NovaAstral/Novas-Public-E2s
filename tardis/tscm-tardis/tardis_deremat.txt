@@ -1,7 +1,7 @@
 @name TARDIS DeRemat
-@inputs Throttle Fast Cloak EngineRelease Ext:entity Loc:vector Ang:angle Siege
+@inputs Throttle Fast Cloak EngineRelease Ext:entity Loc:vector Ang:angle SoundPlaying Power Siege
 @outputs MatSnd DematSnd MatFail ForceDemat CloakSnd Alpha SiegeSnd RotorMoving
-@persist Dematted Moving Alpha MoveState TimerTime MatTimer DematTimer ForceDemat Cloaked
+@persist Dematted Moving Alpha MoveState TimerTime MatTimer DematTimer ForceDemat Cloaked DematWait MatWait
 
 if(first() | dupefinished()){
     Dematted = 0
@@ -9,6 +9,9 @@ if(first() | dupefinished()){
     MoveState = 0
     Cloaked = 0
     RotorMoving = 0
+    
+    DematWait = 0
+    MatWait = 0
     
     function number mathApproach(Cur:number,Tar:number,Change:number){
         if(Tar > Cur){
@@ -31,51 +34,65 @@ if(first() | dupefinished()){
 if(~Fast | first()){
     if(Fast == 1){
         TimerTime = 1
-        MatTimer = 1100
-        DematTimer = 1000
+        MatTimer = 100
+        DematTimer = 100
     }
     else{
         if(ForceDemat == 0){
-            TimerTime = 30
-            MatTimer = 11000
-            DematTimer = 7000
+            TimerTime = 25
+            MatTimer = 10000
+            DematTimer = 6000
         }
         else{
-            TimerTime = 30
-            MatTimer = 9000
-            DematTimer = 5000
+            TimerTime = 25
+            MatTimer = 8000
+            DematTimer = 4000
         }
     }
 }
 
-if(~Throttle & Throttle == 1){
+if(~SoundPlaying & SoundPlaying == 1 & DematWait == 1 & Power == 1){
+    DematWait = 0
+    
+    RotorMoving = 1
+    Moving = 1
+    
+    timer("demat",DematTimer)
+    timer("sndreset",1000)
+}
+
+if(~SoundPlaying & SoundPlaying == 1 & MatWait == 1 & Power == 1){
+    MatWait = 0
+    
+    RotorMoving = 1
+    Moving = 1
+    
+    timer("mat",MatTimer)
+    timer("sndreset",1000)
+}
+
+if(~Throttle & Throttle == 1 & !first() & Power == 1){
     if(Moving == 0 & Dematted == 0){
         if(isJammed(Loc) | isJammed(Ext:pos())){
             if(EngineRelease == 0){
                 ForceDemat = 0
                 MatFail = 1
-                timer("dematsndwait",100)
-                timer("sndreset",1100)
             }
             else{
-                ForceDemat = 1
-                
-                Moving = 1
-                RotorMoving = 1
+                DematWait = 1
                 
                 timer("dematsndwait",10)
-                timer("demat",DematTimer)
-                timer("sndreset",1000)
+                
+                ForceDemat = 1
             }
         }
         else{
-            ForceDemat = 0
-            Moving = 1
-            RotorMoving = 1
+            print()
+            DematWait = 1
             
             timer("dematsndwait",10)
-            timer("demat",DematTimer)
-            timer("sndreset",1000)
+            
+            ForceDemat = 0
         }
     }
     elseif(Moving == 0 & Dematted == 1){
@@ -83,16 +100,16 @@ if(~Throttle & Throttle == 1){
             if(EngineRelease == 0){
                 ForceDemat = 0
                 MatFail = 1
-                timer("matsndwait",100)
                 timer("sndreset",1100)
             }
             else{
+                MatWait = 1
+                
+                timer("matsndwait",10)
+                
                 ForceDemat = 1
                 
-                Moving = 1
-                RotorMoving = 1
-                
-                Ext:setPos(Loc+vec(0,0,48))
+                Ext:setPos(Loc+vec(0,0,0))
                 Ext:setAng(Ang)
                 
                 timer("mat",MatTimer)
@@ -102,13 +119,14 @@ if(~Throttle & Throttle == 1){
         }
         else{
             ForceDemat = 0
-            Moving = 1
-            RotorMoving = 1
+            
+            MatWait = 1
+            
+            timer("matsndwait",100)
                 
-            Ext:setPos(Loc+vec(0,0,48))
+            Ext:setPos(Loc+vec(0,0,0))
             Ext:setAng(Ang)
             
-            timer("mat",MatTimer)
             timer("matsndwait",100)
             timer("sndreset",1100)
         }
@@ -292,7 +310,7 @@ if(clk("mat")){
     }
 }
 
-if(~Cloak & !first()){
+if(~Cloak & !first() & Power == 1){
     timer("cloak",1000)
     timer("sndreset",1000)
     
@@ -327,7 +345,7 @@ if(clk("cloak")){
     Ext:setAlpha(Alpha)
 }
 
-if(~Siege & !first()){
+if(~Siege & !first() & Power == 1){
     if(Siege == 1){
         SiegeSnd = 1
     }
