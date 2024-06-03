@@ -1,0 +1,193 @@
+@name Tardis Vortex Drive v2
+@inputs Throttle Parent:entity WebAudioSF:wirelink SoundPlayingWebSF FastMode #EngineRelease
+@outputs Dematted Moving PAlpha State
+@persist State AnimSpeed DematWait RematWait [DematAlphaTbl,MatAlphaTbl]:table Snd1:string
+
+if(first() | dupefinished()){
+    AnimSpeed = 30 #15 is fastest speed possible
+    
+    if(FastMode == 1){
+        AnimSpeed = 15
+        DematWait = 100
+        RematWait = 100
+    }
+    else{ #not fast mode
+        AnimSpeed = 30
+        DematWait = 6000 #how long to wait after the sound starts playing for the demat anim to play
+        RematWait = 10000 #how long to wait after the sound starts playing for the remat anim to play
+    }
+
+    DematAlphaTbl = table(
+        150,
+        200,
+        100,
+        150,
+        50,
+        100,
+        0
+    )
+    
+    MatAlphaTbl = table(
+        100,
+        50,
+        150,
+        100,
+        200,
+        150,
+        255
+    )
+    
+    #dont touch these
+    State = 1
+    Dematted = 0
+    Moving = 0
+    
+    function number mathApproach(Cur:number,Tar:number,Change:number){
+        if(Tar > Cur){
+            return clamp(Cur+Change,Cur,Tar)
+        }
+        elseif(Tar < Cur){
+            return clamp(Cur-Change,Tar,Cur)
+        }
+        else{
+            return Cur
+        }
+    }
+    
+    function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
+        WebAudioSF["URL",string] = Audio
+        WebAudioSF["Pos",vector] = Vec
+        WebAudioSF["Volume",number] = Vol
+        WebAudioSF["FadeStart",number] = FadeS
+        WebAudioSF["FadeEnd",number] = FadeE
+        WebAudioSF["Mono",number] = MonoEnable
+        
+        timer("playsnd",10)
+        timer("noplaysnd",20)
+    }
+    
+    Parent:setAlpha(255)
+    PAlpha = 255
+}
+
+if(clk("playsnd")){
+    WebAudioSF["Play",number] = 1
+}
+
+if(clk("noplaysnd")){
+    WebAudioSF["Play",number] = 0
+}
+
+if(~FastMode){
+    if(FastMode == 1){
+        AnimSpeed = 15
+        DematWait = 100
+        RematWait = 100
+    }
+    else{
+        AnimSpeed = 30
+        DematWait = 6000
+        RematWait = 10000
+    }
+}
+
+if(~Throttle){
+    if(Throttle == 1){
+        if(Moving == 0){
+            if(Dematted == 0){
+                Moving = 1
+                
+                timer("sndwait",10)
+            }
+            else{
+                Moving = 1
+                timer("sndwait",10)
+            }
+        }
+    }
+}
+
+if(~SoundPlayingWebSF){
+    if(Dematted == 0){
+        timer("demat",DematWait)
+    }
+    else{
+        timer("remat",RematWait)
+    }
+}
+
+if(clk("sndwait")){
+    if(Dematted == 0){
+        if(FastMode == 1){
+            Snd1 = "https://cloud.the17thdoctor.fr/s/6B9fBD3kCEAyMrR/download" #fastdemat
+        }
+        else{
+            Snd1 = "https://cloud.the17thdoctor.fr/s/PrM4qyTbQ57QPoH/download" #demat
+        }
+    }
+    else{
+        if(FastMode == 1){
+            Snd1 = "https://cloud.the17thdoctor.fr/s/5P2W9IA6o23AVMF/download" #fastmat
+        }
+        else{
+            Snd1 = "https://cloud.the17thdoctor.fr/s/QL0hqCJpkhRqYpc/download" #mat
+        }
+    }
+    
+    playsound(
+        Snd1, #URL
+        Parent:pos(), #Audio Pos
+        2, #Volume
+        2000, #Fade Start
+        1000000000, #Fade End
+        0 #Mono
+    )
+}
+
+if(clk("demat")){
+    timer("demat",AnimSpeed)
+    
+    Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],2))
+    PAlpha = Parent:getAlpha()
+    
+    if(Parent:getAlpha() == DematAlphaTbl[State,number]){
+        if(FastMode == 1 & State == 5){
+            State = 7
+        }
+        else{
+            State = clamp(State+1,1,DematAlphaTbl:count()+1)
+        }
+    }
+    
+    if(State >= DematAlphaTbl:count()+1){
+        stoptimer("demat")
+        State = 1
+        Moving = 0
+        Dematted = 1
+    }
+}
+
+if(clk("remat")){
+    timer("remat",AnimSpeed)
+    
+    Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],2))
+    PAlpha = Parent:getAlpha()
+    
+    if(Parent:getAlpha() == MatAlphaTbl[State,number]){
+        if(FastMode == 1 & State == 5){
+            State = 7
+        }
+        else{
+            State = clamp(State+1,1,MatAlphaTbl:count()+1)
+        }
+    }
+    
+    if(State >= MatAlphaTbl:count()+1){
+        stoptimer("remat")
+        State = 1
+        Moving = 0
+        Dematted = 0
+    }
+}
+
+

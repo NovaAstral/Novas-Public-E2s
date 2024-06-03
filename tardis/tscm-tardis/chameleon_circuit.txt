@@ -14,7 +14,7 @@ function void changeModel(Mdl:string){
         if(ExtOut:isValid()){
             OldExt = ExtOut
                 
-            ExtOut = propSpawn(ExtModel,OldExt:pos()+vec(0,0,Offset),1)
+            ExtOut = propSpawn(Mdl,OldExt:pos()+vec(0,0,Offset),1)
             DoorEnt = ExtOut
                 
             IgnoreArray = array(ExtOut,OldExt,PBox)

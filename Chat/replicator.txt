@@ -1,339 +1,316 @@
 @name Replicator
-@inputs PadE:entity Rep:entity
-@outputs Ent:entity Text:string EntPos:vector Font:string
-@persist PadTarget:entity PadBeam PadTargetLoc:vector
+@inputs TransporterPad:wirelink Rep:entity SpawnOffset
+@outputs RepEnt:entity OutputText:string
+@persist EntArray:array
 
 #Made by Nova Astral
-#Discord: Nova Astral#2079
+#Discord: novaastral / Nova Astral#2079
 #Steam: http://steamcommunity.com/profiles/76561198068127098
 
 #There is a tutorial on how to add new things at the bottom of the code
 
-O = owner()
-OLS = owner():lastSaid():lower():explode(" ")
-runOnChat(1)
-
-Pad = PadE:wirelink()
-
-SpawnPos = vec(-14930,9720,-350)
-RepOffset = -30 #This is the default replicator offset, change if you're using a different replicator slot
-
 if(first() | duped()){
     printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"The Replicator is online. Type '/rep help' for help.")
-    propSpawnUndo(0) #this means all spawned props will delete themselves when you reset or..
-    #.. remove the e2 so you don't need to go looking for them
-    EntPos = Ent:pos()
+    propSpawnUndo(0)
     
-    Font = "federation"
-}
+    SpawnOffset = 0
+    
+    EntArray = array() #array that stores all the replicated objects so you can remove them easily
 
-if(clk("padfind")){
-    if(PadE:type() == "transporter_pad"){
-        Pad["Target1",entity] = PadTarget
-        Pad["Beam to vector",number] = PadBeam
-        Pad["TargetLocation",vector] = PadTargetLoc
+    SpawnPos = vec(-14930,9720,-350)
+    #this is some corner of uni that ships generally shouldn't be in
+    #if the replicator doesn't work, there's probably a ship there with its shields up
+    
+    function void replicate(Model:string,Text:string,Offset){
+        RepEnt = propSpawn(Model,SpawnPos,0)
+        
+        printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: ",Text)
+        OutputText = "Replicating: "+Text
+        
+        if(TransporterPad:entity():type() == "transporter_pad"){
+            TransporterPad["Target1",entity] = RepEnt
+            
+            TransporterPad["TargetLocation",vector] = Rep:pos() + vec(0,0,SpawnOffset+Offset)
+        }
+        elseif(TransporterPad:entity():type() == "asgard_transporter"){
+            TransporterPad["Target",entity] = RepEnt
+            
+            TransporterPad["Destination",vector] = Rep:pos() + vec(0,0,SpawnOffset+Offset)
+        }
+        
+        EntArray:insertEntity(EntArray:count()+1,RepEnt)
+        
+        timer("repon",10)
     }
-    elseif(PadE:type() == "asgard_transporter"){
-        Pad["Target",entity] = PadTarget
-        Pad["Send",number] = PadBeam
-        Pad["Destination",vector] = PadTargetLoc
-}}
-
-if(clk("Rep1")){
-    Rep:soundPlay(1,1000,"st/shuttlecraft/computer_work.mp3")
-    PadTarget = Ent
-    timer("energise",100)
-    stoptimer("rep1")
-    #printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"rep1")
-    EntPos = Ent:pos()
-    timer("padfind",10)
-    timer("soundstop",1000)
+    
+    function void activaterep(Value){
+        if(TransporterPad:entity():type() == "transporter_pad"){
+            TransporterPad["Beam to vector",number] = Value
+        }   
+        elseif(TransporterPad:entity():type() == "asgard_transporter"){
+            TransporterPad["Send",number] = Value
+        }
+    }
 }
 
-if(clk("soundstop")){
-    soundStop(1)
-    soundStop(2)
+if(clk("repon")){
+    activaterep(1)
+    Rep:emitSound("st/shuttlecraft/computer_work.mp3")
+    
+    timer("repoff",100)
 }
 
-if(clk("energise")){
-    PadBeam = 1
-        timer("Rep2",30)
-        #printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"energise")
-    EntPos = Ent:pos()
-    timer("padfind",10)
-}
- 
-if(clk("Rep2")){
-    PadBeam = 0
-    PadTargetLoc = vec(0,0,0)
+if(clk("repoff")){
+    activaterep(0)
     stopAllTimers()
-    #printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"rep2")
-    EntPos = Ent:pos()
-    timer("padfind",10)
-}
-  
-if(chatClk(O)){
-    if(OLS[1,string] == "/rep"){
-        
-if(OLS[2,string]:length() < 1){
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"You can't replicate nothing!")
-}
-        
-if(OLS[2,string] == "help"){
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Use '/rep <thing>' to replicate something.")
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"/rep model <model> will replicate whatever model you input.")
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replication List:")
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Ember, Alice, Glimmy, Burger, Egg, Balloon, Hotdog, Bomb, Tea, Pot, Can, Boot, Melon, Coffee, Antimatter, Ext, Shuttle, Noodles, Sandwich, Sbeptos, Tray, Spacemix, Nuggets, Medicine, Manual, Bucket, Paint")
 }
 
-#[ This function will only work if the targetlocation isn't reset
-if(OLS[2,string] == "energise"){
-    if(isJammed(Ent:pos())){
-        printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicated Object jammed. Cannot Beam into replicator slot.")
+event chat(SaidPly:entity, Said:string,_){
+    local OLS = Said:lower():explode(" ")
+    
+    if(SaidPly == owner()){
+        if(OLS[1,string] == "/rep"){
+            if(OLS[2,string]:length() < 1){
+                printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"You can't replicate nothing!")
+            }
+                    
+            if(OLS[2,string] == "help"){
+                printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Use '/rep <thing>' to replicate something.")
+                printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"/rep model <model> will replicate whatever model you input.")
+                printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replication List:")
+                printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Ember, Burger, Egg, Balloon, Hotdog, Bomb, Tea, Pot, Can, Boot, Melon, Coffee, Antimatter, Ext, Shuttle, Noodles, Sandwich, Sbeptos, Tray, Spacemix, Nuggets, Medicine, Manual, Bucket, Paint")
+            }
+            
+            if(OLS[2,string] == "clean" | OLS[2,string] == "remove" | OLS[2,string] == "clear"){
+                 printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Cleaning up all replicated objects.")
+                
+                for(I=1,EntArray:count()){
+                    Ent = EntArray[I,entity]
+                    
+                    if(Ent:isValid()){
+                        Ent:propDelete()
+                    }
+                }
+            }
+            
+            if(OLS[2,string] == "model"){
+                if(OLS[3,string]:length() < 1){
+                    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"You must provide a model path for replication.")
+                }
+                else{
+                    replicate(
+                        OLS[3,string], #model string
+                        OLS[3,string], #text output
+                        0 #model offset
+                    )
+                }
+            }
+            
+            if(OLS[2,string] == "burger"){
+                replicate(
+                    "models/food/burger.mdl", #model string
+                    "Burger", #text output
+                    -20 #offset - burger has a bad origin
+                )
+            }
+            
+            if(OLS[2,string] == "egg"){
+                replicate(
+                    "models/props_phx/misc/egg.mdl",
+                    "Egg",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "balloon"){
+                replicate(
+                    "models/balloons/balloon_classicheart.mdl",
+                    "Balloon",
+                    0
+                )
+            }
+            
+            
+            if(OLS[2,string] == "hotdog"){
+                replicate(
+                    "models/food/hotdog.mdl",
+                    "Hotdog",
+                    -50 #hotdog has bad origin like the borgor
+                )
+            }
+            
+            if(OLS[2,string] == "bomb"){
+                replicate(
+                    "models/dynamite/dynamite.mdl",
+                    "Bomb",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "tea"){
+                replicate(
+                    "models/props_interiors/pot01a.mdl",
+                    "Tea. Earl Grey. Hot.",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "pot"){
+                replicate(
+                    "models/props_interiors/pot02a.mdl",
+                    "Pot (Drugs not included)",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "can"){
+                replicate(
+                    "models/props_junk/PopCan01a.mdl",
+                    "Can",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "boot" | OLS[2,string] == "shoe"){
+                replicate(
+                    "models/props_junk/Shoe001a.mdl",
+                    "Left Boot",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "melon"){
+                replicate(
+                    "models/props_junk/watermelon01.mdl",
+                    "Watermelon",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "coffee"){
+                replicate(
+                    "models/lt_c/sci_fi/coffee_mug.mdl",
+                    "Coffee. Black.",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "antimatter"){
+                replicate(
+                    "models/lt_c/sci_fi/am_container.mdl",
+                    "Antimatter Container",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "ext"){
+                replicate(
+                    "models/lt_c/sci_fi/extinguisher.mdl",
+                    "Fire Extinguisher",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "shuttle"){
+                replicate(
+                    "models/lt_c/sci_fi/shuttle/shuttle_skybox.mdl",
+                    "Shuttle",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "noodles"){
+                replicate(
+                    "models/slyfo/cup_noodle.mdl",
+                    "Noodles. (What is cup-a-soup?)",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "sandwich"){
+                replicate(
+                    "models/slyfo_2/acc_food_meatsandwichhalf.mdl",
+                    "Sandwich",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "sbeptos"){
+                replicate(
+                    "models/slyfo_2/acc_food_sbeptos.mdl",
+                    "Sbeptos",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "tray"){
+                replicate(
+                    "models/slyfo_2/acc_food_foodtrayfull.mdl",
+                    "Food Tray",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "spacemix"){
+                replicate(
+                    "models/slyfo_2/acc_food_snckspacemix.mdl",
+                    "Spacemix",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "nuggets"){
+                replicate(
+                    "models/slyfo_2/acc_food_snckstridernugs.mdl",
+                    "Strider Nuggets",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "medicine"){
+                replicate(
+                    "models/slyfo_2/acc_ndl4.mdl",
+                    "Medicine",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "manual"){
+                replicate(
+                    "models/spacebuild/sbepmanual.mdl",
+                    "SBEP Manual",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "bucket"){
+                replicate(
+                    "models/props_junk/MetalBucket01a.mdl",
+                    "Bucket",
+                    0
+                )
+            }
+            
+            if(OLS[2,string] == "paint"){
+                replicate(
+                    "models/props_junk/metal_paintcan001a.mdl",
+                    "Paint",
+                    0
+                )
+            }
+        }
     }
-    else{
-        printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Energising Replicator")
-        timer("Rep1",10)
-}}
-]#
-
-if(OLS[2,string] == "model"){
-    if(OLS[3,string]:length() < 1){
-        printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"You must provide a model path for replication.")
-    }
-    else{
-        Ent = propSpawn(OLS[3,string],SpawnPos,0)
-        PadTargetLoc = Rep:pos() + vec(0,0,8)
-        printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating Custom Model: " +OLS[3,string])
-        Text = "Replicating Custom Model: \n"+OLS[3,string]
-        timer("Rep1",10)
-    }
 }
-
-if(OLS[2,string] == "ember"){ #This is a reference to my partner
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Error: Cannot replicate 'Ember'") 
-    Text = "Error: Cannot replicate 'Ember'"
-    Rep:soundPlay(2,1500,"st/shuttlecraft/computer_deny.wav")
-    timer("soundstop",1500)
-}
-
-if(OLS[2,string] == "burger"){
-    Ent = propSpawn("models/food/burger.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,-50) #burger has bad model, offset manually
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Cheeseburger")
-    Text = "Replicating: Cheeseburger"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "egg"){
-    Ent = propSpawn("models/props_phx/misc/egg.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Egg")
-    Text = "Replicating: Egg"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "balloon"){
-    Ent = propSpawn("models/balloons/balloon_classicheart.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Balloon")
-    Text = "Replicating: Balloon"
-    timer("Rep1",10)
-}
-
-
-if(OLS[2,string] == "hotdog"){
-    Ent = propSpawn("models/food/hotdog.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,-50) #hotdog has bad model, offset manually
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Hotdog")
-    Text = "Replicating: Hotdog"
-    timer("Rep1",10)
-}
-
-
-if(OLS[2,string] == "bomb"){
-    Ent = propSpawn("models/dynamite/dynamite.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Bomb")
-    Text = "Replicating: Bomb"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "tea"){
-    Ent = propSpawn("models/props_interiors/pot01a.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Tea. Earl Grey. Hot.")
-    Text = "Replicating: Tea. Earl Grey. Hot."
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "pot"){
-    Ent = propSpawn("models/props_interiors/pot02a.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Pot (Drugs not included)")
-    Text = "Replicating: Pot (Drugs not included)"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "can"){
-    Ent = propSpawn("models/props_junk/PopCan01a.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Can")
-    Text = "Replicating: Can"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "boot"){
-    Ent = propSpawn("models/props_junk/Shoe001a.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Left Boot")
-    Text = "Replicating: Left Boot"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "melon"){
-    Ent = propSpawn("models/props_junk/watermelon01.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Watermelon")
-    Text = "Replicating: Watermelon"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "coffee"){
-    Ent = propSpawn("models/lt_c/sci_fi/coffee_mug.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Coffee. Black.")
-    Text = "Replicating: Coffee. Black."
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "antimatter"){
-    Ent = propSpawn("models/lt_c/sci_fi/am_container.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Antimatter Container")
-    Text = "Replicating: Antimatter Container"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "ext"){
-    Ent = propSpawn("models/lt_c/sci_fi/extinguisher.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Fire Extinguisher")
-    Text = "Replicating: Fire Extinguisher"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "shuttle"){
-    Ent = propSpawn("models/lt_c/sci_fi/shuttle/shuttle_skybox.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Shuttle")
-    Text = "Replicating: Shuttle"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "noodles"){
-    Ent = propSpawn("models/slyfo/cup_noodle.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Noodles. (What is cup-a-soup?)")
-    Text = "Replicating: Noodles. (What is cup-a-soup?)"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "sandwich"){
-    Ent = propSpawn("models/slyfo_2/acc_food_meatsandwichhalf.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Sandwich")
-    Text = "Replicating: Sandwich"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "sbeptos"){
-    Ent = propSpawn("models/slyfo_2/acc_food_sbeptos.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Sbeptos")
-    Text = "Replicating: Sbeptos"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "tray"){
-    Ent = propSpawn("models/slyfo_2/acc_food_foodtrayfull.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Food Tray")
-    Text = "Replicating: Food Tray"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "spacemix"){
-    Ent = propSpawn("models/slyfo_2/acc_food_snckspacemix.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Spacemix")
-    Text = "Replicating: Spacemix"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "nuggets"){
-    Ent = propSpawn("models/slyfo_2/acc_food_snckstridernugs.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Strider Nuggets")
-    Text = "Replicating: Strider Nuggets"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "medicine"){
-    Ent = propSpawn("models/slyfo_2/acc_ndl4.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Medicine")
-    Text = "Replicating: Cowona Vaccine"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "manual"){
-    Ent = propSpawn("models/spacebuild/sbepmanual.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: SBEP Manual")
-    Text = "Replicating: SBEP Manual"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "bucket"){
-    Ent = propSpawn("models/props_junk/MetalBucket01a.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Bucket")
-    Text = "Replicating: Bucket"
-    timer("Rep1",10)
-}
-
-if(OLS[2,string] == "paint"){
-    Ent = propSpawn("models/props_junk/metal_paintcan001a.mdl",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: Paint")
-    Text = "Replicating: Paint"
-    timer("Rep1",10)
-}
-
-}} #these need to be after everything else
 
 #[
- #You'll need to add the new stuff to the replication list in /rep help yourself.
+#You'll need to add the new stuff to the replication list in /rep help yourself.
 
-
- #This one is a tutorial on how to set it up
-
-if(OLS[2,string] == "<text to say in chat>"){
-    Ent = propSpawn("<model>",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset) #spawn offset
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: <text put into your chat>")
-    Text = "Replicating: <text for wire text scren>"
-    timer("Rep1",10)
-}
-
- #This one is for easy copypaste
+copypaste for adding new stuff:
 
 if(OLS[2,string] == ""){
-    Ent = propSpawn("",SpawnPos,0)
-    PadTargetLoc = Rep:pos() + vec(0,0,RepOffset)
-    printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: ")
-    Text = "Replicating: "
-    timer("Rep1",10)
+    replicate(
+        "", #model path
+        "", #text output
+        0 #model offset
+    )
 }
-

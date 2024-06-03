@@ -1,0 +1,21 @@
+@name BookThing
+@inputs EGP:wirelink  #User:entity
+@outputs 
+@persist Str:string TextSize
+
+if(first()){
+    TextSize = 10
+}
+
+if(~EGP & EGP){
+    EGP:egpClear()
+    
+    Str = "
+    The auditorium was packed, but it represented only a tiny fraction of the total audience that was waiting for the scheduled event to start. The Lunar Plenary Center was host to the official start of the most remarkable endeavor by the people of Equus and its Lunar Colony in its history. GemVee cameras were set to broadcast the event to every corner of both the home world and its moon.
+
+    Exactly on time, the lights dimmed and a large screen at the back of the stage lit up with the emblem of the Greater Equus Council. Then spotlights picked out the form of a Chrome Changeling princess making her way to the microphone stand in the center of the stage. The audience started applauding, and continued until Epiphany had settled in front of the mike.
+    "
+    
+    EGP:egpTextLayout(1,Str,vec2(10,10),vec2(TextSize))
+    EGP:egpAlign(1,1)
+}

@@ -25,7 +25,6 @@ if(first() | dupefinished()){
     }
     
     function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
-        
         WebAudioSF["URL",string] = Audio
         WebAudioSF["Pos",vector] = Vec
         WebAudioSF["Volume",number] = Vol

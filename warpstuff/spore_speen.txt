@@ -1,0 +1,58 @@
+@name spore speen
+@inputs Activate Parent:entity WarpDest:vector
+@outputs Active OriginalAng:angle SpinAmount SpinOut
+@persist Active OriginalAng:angle SpinAmount SpinOut WarpDest2:vector
+
+if(first()){
+    Active = 0
+    SpinAmount = 1
+    SpinOut = 1
+}
+
+if(~WarpDest & WarpDest != vec(0,0,0)){
+    WarpDest2 = WarpDest
+}
+
+if(~Activate & Activate & Active == 0){
+    Active = 1
+    OriginalAng = Parent:angles()
+    
+    timer("spin",10)
+}
+
+if(clk("spin")){
+    timer("spin",30)
+    
+    if(SpinOut == 1){
+        SpinAmount = clamp(SpinAmount * 1.05,1,3600)
+        
+        Parent:setAng(ang(1*SpinAmount,0,0))
+        
+        if(SpinAmount == 3600){
+            SpinOut = 0
+            
+            Parent:setPos(WarpDest2)
+        }
+    }
+    else{
+        SpinAmount = clamp(SpinAmount / 1.05,1,3600)
+        
+        Parent:setAng(ang(1*SpinAmount,0,0))
+        
+        if(SpinAmount == 1){
+            stoptimer("spin")
+            
+            SpinAmount = 1
+            
+            Parent:setAng(OriginalAng)
+            
+            Active = 0
+            
+            SpinOut = 1
+        }
+    }
+}
+
+if(clk("reset")){
+    
+}

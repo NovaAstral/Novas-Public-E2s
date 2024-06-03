@@ -1,0 +1,70 @@
+@name Saucer Spin 3
+
+@inputs Activate DriveIn:string DestIn:vector Core:wirelink MotorSF:wirelink
+@outputs Warp Destination:vector Alert:string NameInvis
+@persist ActivateSpin
+
+#include "Novas-Public-E2s/library/color_lib"
+
+#This links to Princess Nova's Motor SF
+#for medium-crossfield
+
+if(first() | dupefinished()){
+    MotorSF["Speed",number] = 600
+    MotorSF["Acceleration",number] = 80
+    MotorSF["Direction",number] = -1
+    MotorSF["Move",number] = 0
+}
+
+if(changed(Activate) & Activate == 1){
+    timer("SpinOn",200)
+    timer("SpinOff",2000)
+}
+
+if(clk("SpinOn")){
+    ActivateSpin = 1
+}
+
+if(clk("SpinOff")){
+    ActivateSpin = 0
+}
+
+if(changed(ActivateSpin) & ActivateSpin == 1){
+    if(DriveIn == "gmod_wire_expression2"){
+        Destination = DestIn
+        MotorSF["Move",number] = 1
+        
+        timer("alertend",8500)
+        
+        Core:entity():setCoreEnvironmentSound("st/misc/dsc_black_alert_short.wav",0.5,100)
+        printColor(ColTeam,"[AI]",ColPink," [Vethian] ",ColOng,"Condition Black. Spore Drive Activating.")
+        Alert = "Black"
+    }
+}
+
+if(clk("alertend")){
+    Warp = 1
+    NameInvis = 1
+    timer("warpout",6000)
+}
+
+if(clk("warpout")){
+    MotorSF["Move",number] = 0
+    NameInvis = 0
+    MotorSF["Acceleration",number] = 162.6
+    timer("reset",4000)
+}
+
+if(clk("reset")){
+    MotorSF["Reset",number] = 1
+    
+    timer("unalert",10)
+}
+
+if(clk("unalert")){
+    Core:entity():stopCoreEnvironmentSound()
+    Alert = "Green"
+    MotorSF["Reset",number] = 0
+    Warp = 0
+    MotorSF["Acceleration",number] = 80
+}
