@@ -24,7 +24,7 @@ if(first() | dupefinished()){
         TSCMBridge = 0
     }
     
-    TSCMBridge = 1 #If you're on the TSCM Spacebuild server, set this to 1
+    TSCMBridge = 0 #If you're on the TSCM Spacebuild server, set this to 1
     
     if(BridgeController:entity():isValid()){
         BridgeController["Bridge1 Pos",vector] = holoEntity(1):pos()
