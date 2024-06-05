@@ -56,6 +56,18 @@ event chat(SaidPly:entity, Said:string,_){
                 
                 timer("unreset",10)
             }
+            elseif(OLS[2,string] == "help"){
+                printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Commands:")
+                printColor(ColPink,"[GBC] ",ColOng,"Reset: '/gb reset'")
+                printColor(ColPink,"[GBC] ",ColOng,"Setcolor: '/gb color <normal / blue / default / purple / pink / custom 255,95,255>'")
+                printColor(ColPink,"[GBC] ",ColOng,"Set Size: '/gb <scale / size> 0.1 - 2'")
+                printColor(ColPink,"[GBC] ",ColOng,"Open Bridge: '/gb <activate / on / open>'")
+                printColor(ColPink,"[GBC] ",ColOng,"Close Bridge: '/gb <deactivate / off / close>'")
+                printColor(ColPink,"[GBC] ",ColOng,"Distance: '/gb dist <number>'")
+                printColor(ColPink,"[GBC] ",ColOng,"Set Aimpos: '/gb here <1 or 2>'")
+                printColor(ColPink,"[GBC] ",ColOng,"Set Playerpos: '/gb ply <playername> <1 or 2>'")
+                
+            }
             elseif(OLS[2,string] == "color"){
                 if(OLS[3,string] == "normal" | OLS[3,string] == "default" | OLS[3,string] == "blue"){
                     BridgeController["Color",vector] = vec(255,255,255)
@@ -208,6 +220,9 @@ event chat(SaidPly:entity, Said:string,_){
                         
                         printColor(ColPink,"[GBC] ",ColOng,"Set the position of Ground Bridge Portal ",HoloNum," to Home")
                     }
+                }
+                else{
+                    printColor(ColPink,"[GBC] ",ColOng,"This map has no home!")
                 }
             }
         }
