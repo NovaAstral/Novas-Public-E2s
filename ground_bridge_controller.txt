@@ -3,7 +3,7 @@
 @outputs Size Active Distance [Color,Br1,Br2]:vector
 @persist Prefix:string Distance AutoReset TSCMBridge
 
-#include "Novas-Public-E2s/library/nova_lib"
+#include "Novas-Public-E2s/library/color_lib"
 
 if(first() | dupefinished()){
     Prefix = "/gb"
