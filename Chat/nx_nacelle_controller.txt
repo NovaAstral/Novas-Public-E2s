@@ -1,21 +1,29 @@
 @name NX Nacelle Controller
-@inputs [Nacelle1,Nacelle2,N1,N2,N3,N4,N5,N6,N7,N8]:entity
+@inputs [Nacelle1,Nacelle2,Nacelle3,Nacelle4,N1,N2,N3,N4,N5,N6,N7,N8]:entity
 @outputs Active Col1 Col2
 
-function void nSetColor(){
-    Nacelle1:setColor(vec(Col2,0,0)) #255 0 0 on
-    Nacelle2:setColor(vec(Col2,0,0))
-    N1:setColor(vec(0,Col1,Col2)) #0 60 255 on
-    N2:setColor(vec(0,Col1,Col2))
-    N3:setColor(vec(0,Col1,Col2))
-    N4:setColor(vec(0,Col1,Col2))
-    N5:setColor(vec(0,Col1,Col2))
-    N6:setColor(vec(0,Col1,Col2))
-    N7:setColor(vec(0,Col1,Col2))
-    N8:setColor(vec(0,Col1,Col2))
+if(first()){
+    Col2 = 200
+    Col1 = 255
+    Active = 1
 }
 
-event chat(SaidPly:entity, Said:string, Team:number){
+function void nSetColor(){
+    Nacelle1:setColor(vec(Col1,Col2,Col1)) #bussard collectors
+    Nacelle2:setColor(vec(Col1,Col2,Col1))
+    Nacelle3:setColor(vec(Col1,Col2,Col1))
+    Nacelle4:setColor(vec(Col1,Col2,Col1))
+    N1:setColor(vec(Col1,Col2,Col1))
+    N2:setColor(vec(Col1,Col2,Col1))
+    N3:setColor(vec(Col1,Col2,Col1))
+    N4:setColor(vec(Col1,Col2,Col1))
+    N5:setColor(vec(Col1,Col2,Col1))
+    N6:setColor(vec(Col1,Col2,Col1))
+    N7:setColor(vec(Col1,Col2,Col1))
+    N8:setColor(vec(Col1,Col2,Col1))
+}
+
+event chat(SaidPly:entity, Said:string, _:number){
     local OLS = Said:lower():explode(" ")
     
     if(SaidPly == owner()){
@@ -50,9 +58,9 @@ event chat(SaidPly:entity, Said:string, Team:number){
 }
 
 if(clk("on")){
-    timer("on",60)
+    timer("on",10)
     
-    if(Col1 != 55){
+    if(Col1 != 255){
         Col1++
     }
     else{
@@ -61,10 +69,10 @@ if(clk("on")){
 }
 
 if(clk("on2")){
-    timer("on2",10)
+    timer("on2",15)
     nSetColor()
     
-    if(Col2 != 255){
+    if(Col2 != 200){
         Col2++
     }
     else{
@@ -73,7 +81,7 @@ if(clk("on2")){
 }
 
 if(clk("off")){
-    timer("off",60)
+    timer("off",10)
     
     if(Col1 != 0){
         Col1--
@@ -84,7 +92,7 @@ if(clk("off")){
 }
 
 if(clk("off2")){
-    timer("off2",10)
+    timer("off2",15)
     nSetColor()
     
     if(Col2 != 0){

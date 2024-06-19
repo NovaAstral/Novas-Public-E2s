@@ -2,7 +2,7 @@
 
 entity():soundPlay(1,1,"alarm/sgc_offworld-alarm.wav")
 entity():soundPlay(2,1,"alarm/sga_midway_alarm.wav")
-entity():soundPlay(3,1,"kripalida/sga_selfdestruct-alarm-new.wav")
+#entity():soundPlay(3,1,"kripalida/sga_selfdestruct-alarm-new.wav")
 entity():soundPlay(4,1,"alarm/destiny_siren.wav")
 entity():soundPlay(5,1,"alarm/sga_midway_selfdestruct.wav")
 

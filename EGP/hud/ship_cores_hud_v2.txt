@@ -7,6 +7,12 @@ if(first() | dupefinished()){
     timer("findcores",1)
     timer("staticegp",1) #for things that dont need to be remade like hull/shield/plating text etc
     timer("tarinfo",5)
+    
+    timer("restart",10000)
+}
+
+if(clk("restart")){ #because it doesnt work properly otherwise
+    reset()
 }
 
 if(~EGP & EGP){

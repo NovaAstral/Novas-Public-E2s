@@ -1,7 +1,7 @@
 @name TARDIS Mainframe v2
 @inputs [TardisExt,B1,B2,B3,B4,B5,B6,Throttle]:entity
 @outputs [O,T]:entity
-@persist TW:wirelink ShieldEnt:entity Prefix:string ShieldOnSnd:webaudio ShieldOffSnd:webaudio
+@persist TW:wirelink ShieldEnt:entity Prefix:string
 @persist Shield HPLow OwnerHPLow Advt DematPly:entity
 @persist [SiegeMat,SiegeModel]:string STAlpha SCAlpha [SiegeProp,TDoor]:entity
 
@@ -199,18 +199,6 @@ if(clk("hpcheck")){
     }
 }
 
-if(clk("sndcreate")){
-    ShieldOnSnd = webAudio("https://cdn.discordapp.com/attachments/915811722646925312/1034538675742183556/force_field_up.ogg")
-    ShieldOffSnd = webAudio("https://cdn.discordapp.com/attachments/915811722646925312/1034538675398246400/force_field_down.ogg")
-}
-
-if(clk("sndstop")){
-    ShieldOnSnd:destroy()
-    ShieldOffSnd:destroy()
-    
-    timer("sndcreate",10)
-}
-
 event chat(SaidPly:entity, Said:string,_:number){
     local OLS = Said:lower():explode(" ")
     
@@ -234,11 +222,6 @@ event chat(SaidPly:entity, Said:string,_:number){
                         ShieldEnt:propDraw(1)
                         
                         #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
-                        
-                        ShieldOnSnd:setPos(T:pos())
-                        ShieldOnSnd:setParent(T)
-                        ShieldOnSnd:play()
-                        timer("sndstop",ShieldOnSnd:getLength()*1000)
                     }
                     else{
                         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Shield ",ColGrn,"Offline")
@@ -249,11 +232,6 @@ event chat(SaidPly:entity, Said:string,_:number){
                         ShieldEnt:propDraw(0)
                         
                         #T:soundPlay(1,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-    
-                        ShieldOffSnd:setPos(T:pos())
-                        ShieldOffSnd:setParent(T)
-                        ShieldOffSnd:play()
-                        timer("sndstop",ShieldOffSnd:getLength()*1000)
                     }
                 }
                 
@@ -270,11 +248,6 @@ event chat(SaidPly:entity, Said:string,_:number){
                         ShieldEnt:propDraw(1)
                         
                         #T:soundPlay(1,1,"zeykaa/nova/force_field_up.ogg") #This is a local sound I have
-                        
-                        ShieldOnSnd:setPos(T:pos())
-                        ShieldOnSnd:setParent(T)
-                        ShieldOnSnd:play()
-                        timer("sndstop",ShieldOnSnd:getLength()*1000)
                     }
                 }
                 
@@ -291,11 +264,6 @@ event chat(SaidPly:entity, Said:string,_:number){
                         ShieldEnt:propDraw(0)
                         
                         #T:soundPlay(2,1,"zeykaa/nova/force_field_down.ogg") #This is a local sound I have
-    
-                        ShieldOffSnd:setPos(T:pos())
-                        ShieldOffSnd:setParent(T)
-                        ShieldOffSnd:play()
-                        timer("sndstop",ShieldOnSnd:getLength()*1000)
                     }
                 }
             }

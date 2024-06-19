@@ -40,7 +40,7 @@ if(~BridgeController & BridgeController:entity():isValid()){
     printColor(ColPink,"[GBC] ",ColOng,"Ground Bridge Controller Linked.")
 }
 
-event chat(SaidPly:entity, Said:string,_){
+event chat(SaidPly:entity, Said:string,_:number){
     local OLS = Said:lower():explode(" ")
     
     if(SaidPly == owner()){
@@ -167,10 +167,10 @@ event chat(SaidPly:entity, Said:string,_){
                     }
                     else{
                         local HoloNum = OLS[3,string]:toNumber()
+
+                        local HoloPos = Ply:pos() + vec(300,0,Distance)
                         
-                        local RangerData = Ply:eyeTrace()
-                    
-                        local HoloPos = RangerData:pos() + Ply:eye() * 300
+                        print(HoloPos)
                         
                         if(TSCMBridge == 1){
                             HoloAng2 = (HoloPos - Ply:pos()):toAngle():setYaw(0) + ang(0,0,0)
@@ -178,6 +178,12 @@ event chat(SaidPly:entity, Said:string,_){
                         else{
                             HoloAng2 = (HoloPos - Ply:pos()):toAngle():setPitch(0) + ang(-90,0,0)
                         }
+                        
+                        local BridgePos = "Bridge"+HoloNum:toString()+" Pos"
+                        local BridgeAng = "Bridge"+HoloNum:toString()+" Angle"
+                        
+                        BridgeController[BridgePos,vector] = HoloPos
+                        BridgeController[BridgeAng,angle] = HoloAng2
                         
                         holoPos(HoloNum,HoloPos)
                         holoAng(HoloNum,HoloAng2)
@@ -194,7 +200,7 @@ event chat(SaidPly:entity, Said:string,_){
                 }
             }
             elseif(OLS[2,string] == "home"){
-                if(map() == "gm_cruisercanyon"){
+                if(map() == "gm_cruisercanyon" | map() == "gm_cruisercanyon_rwu"){
                     if(OLS[3,string]:toNumber() != 1 & OLS[3,string]:toNumber() != 2){
                         printColor(ColPink,"[GBC] ",ColOng,"You must select a Ground Bridge to set the position of")
                     }
