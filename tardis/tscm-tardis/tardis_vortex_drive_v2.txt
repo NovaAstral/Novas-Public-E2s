@@ -1,47 +1,76 @@
 @name Tardis Vortex Drive v2
-@inputs Throttle Parent:entity WebAudioSF:wirelink SoundPlayingWebSF FastMode #EngineRelease
+@inputs Parent:entity WebAudioSF:wirelink SoundPlayingWebSF Throttle FastMode VeryFastMode DisableVortexMode EngineRelease Cloak Destination:vector AngleOffset:angle Angle:angle
 @outputs Dematted Moving PAlpha State
-@persist State AnimSpeed DematWait RematWait [DematAlphaTbl,MatAlphaTbl]:table Snd1:string
+@persist State AnimSpeed DematWait RematWait [DematAlphaTbl,MatAlphaTbl]:table Snd1:string AudioPos:vector CloakAlpha Cloaking DupeWait
+
+#fastmode forced demat timing is wrong
+#either change the dematwait when forced, or change the sound (change the sound probably better)
 
 if(first() | dupefinished()){
     AnimSpeed = 30 #15 is fastest speed possible
-    
-    if(FastMode == 1){
-        AnimSpeed = 15
-        DematWait = 100
-        RematWait = 100
-    }
-    else{ #not fast mode
+
+    if(FastMode == 0){
         AnimSpeed = 30
         DematWait = 6000 #how long to wait after the sound starts playing for the demat anim to play
         RematWait = 10000 #how long to wait after the sound starts playing for the remat anim to play
+        
+        DematAlphaTbl = table(
+            150,
+            200,
+            100,
+            150,
+            50,
+            100,
+            0
+        )
+        
+        MatAlphaTbl = table(
+            100,
+            50,
+            150,
+            100,
+            200,
+            150,
+            255
+        )
     }
-
-    DematAlphaTbl = table(
-        150,
-        200,
-        100,
-        150,
-        50,
-        100,
-        0
-    )
-    
-    MatAlphaTbl = table(
-        100,
-        50,
-        150,
-        100,
-        200,
-        150,
-        255
-    )
+    else{ #Fast Mode
+        AnimSpeed = 15
+        DematWait = 2000
+        RematWait = 100
+        
+        DematAlphaTbl = table(
+            150,
+            200,
+            100,
+            150,
+            0
+        )
+        MatAlphaTbl = table(
+            100,
+            50,
+            150,
+            100,
+            255
+        )
+    }
     
     #dont touch these
     State = 1
     Dematted = 0
     Moving = 0
+    CloakAlpha = 255
+    Cloaking = 0
     
+    function number checkJammed(){
+        if(isJammed(Destination) | isJammed(Parent:pos())){
+            return 1
+        }
+        else{
+            return 0
+        }
+    }
+
     function number mathApproach(Cur:number,Tar:number,Change:number){
         if(Tar > Cur){
             return clamp(Cur+Change,Cur,Tar)
@@ -62,12 +91,40 @@ if(first() | dupefinished()){
         WebAudioSF["FadeEnd",number] = FadeE
         WebAudioSF["Mono",number] = MonoEnable
         
-        timer("playsnd",10)
-        timer("noplaysnd",20)
+        timer("playsnd",200)
+        timer("noplaysnd",250)
+    }
+    
+    function void moveParent(){
+        if(Destination != vec(0)){
+            Parent:setPos(Destination)
+        }
+                    
+        if(AngleOffset != ang(0)){
+            Parent:setAng(Parent:angles() + AngleOffset)
+        }
+        else{
+            Parent:setAng(Angle)
+        }
     }
     
     Parent:setAlpha(255)
     PAlpha = 255
+    
+    DupeWait = 1
+    timer("dupewait",5000)
+}
+
+if(dupefinished()){
+    timer("reset",5000)
+}
+
+if(clk("dupewait")){ #workaround for some annoying fuckery
+    DupeWait = 0
+}
+
+if(clk("reset")){ #other workaround for some annoying fuckery
+    reset()
 }
 
 if(clk("playsnd")){
@@ -78,21 +135,97 @@ if(clk("noplaysnd")){
     WebAudioSF["Play",number] = 0
 }
 
-if(~FastMode){
+if(~FastMode | ~VeryFastMode){
     if(FastMode == 1){
         AnimSpeed = 15
-        DematWait = 100
+        DematWait = 2000
         RematWait = 100
+        
+        DematAlphaTbl = table(
+            150,
+            200,
+            100,
+            150,
+            0
+        )
+        MatAlphaTbl = table(
+            100,
+            50,
+            150,
+            100,
+            255
+        )
     }
     else{
         AnimSpeed = 30
         DematWait = 6000
         RematWait = 10000
+        
+        DematAlphaTbl = table(
+            150,
+            200,
+            100,
+            150,
+            50,
+            100,
+            0
+        )
+        
+        MatAlphaTbl = table(
+            100,
+            50,
+            150,
+            100,
+            200,
+            150,
+            255
+        )
+    }
+    
+    if(VeryFastMode == 1){
+        AnimSpeed = 15
+        DematWait = 0
+        RematWait = 0
+        
+        DematAlphaTbl = table(
+            0
+        )
+        
+        MatAlphaTbl = table(
+            255
+        )
     }
 }
 
-if(~Throttle){
-    if(Throttle == 1){
+if(~Throttle & Throttle & !first() & DupeWait == 0){
+    if(checkJammed() == 1){
+        if(EngineRelease == 1){
+            if(Moving == 0){
+                if(Dematted == 0){
+                    Moving = 1
+                    
+                    timer("sndwait",10)
+                }
+                else{
+                    moveParent()
+                    
+                    Moving = 1
+                    timer("sndwait",10)
+                }
+            }
+        }
+        else{
+            playsound( #cant move sound
+                "https://cloud.luna-code.net/s/7Rol1sDci7tJs4q/download", #URL
+                Parent:pos(), #Audio Pos
+                2, #Volume
+                2000, #Fade Start
+                1000000000, #Fade End
+                0 #Mono
+            )
+        }
+    }
+    else{
         if(Moving == 0){
             if(Dematted == 0){
                 Moving = 1
@@ -100,6 +233,8 @@ if(~Throttle){
                 timer("sndwait",10)
             }
             else{
+                moveParent()
+                
                 Moving = 1
                 timer("sndwait",10)
             }
@@ -107,56 +242,153 @@ if(~Throttle){
     }
 }
 
-if(~SoundPlayingWebSF){
-    if(Dematted == 0){
-        timer("demat",DematWait)
+if(~SoundPlayingWebSF & SoundPlayingWebSF == 1){
+    if(Cloaking == 0){
+        if(checkJammed() == 1){
+            if(EngineRelease == 1){
+                if(Dematted == 0){
+                    timer("demat",DematWait)
+                }
+                else{
+                    timer("remat",RematWait)
+                }
+            }
+        }
+        else{
+            if(Dematted == 0){
+                timer("demat",DematWait)
+            }
+            else{
+                timer("remat",RematWait)
+            }
+        }
     }
     else{
-        timer("remat",RematWait)
+        timer("cloaktimer",1)
+    }
+}
+
+if(~Cloak & !Moving & !Dematted & DupeWait == 0){
+    if(Cloak == 1){
+        CloakAlpha = 0
+        Cloaking = 1
+        
+        playsound(
+            "https://cloud.luna-code.net/s/ugRR3108Ahrcade/download", #URL
+            Parent:pos(), #Audio Pos
+            2, #Volume
+            2000, #Fade Start
+            1000000000, #Fade End
+            0 #Mono
+        )
+    }
+    else{
+        CloakAlpha = 255
+        Cloaking = 1
+        playsound(
+            "https://cloud.luna-code.net/s/MhXFVagkag9A7dl/download", #URL
+            Parent:pos(), #Audio Pos
+            2, #Volume
+            2000, #Fade Start
+            1000000000, #Fade End
+            0 #Mono
+        )
+    }
+}
+
+if(clk("cloaktimer")){
+    timer("cloaktimer",30)
+
+    Parent:setAlpha(mathApproach(Parent:getAlpha(),CloakAlpha,4))
+    
+    if(Parent:getAlpha() == CloakAlpha){
+        stoptimer("cloaktimer")
+        Cloaking = 0
     }
 }
 
 if(clk("sndwait")){
     if(Dematted == 0){
-        if(FastMode == 1){
-            Snd1 = "https://cloud.the17thdoctor.fr/s/6B9fBD3kCEAyMrR/download" #fastdemat
+        if(VeryFastMode == 1){
+            Snd1 = "https://cloud.luna-code.net/s/1E9KcmsZsQC9At8/download" #very fast demat
         }
         else{
-            Snd1 = "https://cloud.the17thdoctor.fr/s/PrM4qyTbQ57QPoH/download" #demat
+            if(FastMode == 1){
+                if(checkJammed() == 1 & EngineRelease == 1){
+                    Snd1 = "https://cloud.luna-code.net/s/vsNhCHGNgpbEhrh/download" #fast forced demat
+                }
+                else{
+                    Snd1 = "https://cloud.luna-code.net/s/onXII5pRGHEvYfV/download" #fastdemat
+                }
+            }
+            else{
+                if(checkJammed() == 1 & EngineRelease == 1){
+                    Snd1 = "https://cloud.luna-code.net/s/Mk5sjFH1uAlVr8Z/download" #forced demat
+                }
+                else{
+                    Snd1 = "https://cloud.luna-code.net/s/PrM4qyTbQ57QPoH/download" #demat
+                }
+            }
         }
     }
     else{
-        if(FastMode == 1){
-            Snd1 = "https://cloud.the17thdoctor.fr/s/5P2W9IA6o23AVMF/download" #fastmat
+        if(VeryFastMode == 1){
+            Snd1 = "https://cloud.luna-code.net/s/a1QDbZWxGlvzYFs/download" #very fast mat
         }
         else{
-            Snd1 = "https://cloud.the17thdoctor.fr/s/QL0hqCJpkhRqYpc/download" #mat
+            if(FastMode == 1){
+                if(checkJammed() == 1 & EngineRelease == 1){
+                    Snd1 = "https://cloud.luna-code.net/s/Dl0ZREBZOlqBT9c/download" #forced fast mat
+                }
+                else{
+                    Snd1 = "https://cloud.luna-code.net/s/5P2W9IA6o23AVMF/download" #fastmat
+                }
+            }
+            else{
+                if(checkJammed() == 1 & EngineRelease == 1){
+                    Snd1 = "https://cloud.luna-code.net/s/QE1hClvs3l2f1K7/download" #forced mat
+                }
+                else{
+                    Snd1 = "https://cloud.luna-code.net/s/QL0hqCJpkhRqYpc/download" #mat
+                }
+            }
         }
     }
     
+    if(Dematted == 0){ #play at box
+        AudioPos = Parent:pos()
+    }
+    else{ #play at dest
+        AudioPos = Destination
+    }
     playsound(
-        Snd1, #URL
-        Parent:pos(), #Audio Pos
-        2, #Volume
-        2000, #Fade Start
-        1000000000, #Fade End
-        0 #Mono
-    )
+            Snd1, #URL
+            AudioPos, #Audio Pos
+            2, #Volume
+            2000, #Fade Start
+            1000000000, #Fade End
+            0 #Mono
+        )
 }
 
 if(clk("demat")){
     timer("demat",AnimSpeed)
     
-    Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],2))
+    if(VeryFastMode == 1){
+        Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],10))
+    }
+    else{
+        Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],2))
+    }
+    
     PAlpha = Parent:getAlpha()
     
+    if(Parent:getCollisionGroup() != _COLLISION_GROUP_WORLD){
+        Parent:noCollideAll(1)
+    }
+    
     if(Parent:getAlpha() == DematAlphaTbl[State,number]){
-        if(FastMode == 1 & State == 5){
-            State = 7
-        }
-        else{
-            State = clamp(State+1,1,DematAlphaTbl:count()+1)
-        }
+        State = clamp(State+1,1,DematAlphaTbl:count()+1)
     }
     
     if(State >= DematAlphaTbl:count()+1){
@@ -164,13 +396,26 @@ if(clk("demat")){
         State = 1
         Moving = 0
         Dematted = 1
+        
+        if(DisableVortexMode == 1){
+            moveParent()
+            
+            Moving = 1
+            timer("sndwait",10)
+        }
     }
 }
 
 if(clk("remat")){
     timer("remat",AnimSpeed)
     
-    Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],2))
+    if(VeryFastMode == 1){
+        Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],10))
+    }
+    else{
+        Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],2))
+    }
+    
     PAlpha = Parent:getAlpha()
     
     if(Parent:getAlpha() == MatAlphaTbl[State,number]){
@@ -187,7 +432,9 @@ if(clk("remat")){
         State = 1
         Moving = 0
         Dematted = 0
+        
+        if(Parent:getCollisionGroup() != _COLLISION_GROUP_NONE){
+            Parent:noCollideAll(0)
+        }
     }
 }
-
-

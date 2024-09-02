@@ -55,7 +55,7 @@ event chat(SaidPly:entity, Said:string,_:number){
                     timer("reset",1000)
                 }
                 if(OLS[3,string] == "uni"){
-                    IntDrive["Destination",vector] = vec(10588,-10829,-12747)
+                    IntDrive["Destination",vector] = vec(14758,-14969,-10958)
                     timer("warp",100)
                     
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Universe")

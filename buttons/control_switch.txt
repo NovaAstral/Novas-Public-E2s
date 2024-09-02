@@ -1,45 +1,34 @@
 @name Control Switch
-@inputs Reset
-@outputs Number User:entity
-@persist User:entity State
-@model models/bull/buttons/toggle_switch.mdl
-#models/bull/buttons/toggle_switch.mdl
-#models/bull/buttons/rocker_switch.mdl
+@inputs Reset OwnerMode
+@outputs Number
+@persist State
+#@model models/bull/buttons/toggle_switch.mdl
+@model models/bull/buttons/rocker_switch.mdl
+#@model models/bull/buttons/key_switch.mdl
 
 if(first()){
     Number = 0
     State = 0
     
-    User = noentity()
+    OwnerMode = 0
 }
 
-
-event keyPressed(Ply:entity,Key:string,Down:number,_:string){
-    if(Ply:aimEntity() == entity() & Ply:pos():distance(entity():pos()) <= 100){
-        if(!User:isValid() | User == noentity()){
-            User = Ply
-        }
-        
-        if(User:isValid()){
-            if(Key == "e" & Down == 1){
-                State = !State
-                entity():soundPlay(1,0.1,"buttons/lightswitch2.wav")
-                if(State == 1){
-                    Number = 1
-                    entity():propAnim(1)
-                }
-                else{
-                    Number = 0
-                    entity():propAnim(0)
-                }
+event chipUsed(Ply:entity){
+    if(OwnerMode >= 1 & Ply != owner()){
+    }
+    else{
+        if(Ply:aimEntity() == entity()){
+            State = !State
+            entity():soundPlay(1,0.1,"buttons/lightswitch2.wav")
+                
+            if(State == 1){
+                Number = 1
+                entity():propAnim(1)
             }
-            
-            if(Down == 0){
-                User = noentity()
+            else{
+                Number = 0
+                entity():propAnim(0)
             }
-        }
-        else{
-            User = noentity()
         }
     }
 }

@@ -1,7 +1,7 @@
 @name Tardis Destination Select
-@inputs Activate Exterior:entity [CamCont,PodCont]:wirelink OffsetIn
-@outputs SpeedMult PosOut:vector AngOut:angle Active [ChameleonModel,ChameleonMat]:string ChameleonColor:vector4 Offset
-@persist SpeedMult AMoveDelay Active Plys:array Offset CamDist SetChameleonDelay
+@inputs Activate Exterior:entity [CamCont,PodCont]:wirelink OffsetIn FlightMode
+@outputs SpeedMult PosOut:vector AngOut:angle Active [ChameleonModel,ChameleonMat]:string ChameleonColor:vector4 Offset Holo:entity
+@persist SpeedMult AMoveDelay Active Plys:array Offset SetChameleonDelay
 
 if(first() | dupefinished()){
     holoCreate(1)
@@ -10,19 +10,21 @@ if(first() | dupefinished()){
     holoAng(1,Exterior:angles())
     holoAlpha(1,0)
     
+    Holo = holoEntity(1)
+    
     SpeedMult = 30
     AMoveDelay = 0
     SetChameleonDelay = 0
     
     Offset = 48
-    CamDist = 100
 }
 
 if(~OffsetIn){
     Offset = OffsetIn
 }
 
-if(~Activate & !first()){
+if(~Activate & !first() & !FlightMode){
+    holoDelete(2)
     if(Activate == 1){
         Plys = players()
         for(I=1,Plys:count()){
@@ -53,15 +55,12 @@ if(~Activate & !first()){
             }
         }
         else{
+            holoDelete(2)
             holoModel(1,Exterior:model())
             holoScale(1,vec(1))
             holoPos(1,Exterior:pos())
             holoAng(1,Exterior:angles())
         }
-
-        CamCont["Distance",number] = CamDist
-        CamCont["Position",vector] = holoEntity(1):pos()
-        CamCont["Parent",entity] = holoEntity(1)
         
         holoAlpha(1,150)
         Active = 1
@@ -183,16 +182,6 @@ if(clk("destselect")){ #timer because running on tick crashes with 9+ people
                 holoPos(1,RangerEnt:pos())
                 holoAng(1,RangerEnt:angles())
             }
-        }
-
-        if(PodCont["NextWeapon",number] == 1){
-            CamDist = CamDist+20
-            CamCont["Distance",number] = CamDist
-        }
-        
-        if(PodCont["PrevWeapon",number] == 1){
-            CamDist = CamDist-20
-            CamCont["Distance",number] = CamDist
         }
     }
 }

@@ -20,7 +20,10 @@ if(first() | duped()){
     
     EGP:egpClear()
     timer("update",100)
-    timer("egpcreate",10)
+    
+    if(Activate == 1){
+        timer("egpcreate",10)
+    }
     
     #Offset Bank 1
     B1N1 = "models/props_interiors/VendingMachineSoda01a.mdl|Vending Machine" #Model #String Explodes with |
@@ -180,7 +183,7 @@ if(~Activate){
     }
 }
 
-if(~EGP & EGP){
+if(~EGP & EGP & Activate == 1){
     timer("egpcreate",10)
 }
 
