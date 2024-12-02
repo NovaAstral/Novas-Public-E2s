@@ -1,0 +1,194 @@
+@name Junk TARDIS Effect
+@inputs Parent:entity Destination:vector Activate Dematted Moving
+@outputs HoloScale
+@persist HoloPos:vector HoloScale X1 X2 X3 X4 X5 Alpha
+
+if(first() | dupefinished()){
+    HoloPos = Parent:pos() + vec(0,0,100)
+    HoloScale = 5
+    Alpha = 0
+    
+    X1 = randint(0,360)
+    X2 = randint(0,360)
+    X3 = randint(0,360)
+    X4 = randint(0,360)
+    X5 = randint(0,360)
+    
+    function createHolos(SetInvis){
+        HoloPos = Parent:pos() + vec(0,0,100)
+        
+        holoCreate(1,HoloPos,vec(1*HoloScale),ang(0,0,0),vec4(255,200,0,100),"models/hunter/misc/shell2x2a.mdl")
+        holoCreate(2,HoloPos,vec(1*HoloScale),ang(0,0,180),vec4(255,200,0,100),"models/hunter/misc/shell2x2a.mdl")
+        
+        holoMaterial(1,"cmats/light")
+        holoMaterial(2,"cmats/light")
+        
+        #rings are to bottom
+        holoCreate(3,HoloPos+vec(0,0,40*HoloScale),vec(1*HoloScale,1*HoloScale,0.5*HoloScale),ang(0,0,0),vec4(255,200,0,150),"models/hunter/tubes/tube2x2x025.mdl")
+        holoCreate(4,HoloPos+vec(0,0,20*HoloScale),vec(1.2*HoloScale,1.2*HoloScale,0.5*HoloScale),ang(0,0,0),vec4(255,200,0,150),"models/hunter/tubes/tube2x2x025.mdl")
+        holoCreate(5,HoloPos,vec(1.5*HoloScale,1.5*HoloScale,0.5*HoloScale),ang(0,0,0),vec4(255,200,0,150),"models/hunter/tubes/tube2x2x025.mdl")
+        holoCreate(6,HoloPos+vec(0,0,-20*HoloScale),vec(1.2*HoloScale,1.2*HoloScale,0.5*HoloScale),ang(0,0,0),vec4(255,200,0,150),"models/hunter/tubes/tube2x2x025.mdl")
+        holoCreate(7,HoloPos+vec(0,0,-40*HoloScale),vec(1*HoloScale,1*HoloScale,0.5*HoloScale),ang(0,0,0),vec4(255,200,0,150),"models/hunter/tubes/tube2x2x025.mdl")
+        
+        for(I=3,7){ 
+            holoMaterial(I,"models/alyx/emptool_glow") 
+        }
+        
+        holoAng(3,ang(0,X1,randint(-20,20)))
+        holoAng(4,ang(0,X2,randint(-20,20)))
+        holoAng(5,ang(0,X3,randint(-20,20)))
+        holoAng(6,ang(0,X4,randint(-20,20)))
+        holoAng(7,ang(0,X5,randint(-20,20)))
+        
+        if(SetInvis == 1){
+            for(I=1,7){
+                holoAlpha(I,Alpha)
+            }
+        }
+    }
+}
+
+if(~Activate & Activate == 1){
+    createHolos(1)
+    
+    timer("Demat",3000)
+    timer("HoloAnim",3000)
+}
+
+if(~Dematted & Dematted){
+    stoptimer("Demat")
+    timer("dematted",10)
+}
+
+if(~Moving & Moving == 0){
+    stoptimer("remat")
+    timer("fullmat",1000)
+}
+
+if(clk("fullmat")){
+    timer("fullmat",10)
+    Alpha = Alpha-2
+    
+    for(I=1,7){
+        holoAlpha(I,Alpha)
+    }
+    
+    if(Alpha <= 0){
+        stopAllTimers()
+        holoDeleteAll()
+    }
+}
+
+if(clk("dematted")){
+    timer("dematted",15)
+    HoloScale = clamp(HoloScale+0.1,0,10)
+    Alpha = Alpha-2
+    
+    if(Alpha <= 0){
+        stoptimer("dematted")
+        HoloPos = Destination + vec(0,0,100)
+        HoloScale = 1
+        
+        timer("remat",100)
+        
+        holoPos(1,HoloPos)
+        holoPos(2,HoloPos)
+        holoPos(3,HoloPos+vec(0,0,40*5))
+        holoPos(4,HoloPos+vec(0,0,20*5))
+        holoPos(5,HoloPos)
+        holoPos(6,HoloPos+vec(0,0,-20*5))
+        holoPos(7,HoloPos+vec(0,0,-40*5))
+        
+        holoScale(1,vec(1))
+        holoScale(2,vec(1))
+        holoScale(3,vec(1*1,1*1,0.5*1))
+        holoScale(3,vec(1.2*1,1.2*1,0.5*1))
+        holoScale(5,vec(1.5*1,1.5*1,0.5*1))
+        holoScale(6,vec(1.2*1,1.2*1,0.5*1))
+        holoScale(7,vec(1*1,1*1,0.5*1))
+    }
+    else{
+        for(I=1,7){
+            holoAlpha(I,Alpha)
+        }
+        
+        holoScale(1,vec(HoloScale))
+        holoScale(2,vec(HoloScale))
+        holoScale(3,vec(1*HoloScale,1*HoloScale,0.5*HoloScale))
+        holoScale(3,vec(1.2*HoloScale,1.2*HoloScale,0.5*HoloScale))
+        holoScale(5,vec(1.5*HoloScale,1.5*HoloScale,0.5*HoloScale))
+        holoScale(6,vec(1.2*HoloScale,1.2*HoloScale,0.5*HoloScale))
+        holoScale(7,vec(1*HoloScale,1*HoloScale,0.5*HoloScale))
+    }
+}
+
+if(clk("remat")){
+    timer("remat",15)
+    
+    if(Alpha < 100){
+        Alpha = Alpha+2
+        for(I=1,7){
+            holoAlpha(I,Alpha)
+        }
+    }
+    
+    if(HoloScale < 5){
+        HoloScale = HoloScale+0.2
+            
+        holoScale(1,vec(HoloScale))
+        holoScale(2,vec(HoloScale))
+        holoScale(3,vec(1*HoloScale,1*HoloScale,0.5*HoloScale))
+        holoScale(3,vec(1.2*HoloScale,1.2*HoloScale,0.5*HoloScale))
+        holoScale(5,vec(1.5*HoloScale,1.5*HoloScale,0.5*HoloScale))
+        holoScale(6,vec(1.2*HoloScale,1.2*HoloScale,0.5*HoloScale))
+        holoScale(7,vec(1*HoloScale,1*HoloScale,0.5*HoloScale))
+    }
+}
+
+if(clk("Demat")){
+    timer("Demat",15)
+    
+    Alpha = Alpha+1
+    
+    if(Alpha >= 100){
+        stoptimer("Demat")
+    }
+    
+    for(I=1,7){
+        holoAlpha(I,Alpha)
+    }
+}
+
+if(clk("HoloAnim")){
+    timer("HoloAnim",100)
+    X1 = X1+40
+    if(X1 >= 360){
+        X1 = 0
+    }
+    
+    X2 = X2+40
+    if(X2 >= 360){
+        X2 = 0
+    }
+    
+    X3 = X3+40
+    if(X3 >= 360){
+        X3 = 0
+    }
+    
+    X4 = X4+40
+    if(X4 >= 360){
+        X4 = 0
+    }
+    
+    X5 = X5+40
+    if(X5 >= 360){
+        X5 = 0
+    }
+    
+    holoAng(3,ang(0,X1,15))
+    holoAng(4,ang(0,X2,-10))
+    holoAng(5,ang(0,X3,5))
+    holoAng(6,ang(0,X4,10))
+    holoAng(7,ang(0,X5,-15))
+}

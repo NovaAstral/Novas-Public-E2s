@@ -1,14 +1,41 @@
-@name Tardis Vortex Drive v2
-@inputs Parent:entity WebAudioSF:wirelink SoundPlayingWebSF Throttle FastMode VeryFastMode DisableVortexMode EngineRelease Cloak Destination:vector AngleOffset:angle Angle:angle
-@outputs Dematted Moving PAlpha State
-@persist State AnimSpeed DematWait RematWait [DematAlphaTbl,MatAlphaTbl]:table Snd1:string AudioPos:vector CloakAlpha Cloaking DupeWait
-
-#fastmode forced demat timing is wrong
+@name Tardis Vortex Drive v2.1
+@inputs Parent:entity WebAudioSF:wirelink SoundPlayingWebSF Throttle FastReturn FastMode VeryFastMode DisableVortexMode EngineRelease Cloak DestIn:vector AngleOffset:angle AngIn:angle ToiMode
+@outputs Dematted Moving PAlpha State [Destination,PrevDestination]:vector [Angle,PrevAngle]:angle
+@persist State AnimSpeed DematWait RematWait [DematAlphaTbl,MatAlphaTbl]:table Snd1:string AudioPos:vector CloakAlpha Cloaking DupeWait [Destination,PrevDestination]:vector [Angle,PrevAngle]:angle
+@persist [DematSnd,MatSnd,FastDematSnd,FastMatSnd,ForcedDematSnd,ForcedMatSnd,ForcedFastDematSnd,ForcedFastMatSnd,FailSnd,CloakSnd,DeCloakSnd,VeryFastDematSnd,VeryFastMatSnd]:string
+#veryfastmode forced demat timing is wrong
 #either change the dematwait when forced, or change the sound (change the sound probably better)
 
+function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
+    WebAudioSF["URL",string] = Audio
+    WebAudioSF["Pos",vector] = Vec
+    WebAudioSF["Volume",number] = Vol
+    WebAudioSF["FadeStart",number] = FadeS
+    WebAudioSF["FadeEnd",number] = FadeE
+    WebAudioSF["Mono",number] = MonoEnable
+        
+    timer("playsnd",200)
+    timer("noplaysnd",250)
+}
+    
 if(first() | dupefinished()){
     AnimSpeed = 30 #15 is fastest speed possible
-
+    
+    DematSnd = "https://cloud.luna-code.net/s/PrM4qyTbQ57QPoH/download"
+    MatSnd = "https://cloud.luna-code.net/s/QL0hqCJpkhRqYpc/download"
+    FastDematSnd = "https://cloud.luna-code.net/s/onXII5pRGHEvYfV/download"
+    FastMatSnd = "https://cloud.luna-code.net/s/5P2W9IA6o23AVMF/download"
+    ForcedDematSnd = "https://cloud.luna-code.net/s/Mk5sjFH1uAlVr8Z/download"
+    ForcedMatSnd = "https://cloud.luna-code.net/s/QE1hClvs3l2f1K7/download"
+    ForcedFastDematSnd = "https://cloud.luna-code.net/s/vsNhCHGNgpbEhrh/download"
+    ForcedFastMatSnd = "https://cloud.luna-code.net/s/Dl0ZREBZOlqBT9c/download"
+    VeryFastDematSnd = "https://cloud.luna-code.net/s/jeYfNafnTnMflwj/download"
+    VeryFastMatSnd = "https://cloud.luna-code.net/s/VSiIeZYzath04p8/download"
+    FailSnd = "https://cloud.luna-code.net/s/7Rol1sDci7tJs4q/download"
+    CloakSnd = "https://cloud.luna-code.net/s/51J6CQk9aQExNWR/download"
+    DeCloakSnd = "https://cloud.luna-code.net/s/sflsHGsRLRt018j/download"
+    
+    
     if(FastMode == 0){
         AnimSpeed = 30
         DematWait = 6000 #how long to wait after the sound starts playing for the demat anim to play
@@ -81,18 +108,6 @@ if(first() | dupefinished()){
         else{
             return Cur
         }
-    }
-    
-    function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
-        WebAudioSF["URL",string] = Audio
-        WebAudioSF["Pos",vector] = Vec
-        WebAudioSF["Volume",number] = Vol
-        WebAudioSF["FadeStart",number] = FadeS
-        WebAudioSF["FadeEnd",number] = FadeE
-        WebAudioSF["Mono",number] = MonoEnable
-        
-        timer("playsnd",200)
-        timer("noplaysnd",250)
     }
     
     function void moveParent(){
@@ -197,26 +212,43 @@ if(~FastMode | ~VeryFastMode){
     }
 }
 
-if(~Throttle & Throttle & !first() & DupeWait == 0){
+function movethebox(){
     if(checkJammed() == 1){
         if(EngineRelease == 1){
             if(Moving == 0){
-                if(Dematted == 0){
+                if(Dematted == 0){ #demat
                     Moving = 1
                     
+                    PrevDestination = Parent:pos()# + vec(0,0,PosOffset)
+                    PrevAngle = Parent:angles()
+                    
                     timer("sndwait",10)
+                    if(FastMode == 0){
+                        DematWait = 4000
+                    }
+                    else{
+                        DematWait = 100
+                    }
                 }
-                else{
+                else{ #remat
                     moveParent()
                     
                     Moving = 1
+                    
                     timer("sndwait",10)
+                    
+                    if(FastMode == 0){
+                        RematWait = 8000
+                    }
+                    else{
+                        RematWait = 100
+                    }
                 }
             }
         }
         else{
             playsound( #cant move sound
-                "https://cloud.luna-code.net/s/7Rol1sDci7tJs4q/download", #URL
+                FailSnd, #URL
                 Parent:pos(), #Audio Pos
                 2, #Volume
                 2000, #Fade Start
@@ -227,19 +259,74 @@ if(~Throttle & Throttle & !first() & DupeWait == 0){
     }
     else{
         if(Moving == 0){
-            if(Dematted == 0){
+            if(Dematted == 0){ #demat
                 Moving = 1
                 
+                PrevDestination = Parent:pos()# + vec(0,0,PosOffset)
+                PrevAngle = Parent:angles()
+                
                 timer("sndwait",10)
+                
+                if(VeryFastMode == 1){
+                    DematWait = 0
+                    RematWait = 0
+                }
+                else{
+                    if(FastMode == 0){
+                        DematWait = 6000
+                    }
+                    else{
+                        DematWait = 2000
+                    }
+                }
             }
-            else{
+            else{ #remat
                 moveParent()
                 
                 Moving = 1
                 timer("sndwait",10)
+                
+                if(VeryFastMode == 1){
+                    DematWait = 0
+                    RematWait = 0
+                }
+                else{
+                    if(FastMode == 0){
+                        RematWait = 10000
+                    }
+                    else{
+                        RematWait = 100
+                    }
+                }
             }
         }
     }
+}
+
+if(~Throttle & Throttle & !first() & DupeWait == 0){
+    movethebox()
+}
+
+if(~DestIn){
+    Destination = DestIn
+}
+
+if(~FastReturn & FastReturn & !first() & DupeWait == 0){
+    Destination = PrevDestination
+    Angle = PrevAngle
+    
+    DisableVortexMode = 1
+    #FastMode = 1
+    
+    timer("fastreturnwait",100)
+}
+
+if(clk("fastreturnwait")){
+    movethebox()
+}
+
+if(~AngIn){
+    Angle = AngIn
 }
 
 if(~SoundPlayingWebSF & SoundPlayingWebSF == 1){
@@ -274,7 +361,7 @@ if(~Cloak & !Moving & !Dematted & DupeWait == 0){
         Cloaking = 1
         
         playsound(
-            "https://cloud.luna-code.net/s/ugRR3108Ahrcade/download", #URL
+            CloakSnd, #cloak
             Parent:pos(), #Audio Pos
             2, #Volume
             2000, #Fade Start
@@ -286,7 +373,7 @@ if(~Cloak & !Moving & !Dematted & DupeWait == 0){
         CloakAlpha = 255
         Cloaking = 1
         playsound(
-            "https://cloud.luna-code.net/s/MhXFVagkag9A7dl/download", #URL
+            DeCloakSnd, #decloak
             Parent:pos(), #Audio Pos
             2, #Volume
             2000, #Fade Start
@@ -310,46 +397,56 @@ if(clk("cloaktimer")){
 if(clk("sndwait")){
     if(Dematted == 0){
         if(VeryFastMode == 1){
-            Snd1 = "https://cloud.luna-code.net/s/1E9KcmsZsQC9At8/download" #very fast demat
+            Snd1 = VeryFastDematSnd #very fast demat
         }
         else{
             if(FastMode == 1){
                 if(checkJammed() == 1 & EngineRelease == 1){
-                    Snd1 = "https://cloud.luna-code.net/s/vsNhCHGNgpbEhrh/download" #fast forced demat
+                    Snd1 = ForcedFastDematSnd #fast forced demat
                 }
                 else{
-                    Snd1 = "https://cloud.luna-code.net/s/onXII5pRGHEvYfV/download" #fastdemat
+                    Snd1 = FastDematSnd #fastdemat
                 }
             }
             else{
                 if(checkJammed() == 1 & EngineRelease == 1){
-                    Snd1 = "https://cloud.luna-code.net/s/Mk5sjFH1uAlVr8Z/download" #forced demat
+                    Snd1 = ForcedDematSnd #forced demat
                 }
                 else{
-                    Snd1 = "https://cloud.luna-code.net/s/PrM4qyTbQ57QPoH/download" #demat
+                    if(ToiMode == 1){
+                        Snd1 = "https://cloud.luna-code.net/s/c1bvRDlkaNJuWFC/download" #toi demat
+                    }
+                    else{
+                        Snd1 = DematSnd #demat
+                    }
                 }
             }
         }
     }
     else{
         if(VeryFastMode == 1){
-            Snd1 = "https://cloud.luna-code.net/s/a1QDbZWxGlvzYFs/download" #very fast mat
+            Snd1 = VeryFastMatSnd #very fast mat
         }
         else{
             if(FastMode == 1){
                 if(checkJammed() == 1 & EngineRelease == 1){
-                    Snd1 = "https://cloud.luna-code.net/s/Dl0ZREBZOlqBT9c/download" #forced fast mat
+                    Snd1 = ForcedFastMatSnd #forced fast mat
                 }
                 else{
-                    Snd1 = "https://cloud.luna-code.net/s/5P2W9IA6o23AVMF/download" #fastmat
+                    Snd1 = FastMatSnd #fastmat
                 }
             }
             else{
                 if(checkJammed() == 1 & EngineRelease == 1){
-                    Snd1 = "https://cloud.luna-code.net/s/QE1hClvs3l2f1K7/download" #forced mat
+                    Snd1 = ForcedMatSnd #forced mat
                 }
                 else{
-                    Snd1 = "https://cloud.luna-code.net/s/QL0hqCJpkhRqYpc/download" #mat
+                    if(ToiMode == 1){
+                        Snd1 = "https://cloud.luna-code.net/s/QeQnGlV1xYMm3FZ/download" #toi mat
+                    }
+                    else{
+                        Snd1 = MatSnd #mat
+                    }
                 }
             }
         }
@@ -378,6 +475,10 @@ if(clk("demat")){
         Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],10))
     }
     else{
+        if(checkJammed() == 1 & EngineRelease == 1){
+            Parent:setAlpha(Parent:getAlpha()+randint(-6,6))
+        }
+        
         Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],2))
     }
     
@@ -413,6 +514,10 @@ if(clk("remat")){
         Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],10))
     }
     else{
+        if(checkJammed() == 1 & EngineRelease == 1){
+            Parent:setAlpha(Parent:getAlpha()+randint(-6,6))
+        }
+        
         Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],2))
     }
     

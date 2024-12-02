@@ -1,5 +1,5 @@
 @name Chameleon Circuit Selector
-@inputs EGP:wirelink User:entity Activate
+@inputs EGP:wirelink User:entity Activate Isomorphic
 @outputs ExtModel:string Offset Angle:angle Bank ModelName:string
 @persist Bank
 @persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string #Bank 1 Models
@@ -99,7 +99,7 @@ if(first() | duped()){
     B2V6 = 48
     B2A6 = ang(0,0,0)
     
-    B2N7 = ""
+    B2N7 = "models/medicdevicedestiny.mdl|Medical Console"
     B2V7 = 0
     B2A7 = ang(0,0,0)
     
@@ -295,352 +295,357 @@ if(clk("egpcreate")){
 }
 
 if(~User & User & Activate == 1){
-    local Cursor = EGP:egpCursor(User)
-    timer("soundpurge",500)
-    
-    if(inrange(Cursor,vec2(305,30),vec2(365,90))){ #Switch Banks
-        EGP:egpColor(5,vec(0,255,0))
-        EGP:egpColor(6,vec(0,255,0))
-        timer("colorreset",1000)
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        if(Bank == 1){
-            Bank = 2
-            EGP:egpSetText(9,"2")
-            timer("bank2",10)
-        }
-        elseif(Bank == 2){
-            Bank = 3
-            EGP:egpSetText(9,"3")
-            timer("bank3",10)
-        }
-        elseif(Bank == 3){
-            Bank = 1
-            EGP:egpSetText(9,"1")
-            timer("bank1",10)
-        }
+    if(Isomorphic == 1 & User != owner()){
     }
-    
-    if(inrange(Cursor,vec2(35,125),vec2(235,175))){ #Selector 1
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(11,vec(0,255,0))
-        EGP:egpColor(12,vec(0,255,0))
-        EGP:egpColor(13,vec(0,255,0))
-        timer("colorreset",1000)
+    else{
         
-        if(Bank == 1){
-            ExtModel = B1N1:explode("|")[1,string]
-            Offset = B1V1
-            Angle = B1A1
-            ModelName = B1N1:explode("|")[2,string]
-        }
-        elseif(Bank == 2){
-            ExtModel = B2N1:explode("|")[1,string]
-            Offset = B2V1
-            Angle = B2A1
-            ModelName = B2N1:explode("|")[2,string]
-        }
-        elseif(Bank == 3){
-            ExtModel = B3N1:explode("|")[1,string]
-            Offset = B3V1
-            Angle = B3A1
-            ModelName = B3N1:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(35,185),vec2(235,235))){ #Selector 2
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(16,vec(0,255,0))
-        EGP:egpColor(17,vec(0,255,0))
-        EGP:egpColor(18,vec(0,255,0))
-        timer("colorreset",1000)
+        local Cursor = EGP:egpCursor(User)
+        timer("soundpurge",500)
         
-        if(Bank == 1){
-            ExtModel = B1N2:explode("|")[1,string]
-            Offset = B1V2
-            Angle = B1A2
-            ModelName = B1N2:explode("|")[2,string]
+        if(inrange(Cursor,vec2(305,30),vec2(365,90))){ #Switch Banks
+            EGP:egpColor(5,vec(0,255,0))
+            EGP:egpColor(6,vec(0,255,0))
+            timer("colorreset",1000)
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            if(Bank == 1){
+                Bank = 2
+                EGP:egpSetText(9,"2")
+                timer("bank2",10)
+            }
+            elseif(Bank == 2){
+                Bank = 3
+                EGP:egpSetText(9,"3")
+                timer("bank3",10)
+            }
+            elseif(Bank == 3){
+                Bank = 1
+                EGP:egpSetText(9,"1")
+                timer("bank1",10)
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N2:explode("|")[1,string]
-            Offset = B2V2
-            Angle = B2A2
-            ModelName = B2N2:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N2:explode("|")[1,string]
-            Offset = B3V2
-            Angle = B3A2
-            ModelName = B3N2:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(35,245),vec2(235,295))){ #Selector 3
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(21,vec(0,255,0))
-        EGP:egpColor(22,vec(0,255,0))
-        EGP:egpColor(23,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N3:explode("|")[1,string]
-            Offset = B1V3
-            Angle = B1A3
-            ModelName = B1N3:explode("|")[2,string]
+        if(inrange(Cursor,vec2(35,125),vec2(235,175))){ #Selector 1
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(11,vec(0,255,0))
+            EGP:egpColor(12,vec(0,255,0))
+            EGP:egpColor(13,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N1:explode("|")[1,string]
+                Offset = B1V1
+                Angle = B1A1
+                ModelName = B1N1:explode("|")[2,string]
+            }
+            elseif(Bank == 2){
+                ExtModel = B2N1:explode("|")[1,string]
+                Offset = B2V1
+                Angle = B2A1
+                ModelName = B2N1:explode("|")[2,string]
+            }
+            elseif(Bank == 3){
+                ExtModel = B3N1:explode("|")[1,string]
+                Offset = B3V1
+                Angle = B3A1
+                ModelName = B3N1:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N3:explode("|")[1,string]
-            Offset = B2V3
-            Angle = B2A3
-            ModelName = B2N3:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N3:explode("|")[1,string]
-            Offset = B3V3
-            Angle = B3A3
-            ModelName = B3N3:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(35,305),vec2(235,355))){ #Selector 4
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(26,vec(0,255,0))
-        EGP:egpColor(27,vec(0,255,0))
-        EGP:egpColor(28,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N4:explode("|")[1,string]
-            Offset = B1V4
-            Angle = B1A4
-            ModelName = B1N4:explode("|")[2,string]
+        if(inrange(Cursor,vec2(35,185),vec2(235,235))){ #Selector 2
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(16,vec(0,255,0))
+            EGP:egpColor(17,vec(0,255,0))
+            EGP:egpColor(18,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N2:explode("|")[1,string]
+                Offset = B1V2
+                Angle = B1A2
+                ModelName = B1N2:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N2:explode("|")[1,string]
+                Offset = B2V2
+                Angle = B2A2
+                ModelName = B2N2:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N2:explode("|")[1,string]
+                Offset = B3V2
+                Angle = B3A2
+                ModelName = B3N2:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N4:explode("|")[1,string]
-            Offset = B2V4
-            Angle = B2A4
-            ModelName = B2N4:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N4:explode("|")[1,string]
-            Offset = B3V4
-            Angle = B3A4
-            ModelName = B3N4:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(35,365),vec2(235,415))){ #Selector 5
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(31,vec(0,255,0))
-        EGP:egpColor(32,vec(0,255,0))
-        EGP:egpColor(33,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N5:explode("|")[1,string]
-            Offset = B1V5
-            Angle = B1A5
-            ModelName = B1N5:explode("|")[2,string]
+        if(inrange(Cursor,vec2(35,245),vec2(235,295))){ #Selector 3
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(21,vec(0,255,0))
+            EGP:egpColor(22,vec(0,255,0))
+            EGP:egpColor(23,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N3:explode("|")[1,string]
+                Offset = B1V3
+                Angle = B1A3
+                ModelName = B1N3:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N3:explode("|")[1,string]
+                Offset = B2V3
+                Angle = B2A3
+                ModelName = B2N3:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N3:explode("|")[1,string]
+                Offset = B3V3
+                Angle = B3A3
+                ModelName = B3N3:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N5:explode("|")[1,string]
-            Offset = B2V5
-            Angle = B2A5
-            ModelName = B2N5:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N5:explode("|")[1,string]
-            Offset = B3V5
-            Angle = B3A5
-            ModelName = B3N5:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(35,425),vec2(235,475))){ #Selector 6
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(36,vec(0,255,0))
-        EGP:egpColor(37,vec(0,255,0))
-        EGP:egpColor(38,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N6:explode("|")[1,string]
-            Offset = B1V6
-            Angle = B1A6
-            ModelName = B1N6:explode("|")[2,string]
+        if(inrange(Cursor,vec2(35,305),vec2(235,355))){ #Selector 4
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(26,vec(0,255,0))
+            EGP:egpColor(27,vec(0,255,0))
+            EGP:egpColor(28,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N4:explode("|")[1,string]
+                Offset = B1V4
+                Angle = B1A4
+                ModelName = B1N4:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N4:explode("|")[1,string]
+                Offset = B2V4
+                Angle = B2A4
+                ModelName = B2N4:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N4:explode("|")[1,string]
+                Offset = B3V4
+                Angle = B3A4
+                ModelName = B3N4:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N6:explode("|")[1,string]
-            Offset = B2V6
-            Angle = B2A6
-            ModelName = B2N6:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N6:explode("|")[1,string]
-            Offset = B3V6
-            Angle = B3A6
-            ModelName = B3N6:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(275,125),vec2(475,175))){ #Selector 7
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(41,vec(0,255,0))
-        EGP:egpColor(42,vec(0,255,0))
-        EGP:egpColor(43,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N7:explode("|")[1,string]
-            Offset = B1V7
-            Angle = B1A7
-            ModelName = B1N7:explode("|")[2,string]
+        if(inrange(Cursor,vec2(35,365),vec2(235,415))){ #Selector 5
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(31,vec(0,255,0))
+            EGP:egpColor(32,vec(0,255,0))
+            EGP:egpColor(33,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N5:explode("|")[1,string]
+                Offset = B1V5
+                Angle = B1A5
+                ModelName = B1N5:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N5:explode("|")[1,string]
+                Offset = B2V5
+                Angle = B2A5
+                ModelName = B2N5:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N5:explode("|")[1,string]
+                Offset = B3V5
+                Angle = B3A5
+                ModelName = B3N5:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N7:explode("|")[1,string]
-            Offset = B2V7
-            Angle = B2A7
-            ModelName = B2N7:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N7:explode("|")[1,string]
-            Offset = B3V7
-            Angle = B3A7
-            ModelName = B3N7:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(275,185),vec2(475,235))){ #Selector 8
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(46,vec(0,255,0))
-        EGP:egpColor(47,vec(0,255,0))
-        EGP:egpColor(48,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N8:explode("|")[1,string]
-            Offset = B1V8
-            Angle = B1A8
-            ModelName = B1N8:explode("|")[2,string]
+        if(inrange(Cursor,vec2(35,425),vec2(235,475))){ #Selector 6
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(36,vec(0,255,0))
+            EGP:egpColor(37,vec(0,255,0))
+            EGP:egpColor(38,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N6:explode("|")[1,string]
+                Offset = B1V6
+                Angle = B1A6
+                ModelName = B1N6:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N6:explode("|")[1,string]
+                Offset = B2V6
+                Angle = B2A6
+                ModelName = B2N6:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N6:explode("|")[1,string]
+                Offset = B3V6
+                Angle = B3A6
+                ModelName = B3N6:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N8:explode("|")[1,string]
-            Offset = B2V8
-            Angle = B2A8
-            ModelName = B2N8:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N8:explode("|")[1,string]
-            Offset = B3V8
-            Angle = B3A8
-            ModelName = B3N8:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(275,245),vec2(475,295))){ #Selector 9
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(51,vec(0,255,0))
-        EGP:egpColor(52,vec(0,255,0))
-        EGP:egpColor(53,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N9:explode("|")[1,string]
-            Offset = B1V9
-            Angle = B1A9
-            ModelName = B1N9:explode("|")[2,string]
+        if(inrange(Cursor,vec2(275,125),vec2(475,175))){ #Selector 7
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(41,vec(0,255,0))
+            EGP:egpColor(42,vec(0,255,0))
+            EGP:egpColor(43,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N7:explode("|")[1,string]
+                Offset = B1V7
+                Angle = B1A7
+                ModelName = B1N7:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N7:explode("|")[1,string]
+                Offset = B2V7
+                Angle = B2A7
+                ModelName = B2N7:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N7:explode("|")[1,string]
+                Offset = B3V7
+                Angle = B3A7
+                ModelName = B3N7:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N9:explode("|")[1,string]
-            Offset = B2V9
-            Angle = B2A9
-            ModelName = B2N9:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N9:explode("|")[1,string]
-            Offset = B3V9
-            Angle = B3A9
-            ModelName = B3N9:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(275,305),vec2(475,355))){ #Selector 10
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(56,vec(0,255,0))
-        EGP:egpColor(57,vec(0,255,0))
-        EGP:egpColor(58,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N10:explode("|")[1,string]
-            Offset = B1V10
-            Angle = B1A10
-            ModelName = B1N10:explode("|")[2,string]
+        if(inrange(Cursor,vec2(275,185),vec2(475,235))){ #Selector 8
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(46,vec(0,255,0))
+            EGP:egpColor(47,vec(0,255,0))
+            EGP:egpColor(48,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N8:explode("|")[1,string]
+                Offset = B1V8
+                Angle = B1A8
+                ModelName = B1N8:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N8:explode("|")[1,string]
+                Offset = B2V8
+                Angle = B2A8
+                ModelName = B2N8:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N8:explode("|")[1,string]
+                Offset = B3V8
+                Angle = B3A8
+                ModelName = B3N8:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N10:explode("|")[1,string]
-            Offset = B2V10
-            Angle = B2A10
-            ModelName = B2N10:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N10:explode("|")[1,string]
-            Offset = B3V10
-            Angle = B3A10
-            ModelName = B3N10:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(275,365),vec2(475,415))){ #Selector 11
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(61,vec(0,255,0))
-        EGP:egpColor(62,vec(0,255,0))
-        EGP:egpColor(63,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N11:explode("|")[1,string]
-            Offset = B1V11
-            Angle = B1A11
-            ModelName = B1N11:explode("|")[2,string]
+        if(inrange(Cursor,vec2(275,245),vec2(475,295))){ #Selector 9
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(51,vec(0,255,0))
+            EGP:egpColor(52,vec(0,255,0))
+            EGP:egpColor(53,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N9:explode("|")[1,string]
+                Offset = B1V9
+                Angle = B1A9
+                ModelName = B1N9:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N9:explode("|")[1,string]
+                Offset = B2V9
+                Angle = B2A9
+                ModelName = B2N9:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N9:explode("|")[1,string]
+                Offset = B3V9
+                Angle = B3A9
+                ModelName = B3N9:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N11:explode("|")[1,string]
-            Offset = B2V11
-            Angle = B2A11
-            ModelName = B2N11:explode("|")[2,string]
-        }
-        if(Bank == 3){
-            ExtModel = B3N11:explode("|")[1,string]
-            Offset = B3V11
-            Angle = B3A11
-            ModelName = B3N11:explode("|")[2,string]
-        }
-    }
-    
-    if(inrange(Cursor,vec2(275,425),vec2(475,475))){ #Selector 12
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(66,vec(0,255,0))
-        EGP:egpColor(67,vec(0,255,0))
-        EGP:egpColor(68,vec(0,255,0))
-        timer("colorreset",1000)
         
-        if(Bank == 1){
-            ExtModel = B1N12:explode("|")[1,string]
-            Offset = B1V12
-            Angle = B1A12
-            ModelName = B1N12:explode("|")[2,string]
+        if(inrange(Cursor,vec2(275,305),vec2(475,355))){ #Selector 10
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(56,vec(0,255,0))
+            EGP:egpColor(57,vec(0,255,0))
+            EGP:egpColor(58,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N10:explode("|")[1,string]
+                Offset = B1V10
+                Angle = B1A10
+                ModelName = B1N10:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N10:explode("|")[1,string]
+                Offset = B2V10
+                Angle = B2A10
+                ModelName = B2N10:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N10:explode("|")[1,string]
+                Offset = B3V10
+                Angle = B3A10
+                ModelName = B3N10:explode("|")[2,string]
+            }
         }
-        if(Bank == 2){
-            ExtModel = B2N12:explode("|")[1,string]
-            Offset = B2V12
-            Angle = B2A12
-            ModelName = B2N12:explode("|")[2,string]
+        
+        if(inrange(Cursor,vec2(275,365),vec2(475,415))){ #Selector 11
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(61,vec(0,255,0))
+            EGP:egpColor(62,vec(0,255,0))
+            EGP:egpColor(63,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N11:explode("|")[1,string]
+                Offset = B1V11
+                Angle = B1A11
+                ModelName = B1N11:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N11:explode("|")[1,string]
+                Offset = B2V11
+                Angle = B2A11
+                ModelName = B2N11:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N11:explode("|")[1,string]
+                Offset = B3V11
+                Angle = B3A11
+                ModelName = B3N11:explode("|")[2,string]
+            }
         }
-        if(Bank == 3){
-            ExtModel = B3N12:explode("|")[1,string]
-            Offset = B3V12
-            Angle = B3A12
-            ModelName = B3N12:explode("|")[2,string]
+        
+        if(inrange(Cursor,vec2(275,425),vec2(475,475))){ #Selector 12
+            EGP:entity():soundPlay(1,0,"buttons/button9.wav")
+            EGP:egpColor(66,vec(0,255,0))
+            EGP:egpColor(67,vec(0,255,0))
+            EGP:egpColor(68,vec(0,255,0))
+            timer("colorreset",1000)
+            
+            if(Bank == 1){
+                ExtModel = B1N12:explode("|")[1,string]
+                Offset = B1V12
+                Angle = B1A12
+                ModelName = B1N12:explode("|")[2,string]
+            }
+            if(Bank == 2){
+                ExtModel = B2N12:explode("|")[1,string]
+                Offset = B2V12
+                Angle = B2A12
+                ModelName = B2N12:explode("|")[2,string]
+            }
+            if(Bank == 3){
+                ExtModel = B3N12:explode("|")[1,string]
+                Offset = B3V12
+                Angle = B3A12
+                ModelName = B3N12:explode("|")[2,string]
+            }
         }
     }
     

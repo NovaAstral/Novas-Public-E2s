@@ -1,97 +1,95 @@
 @name Music Bank Selector
 @inputs EGP:wirelink User:entity
-@outputs MusicName:string MusicLink:string Bank WebA:webaudio #Cursor:vector2
-@persist Bank Play Pause
-@persist WebA:webaudio [MusicName,MusicLink]:string
+@outputs MusicName:string MusicLink:string Bank Play Stop
+@persist Bank Play Stop GrnCol1 GrnCol2
+@persist [MusicName,MusicLink]:string
 @persist [B1N1,B1N2,B1N3,B1N4,B1N5,B1N6,B1N7,B1N8,B1N9,B1N10,B1N11,B1N12]:string
 @persist [B2N1,B2N2,B2N3,B2N4,B2N5,B2N6,B2N7,B2N8,B2N9,B2N10,B2N11,B2N12]:string
 @persist [B1V1,B1V2,B1V3,B1V4,B1V5,B1V6,B1V7,B1V8,B1V9,B1V10,B1V11,B1V12]:string
 @persist [B2V1,B2V2,B2V3,B2V4,B2V5,B2V6,B2V7,B2V8,B2V9,B2V10,B2V11,B2V12]:string
-#@model models/Madman07/com_device/stone.mdl
-
-#This is repurposed from my Vector Bank Selector
-#You need an E2 Extention called "Webaudio"
 
 #Cursor = EGP:egpCursor(owner())
-#print(WebA:getRadius())
 
 if(first() | dupefinished()){
-    MusicName = "Losing Rodney"
-    MusicLink = "https://cdn.discordapp.com/attachments/915811722646925312/915812501705355324/losingroney.ogg"
+    MusicName = "All Along the Watchtower" #default when you first spawn it
+    MusicLink = "https://cloud.luna-code.net/s/DxiEYVYi3BnkxvU/download"
     
     EGP:egpClear()
     timer("update",100)
     timer("egpcreate",10)
     
-    B1N1 = "Losing Rodney"
-    B1V1 = "https://cdn.discordapp.com/attachments/915811722646925312/915812501705355324/losingroney.ogg"
+    B1N1 = "All Along the Watchtower"
+    B1V1 = "https://cloud.luna-code.net/s/6JQVoPXHrIlaRYF/download"
     
-    B1N2 = "Temple of Time (OOT)"
-    B1V2 = "https://cdn.discordapp.com/attachments/915811722646925312/915812518486769664/OOT_-_Temple_Of_Time.ogg"
+    B1N2 = "People Playground Trailer 2"
+    B1V2 = "https://cloud.luna-code.net/s/4DkZKYwT3zPjB2y/download"
     
-    B1N3 = "All Along the Watchtower"
-    B1V3 = "https://cdn.discordapp.com/attachments/915811722646925312/915813579834413107/All_Along_the_Watchtower.ogg"
+    B1N3 = "Honeyhive Galaxy"
+    B1V3 = "https://cloud.luna-code.net/s/9Ko4qv2d2xZzftT/download"
     
-    B1N4 = "Worst Day Since Ystrday"
-    B1V4 = "https://cdn.discordapp.com/attachments/915811722646925312/915815307636006912/The_Worst_Day_Since_Yesterday.ogg"
+    B1N4 = "Breathe"
+    B1V4 = "https://cloud.luna-code.net/s/zEWAKEnn0NOOgML/download"
     
-    B1N5 = "Don't Forget to Breathe"
-    B1V5 = "https://cdn.discordapp.com/attachments/915811722646925312/915815427475644467/Dont_Forget_To_Breathe.ogg"
+    B1N5 = "Legendary Walk"
+    B1V5 = "https://cloud.luna-code.net/s/d2Vui3a2MvDPzdA/download"
     
-    B1N6 = "SGU - Light"
-    B1V6 = "https://cdn.discordapp.com/attachments/915811722646925312/915816044612976680/SGU_Light_lowq.ogg"
+    B1N6 = "Galactic Mermaid"
+    B1V6 = "https://cloud.luna-code.net/s/S4PV9dgY12IGMF3/download"
     
-    B1N7 = "BSG - Heeding the Call"
-    B1V7 = "https://cdn.discordapp.com/attachments/915811722646925312/919856692961890335/BSG_-_Heeding_the_Call.ogg"
+    B1N7 = "Kani Kani"
+    B1V7 = "https://cloud.luna-code.net/s/29vtLTNzvdchElS/download"
     
-    B1N8 = ""
-    B1V8 = "https://cdn.discordapp.com/attachments/915811722646925312/959265874496331836/speen.mp3"
+    B1N8 = "Falcon Punch Remix"
+    B1V8 = "https://cloud.luna-code.net/s/i8SMn5pzMvKI779/download"
     
-    B1N9 = ""
-    B1V9 = "https://cdn.discordapp.com/attachments/915811722646925312/959276686053105704/do_you_suck_dicks.ogg"
+    B1N9 = "Metal (Pipe) Mario"
+    B1V9 = "https://cloud.luna-code.net/s/5w4HmTpg2tuCReC/download"
     
-    B1N10 = ""
-    B1V10 = ""
+    B1N10 = "Temple of Time"
+    B1V10 = "https://cloud.luna-code.net/s/g5LuUZougJIGB6D/download"
     
-    B1N11 = ""
-    B1V12 = ""
+    B1N11 = "Light"
+    B1V11 = "https://cloud.luna-code.net/s/fcEPyM2g9pAwIvT/download"
+    
+    B1N12 = "Slam the Day Away :)"
+    B1V12 = "https://cloud.luna-code.net/s/2wN4xGS2RHQbOOx/download"
     
     
-    B2N1 = ""
-    B2V1 = ""
+    B2N1 = "SBY - Opening Theme"
+    B2V1 = "https://cloud.luna-code.net/s/QyIe2Omfg8PT7Lo/download"
     
-    B2N2 = ""
-    B2V2 = ""
+    B2N2 = "SBY - Warp"
+    B2V2 = "https://cloud.luna-code.net/s/DwL5gQ5wyiAtoCE/download"
     
-    B2N3 = ""
-    B2V3 = ""
+    B2N3 = "Starbucks Song"
+    B2V3 = "https://cloud.luna-code.net/s/dYOIBETBpIcwlBK/download"
     
-    B2N4 = ""
-    B2V4 = ""
+    B2N4 = "Stargate Atlantis Remix"
+    B2V4 = "https://cloud.luna-code.net/s/X0lW0ASV1lOUXta/download"
     
-    B2N5 = ""
-    B2V5 = ""
+    B2N5 = "Worst Day Since Yesterday"
+    B2V5 = "https://cloud.luna-code.net/s/3i6MNebChUu2gwZ/download"
     
-    B2N6 = ""
-    B2V6 = ""
+    B2N6 = "Weegee Remix"
+    B2V6 = "https://cloud.luna-code.net/s/aldWv89gfSOog1t/download"
     
-    B2N7 = ""
-    B2V7 = ""
+    B2N7 = "Kirby's Epic Yarn Title"
+    B2V7 = "https://cloud.luna-code.net/s/ET0jp3F6LM5flkZ/download"
     
-    B2N8 = ""
-    B2V8 = ""
+    B2N8 = "Original Yamato Theme"
+    B2V8 = "https://cloud.luna-code.net/s/MHnI5iQ19rqXr99/download"
     
-    B2N9 = ""
-    B2V9 = ""
+    B2N9 = "SBY - Andromeda's Theme"
+    B2V9 = "https://cloud.luna-code.net/s/XB5TxHqfnVeYCaU/download"
         
-    B2N10 = ""
-    B2V10 = ""
+    B2N10 = "SBY - 2202 Main Theme"
+    B2V10 = "https://cloud.luna-code.net/s/QAnd0Ac8DqQ1MUn/download"
     
-    B2N11 = ""
-    B2V11 = ""
+    B2N11 = "SG1 Credits"
+    B2V11 = "https://cloud.luna-code.net/s/OXpO9dqF6Lrxhq5/download"
     
-    B2N12 = ""
-    B2V12 = ""
+    B2N12 = "SG1 Theme"
+    B2V12 = "https://cloud.luna-code.net/s/eSFPK8apOCTilQb/download"
 }
 
 if(~EGP & EGP){
@@ -126,63 +124,75 @@ if(clk("egpcreate")){
     EGP:egpText(9,"1",vec2(472,60))
     EGP:egpAlign(9,1)
     
-    EGP:egpCircleOutline(71,vec2(260,60),vec2(30)) #Start/Stop
-    EGP:egpText(72,"Start",vec2(261,50))
+    EGP:egpCircleOutline(71,vec2(260,60),vec2(30)) #Play
+    EGP:egpText(72,"Play",vec2(261,50))
     EGP:egpAlign(72,1)
     
-    EGP:egpCircleOutline(76,vec2(330,60),vec2(30)) #Pause/Unpause
-    EGP:egpText(77,"Pause",vec2(331,50))
+    EGP:egpCircleOutline(76,vec2(330,60),vec2(30)) #Stop
+    EGP:egpText(77,"Stop",vec2(331,50))
     EGP:egpAlign(77,1)
     
     EGP:egpRoundedBoxOutline(10,vec2(256,300),vec2(480,380)) #Main button box
     
     EGP:egpBoxOutline(11,vec2(135,150),vec2(200,50)) #Selector1
-    EGP:egpText(12,B1N1,vec2(135,140))
+    EGP:egpText(12,B1N1,vec2(135,142))
     EGP:egpAlign(12,1)
+    EGP:egpSize(12,15)
     
     EGP:egpBoxOutline(16,vec2(135,210),vec2(200,50)) #Selector2
-    EGP:egpText(17,B1N2,vec2(135,200))
+    EGP:egpText(17,B1N2,vec2(135,202))
     EGP:egpAlign(17,1)
+    EGP:egpSize(17,15)
 
     EGP:egpBoxOutline(21,vec2(135,270),vec2(200,50)) #Selector3
-    EGP:egpText(22,B1N3,vec2(135,260))
+    EGP:egpText(22,B1N3,vec2(135,262))
     EGP:egpAlign(22,1)
+    EGP:egpSize(22,15)
     
     EGP:egpBoxOutline(26,vec2(135,330),vec2(200,50)) #Selector4
-    EGP:egpText(27,B1N4,vec2(135,320))
+    EGP:egpText(27,B1N4,vec2(135,322))
     EGP:egpAlign(27,1)
+    EGP:egpSize(27,15)
     
     EGP:egpBoxOutline(31,vec2(135,390),vec2(200,50)) #Selector5
-    EGP:egpText(32,B1N5,vec2(135,380))
+    EGP:egpText(32,B1N5,vec2(135,382))
     EGP:egpAlign(32,1)
+    EGP:egpSize(32,15)
     
     EGP:egpBoxOutline(36,vec2(135,450),vec2(200,50)) #Selector6
-    EGP:egpText(37,B1N6,vec2(135,440))
+    EGP:egpText(37,B1N6,vec2(135,442))
     EGP:egpAlign(37,1)
+    EGP:egpSize(37,15)
     
     EGP:egpBoxOutline(41,vec2(375,150),vec2(200,50)) #Selector7
-    EGP:egpText(42,B1N7,vec2(375,140))
+    EGP:egpText(42,B1N7,vec2(375,142))
     EGP:egpAlign(42,1)
+    EGP:egpSize(42,15)
     
     EGP:egpBoxOutline(46,vec2(375,210),vec2(200,50)) #Selector8
     EGP:egpText(47,B1N8,vec2(375,200))
     EGP:egpAlign(47,1)
+    EGP:egpSize(47,15)
     
     EGP:egpBoxOutline(51,vec2(375,270),vec2(200,50)) #Selector9
-    EGP:egpText(52,B1N9,vec2(375,260))
+    EGP:egpText(52,B1N9,vec2(375,262))
     EGP:egpAlign(52,1)
+    EGP:egpSize(52,15)
     
     EGP:egpBoxOutline(56,vec2(375,330),vec2(200,50)) #Selector10
-    EGP:egpText(57,B1N10,vec2(375,320))
+    EGP:egpText(57,B1N10,vec2(375,322))
     EGP:egpAlign(57,1)
+    EGP:egpSize(57,15)
     
     EGP:egpBoxOutline(61,vec2(375,390),vec2(200,50)) #Selector11
-    EGP:egpText(62,B1N11,vec2(375,380))
+    EGP:egpText(62,B1N11,vec2(375,382))
     EGP:egpAlign(62,1)
+    EGP:egpSize(62,15)
 
     EGP:egpBoxOutline(66,vec2(375,450),vec2(200,50)) #Selector12
-    EGP:egpText(67,B1N12,vec2(375,440))
+    EGP:egpText(67,B1N12,vec2(375,442))
     EGP:egpAlign(67,1)
+    EGP:egpSize(67,15)
 }
 
 if(~User & User){
@@ -209,6 +219,9 @@ if(~User & User){
             EGP:egpSetText(9,"1")
             timer("bank1",10)
         }
+        
+        timer("resetcolor",1000)
+        timer("resetbankcolor",10)
     }
     
     if(inrange(Cursor,vec2(230,30),vec2(290,90))){ #Play Button
@@ -217,46 +230,28 @@ if(~User & User){
         
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         
-        if(Play == 1){
-            Play = 0
-            WebA:destroy()
-            timer("resetcolor",1000)
-        }
-        else{
-            Play = 1
-            WebA:pause()
-            timer("musicchange",100)
-            timer("playsnd",500)
-            
-            timer("musicstop",1)
-            timer("resetcolor",1000)
-        }
+        Stop = 1
+        timer("play",100)
+        timer("resetcolor",1000)
     }
-    #[
-    if(inrange(Cursor,vec2(230,30),vec2(290,90))){ #Play Button
-        EGP:egpColor(71,vec(0,255,0))
-        EGP:egpColor(72,vec(0,255,0))
+    
+    if(inrange(Cursor,vec2(300,30),vec2(360,90))){ #Stop Button
+        EGP:egpColor(76,vec(0,255,0))
+        EGP:egpColor(77,vec(0,255,0))
         
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
         
-        if(Play == 1){
-            Play = 0
-            WebA:destroy()
-            timer("resetcolor",1000)
-        }
-        else{
-            Play = 1
-            WebA:play()
-            
-            timer("musicstop",WebA:getLength()*1000)
-        }
+        Stop = 1
+        timer("resetcolor",1000)
     }
-    ]#
+    
     if(inrange(Cursor,vec2(35,125),vec2(235,175))){ #Selector 1
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(11,vec(0,255,0))
-        EGP:egpColor(12,vec(0,255,0))
-        timer("musicchange",10)
+        
+        GrnCol1 = 11
+        GrnCol2 = 12
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N1
@@ -266,13 +261,18 @@ if(~User & User){
             MusicName = B2N1
             MusicLink = B2V1
         }
+        
+        
     }
     
     if(inrange(Cursor,vec2(35,185),vec2(235,235))){ #Selector 2
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(16,vec(0,255,0))
-        EGP:egpColor(17,vec(0,255,0))
-        timer("musicchange",10)
+        
+        GrnCol1 = 16
+        GrnCol2 = 17
+        timer("resetbankcolor",50)
+        timer("greencol",100)
+        
         
         if(Bank == 1){
             MusicName = B1N2
@@ -286,9 +286,12 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(35,245),vec2(235,295))){ #Selector 3
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(21,vec(0,255,0))
-        EGP:egpColor(22,vec(0,255,0))        
-        timer("musicchange",10)
+ 
+        GrnCol1 = 21
+        GrnCol2 = 22
+        timer("resetbankcolor",50)
+        timer("greencol",100)  
+        
         
         if(Bank == 1){
             MusicName = B1N3
@@ -302,9 +305,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(35,305),vec2(235,355))){ #Selector 4
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(26,vec(0,255,0))
-        EGP:egpColor(27,vec(0,255,0))        
-        timer("musicchange",10)
+
+        GrnCol1 = 26
+        GrnCol2 = 27
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N4
@@ -318,9 +323,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(35,365),vec2(235,415))){ #Selector 5
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(31,vec(0,255,0))
-        EGP:egpColor(32,vec(0,255,0))        
-        timer("musicchange",10)
+
+        GrnCol1 = 31
+        GrnCol2 = 32
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N5
@@ -334,9 +341,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(35,425),vec2(235,475))){ #Selector 6
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(36,vec(0,255,0))
-        EGP:egpColor(37,vec(0,255,0))        
-        timer("musicchange",10)
+
+        GrnCol1 = 36
+        GrnCol2 = 37
+        timer("resetbankcolor",50)
+        timer("greencol",100)    
         
         if(Bank == 1){
             MusicName = B1N6
@@ -350,9 +359,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(275,125),vec2(475,175))){ #Selector 7
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(41,vec(0,255,0))
-        EGP:egpColor(42,vec(0,255,0))        
-        timer("musicchange",10)
+
+        GrnCol1 = 41
+        GrnCol2 = 42
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N7
@@ -366,9 +377,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(275,185),vec2(475,235))){ #Selector 8
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(46,vec(0,255,0))
-        EGP:egpColor(47,vec(0,255,0))    
-        timer("musicchange",10)
+
+        GrnCol1 = 46
+        GrnCol2 = 47
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N8
@@ -381,10 +394,12 @@ if(~User & User){
     }
     
     if(inrange(Cursor,vec2(275,245),vec2(475,295))){ #Selector 9
-        EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(51,vec(0,255,0))
-        EGP:egpColor(52,vec(0,255,0))        
-        timer("musicchange",10)
+        EGP:entity():soundPlay(1,0,"buttons/button9.wav") 
+        
+        GrnCol1 = 51
+        GrnCol2 = 52
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N9
@@ -398,9 +413,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(275,305),vec2(475,355))){ #Selector 10
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(56,vec(0,255,0))
-        EGP:egpColor(57,vec(0,255,0))        
-        timer("musicchange",10)
+
+        GrnCol1 = 56
+        GrnCol2 = 57
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N10
@@ -414,9 +431,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(275,365),vec2(475,415))){ #Selector 11
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(61,vec(0,255,0))
-        EGP:egpColor(62,vec(0,255,0))        
-        timer("musicchange",10)
+ 
+        GrnCol1 = 61
+        GrnCol2 = 62
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N11
@@ -430,9 +449,11 @@ if(~User & User){
     
     if(inrange(Cursor,vec2(275,425),vec2(475,475))){ #Selector 12
         EGP:entity():soundPlay(1,0,"buttons/button9.wav")
-        EGP:egpColor(66,vec(0,255,0))
-        EGP:egpColor(67,vec(0,255,0))        
-        timer("musicchange",10)
+
+        GrnCol1 = 66
+        GrnCol2 = 67
+        timer("resetbankcolor",50)
+        timer("greencol",100)
         
         if(Bank == 1){
             MusicName = B1N12
@@ -446,16 +467,16 @@ if(~User & User){
     
 }
 
-if(clk("playsnd")){
-    WebA:play()
+if(clk("play")){
+    Play = 1
 }
 
-if(clk("resetcolor")){
-    timer("egpcreate",10)
-    
-    EGP:egpColor(5,vec(255)) #Bank Selector
-    EGP:egpColor(6,vec(255))
-    
+if(clk("greencol")){
+    EGP:egpColor(GrnCol1,vec(0,255,0))
+    EGP:egpColor(GrnCol2,vec(0,255,0))
+}
+
+if(clk("resetbankcolor")){
     EGP:egpColor(11,vec(255)) #Selector 1
     EGP:egpColor(12,vec(255))
     
@@ -491,11 +512,19 @@ if(clk("resetcolor")){
     
     EGP:egpColor(66,vec(255)) #Selector 12
     EGP:egpColor(67,vec(255))
+}
+
+if(clk("resetcolor")){
+    Play = 0
+    Stop = 0
+    
+    EGP:egpColor(5,vec(255)) #Bank Selector
+    EGP:egpColor(6,vec(255))
     
     EGP:egpColor(71,vec(255)) #Play
     EGP:egpColor(72,vec(255))
     
-    EGP:egpColor(76,vec(255)) #Pause
+    EGP:egpColor(76,vec(255)) #Stop
     EGP:egpColor(77,vec(255))
 }
 
@@ -549,26 +578,4 @@ if(clk("bank2")){
     EGP:egpSetText(62,B2N11)
     
     EGP:egpSetText(67,B2N12)
-}
-
-if(clk("soundpurge")){
-    soundPurge()
-}
-
-if(clk("musicchange")){
-    #timer("soundpurge",10)
-    WebA:destroy()
-    
-    Play = 0
-    
-    WebA = webAudio(MusicLink)
-    WebA:set3DEnabled(0)
-    WebA:setRadius(30000)
-    WebA:setPos(EGP:entity():pos())
-    WebA:setParent(EGP:entity())
-}
-
-if(clk("musicstop")){
-    WebA:destroy()
-    print("Music Stopped")
 }

@@ -1,0 +1,39 @@
+@name 
+@inputs Activate #Pos:vector
+@outputs RangerHit
+@persist RangerHit
+
+if(first() | dupefinished()){
+    function vector ranDir(){
+        local Theta = random(0,pi()*2)
+        local Z = random(-1,1)
+        
+        return vec(sqrt(1 - Z^2) * cos(Theta),sqrt(1 - Z^2) * sin(Theta),Z)
+    }
+    
+    RangerHit = 0
+}
+
+if(~Activate & Activate){
+    local StartPos = entity():pos()+vec(0,0,40)
+    local Dist = 60
+    
+    for(_=1,50){
+        local Dir = ranDir()
+        local Range = rangerOffset(Dist,StartPos,Dir)
+        if(Range:hit()){
+            RangerHit = 1
+        }
+    }
+    
+    timer("rangewait",500)
+}
+
+if(clk("rangewait")){
+    if(RangerHit == 0){
+        print("nohit")
+    }
+    else{
+        print("hit")
+    }
+}

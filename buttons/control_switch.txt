@@ -1,10 +1,10 @@
 @name Control Switch
-@inputs Reset OwnerMode
+@inputs Reset OwnerMode DisableToggle
 @outputs Number
 @persist State
 #@model models/bull/buttons/toggle_switch.mdl
-@model models/bull/buttons/rocker_switch.mdl
-#@model models/bull/buttons/key_switch.mdl
+#@model models/bull/buttons/rocker_switch.mdl
+@model models/bull/buttons/key_switch.mdl
 
 if(first()){
     Number = 0
@@ -21,19 +21,37 @@ event chipUsed(Ply:entity){
             State = !State
             entity():soundPlay(1,0.1,"buttons/lightswitch2.wav")
                 
-            if(State == 1){
-                Number = 1
-                entity():propAnim(1)
+            if(DisableToggle == 1){
+                if(State == 1){
+                    Number = 1
+                    entity():propAnim(1)
+                    
+                    timer("reset",500)
+                }
             }
             else{
-                Number = 0
-                entity():propAnim(0)
+                if(State == 1){
+                    Number = 1
+                    entity():propAnim(1)
+                }
+                else{
+                    Number = 0
+                    entity():propAnim(0)
+                }
             }
         }
     }
 }
 
 if(~Reset & Reset){
+    timer("reset",10)
+}
+
+if(clk("reset")){
     Number = 0
     State = 0
+    
+    entity():propAnim(0)
+    
+    entity():soundPlay(1,0.1,"buttons/lightswitch2.wav")
 }

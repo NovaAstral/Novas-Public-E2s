@@ -34,6 +34,13 @@ event chat(SaidPly:entity, Said:string,_:number){
                     Throttle = 1
                     timer("reset",100)
                 }
+                elseif(OLS[3,string] == "me"){
+                    DeMatPos = owner():pos()+vec(0,0,Offset)
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerialising to ",ColTeam,"You")
+                    
+                    Throttle = 1
+                    timer("reset",100)
+                }
                 else{
                     if(RotorMoving == 0){
                         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerialising the TARDIS")

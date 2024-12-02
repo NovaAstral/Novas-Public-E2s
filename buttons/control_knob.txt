@@ -4,6 +4,8 @@
 @persist Move User:entity
 @model models/cheeze/buttons2/up_small.mdl
 
+#this is bad and it should feel bad
+
 if(first()){
     Move = 0
     Number = 0

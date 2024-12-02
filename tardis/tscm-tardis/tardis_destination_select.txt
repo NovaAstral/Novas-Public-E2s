@@ -1,5 +1,5 @@
 @name Tardis Destination Select
-@inputs Activate Exterior:entity [CamCont,PodCont]:wirelink OffsetIn FlightMode
+@inputs Activate Exterior:entity [CamCont,PodCont]:wirelink OffsetIn FlightMode Door:entity
 @outputs SpeedMult PosOut:vector AngOut:angle Active [ChameleonModel,ChameleonMat]:string ChameleonColor:vector4 Offset Holo:entity
 @persist SpeedMult AMoveDelay Active Plys:array Offset SetChameleonDelay
 
@@ -16,7 +16,7 @@ if(first() | dupefinished()){
     AMoveDelay = 0
     SetChameleonDelay = 0
     
-    Offset = 48
+    Offset = 0
 }
 
 if(~OffsetIn){
@@ -25,6 +25,7 @@ if(~OffsetIn){
 
 if(~Activate & !first() & !FlightMode){
     holoDelete(2)
+    holoDelete(3)
     if(Activate == 1){
         Plys = players()
         for(I=1,Plys:count()){
@@ -43,7 +44,7 @@ if(~Activate & !first() & !FlightMode){
             holoPos(1,Exterior:pos()+vec(0,0,65))
             holoAng(1,Exterior:angles()+ang(90,0,0))
             
-            holoCreate(2,holoEntity(1):pos()+holoEntity(1):up()*25,vec(1),ang(0),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl") #Police Box
+            holoCreate(2,holoEntity(1):pos()+holoEntity(1):up()*25,vec(1),ang(0),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl") #forward
             holoParent(2,holoEntity(1))
             
             for(I=1,Plys:count()){
@@ -51,6 +52,56 @@ if(~Activate & !first() & !FlightMode){
                 holoVisible(2,Ply,1)
                 if(Ply != PodCont["Driver",entity]){
                     holoVisible(2,Ply,0)
+                }
+            }
+        }
+        elseif(Exterior:model() == "models/hunter/tubes/circle2x2.mdl"){ #hl2 junk tardis
+            holoModel(1,Exterior:model())
+            holoScale(1,vec(4,4,1))
+            holoPos(1,Exterior:pos())
+            holoAng(1,Exterior:angles())
+            
+            holoCreate(2,holoEntity(1):pos()+holoEntity(1):up()*115,vec(4,4,1),ang(0),vec4(255,255,255,100),"models/hunter/tubes/circle2x2.mdl")
+            holoParent(2,holoEntity(1))
+            
+            holoCreate(3,Door:pos()+Door:up()*25,vec(1),Door:angles(),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl") #forward
+            holoParent(3,holoEntity(1))
+            
+            for(I=1,Plys:count()){
+                Ply = Plys[I,entity]
+                holoVisible(2,Ply,1)
+                holoVisible(3,Ply,1)
+                if(Ply != PodCont["Driver",entity]){
+                    holoVisible(2,Ply,0)
+                    holoVisible(3,Ply,0)
+                }
+            }
+        }
+        elseif(Exterior:model() == "models/hunter/blocks/cube1x1x1.mdl"){ #mc junk tardis
+            Offset = 16.965
+            holoModel(1,Exterior:model())
+            holoScale(1,vec(2.86,2.86,0.715))
+            holoPos(1,Exterior:pos())
+            holoAng(1,Exterior:angles())
+            
+            holoCreate(2,holoEntity(1):pos()+holoEntity(1):up()*51+holoEntity(1):forward()*-85,vec(2.86,2.86,0.715),ang(0,0,90),vec4(255,255,255,100),Exterior:model())
+            holoParent(2,holoEntity(1))
+            
+            holoCreate(3,holoEntity(1):pos()+holoEntity(1):up()*51+holoEntity(1):right()*-85,vec(2.86,2.86,0.715),ang(0,90,90),vec4(255,255,255,100),Exterior:model())
+            holoParent(3,holoEntity(1))
+            
+            holoCreate(4,holoEntity(1):pos()+holoEntity(1):up()*135+holoEntity(1):right()*17+holoEntity(1):forward()*17,vec(0.715,0.715,0.715),ang(0,90,90),vec4(255,255,255,100),Exterior:model())
+            holoParent(4,holoEntity(1))
+            
+            for(I=1,Plys:count()){
+                Ply = Plys[I,entity]
+                holoVisible(2,Ply,1)
+                holoVisible(3,Ply,1)
+                holoVisible(4,Ply,1)
+                if(Ply != PodCont["Driver",entity]){
+                    holoVisible(2,Ply,0)
+                    holoVisible(3,Ply,0)
+                    holoVisible(4,Ply,0)
                 }
             }
         }
@@ -150,6 +201,8 @@ if(clk("destselect")){ #timer because running on tick crashes with 9+ people
             
             if(holoEntity(2):isValid()){
                 holoDelete(2)
+                holoDelete(3)
+                holoDelete(4)
             }
             
             stoptimer("destselect")
