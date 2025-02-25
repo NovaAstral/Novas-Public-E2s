@@ -1,7 +1,7 @@
 @name Replicator
 @inputs TransporterPad:wirelink Rep:entity SpawnOffset
 @outputs RepEnt:entity OutputText:string
-@persist EntArray:array
+@persist EntArray:array SpawnPos:vector SpawnOffset
 
 #Made by Nova Astral
 #Discord: novaastral / Nova Astral#2079
@@ -11,7 +11,7 @@
 
 if(first() | duped()){
     printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"The Replicator is online. Type '/rep help' for help.")
-    propSpawnUndo(0)
+    #propSpawnUndo(0)
     
     SpawnOffset = 0
     
@@ -21,12 +21,29 @@ if(first() | duped()){
     #this is some corner of uni that ships generally shouldn't be in
     #if the replicator doesn't work, there's probably a ship there with its shields up
     
-    function void replicate(Model:string,Text:string,Offset){
+    function void activaterep(Value:number){
+        TransporterPad["Beam to vector",number] = Value
+        #[
+        if(TransporterPad:entity():type() == "transporter_pad"){
+            TransporterPad["Beam to vector",number] = Value
+        }   
+        elseif(TransporterPad:entity():type() == "asgard_transporter"){
+            TransporterPad["Send",number] = Value
+        }
+        ]#
+    }
+    
+    function void replicate(Model:string,Text:string,Offset:number){
         RepEnt = propSpawn(Model,SpawnPos,0)
         
         printColor(vec(255,95,215)," [Replicator] ",vec(230,110,0),"Replicating: ",Text)
         OutputText = "Replicating: "+Text
         
+        TransporterPad["Target1",entity] = RepEnt
+            
+        TransporterPad["TargetLocation",vector] = Rep:pos() + vec(0,0,SpawnOffset+Offset)
+        
+        #[]    
         if(TransporterPad:entity():type() == "transporter_pad"){
             TransporterPad["Target1",entity] = RepEnt
             
@@ -37,35 +54,23 @@ if(first() | duped()){
             
             TransporterPad["Destination",vector] = Rep:pos() + vec(0,0,SpawnOffset+Offset)
         }
+        ]#
         
         EntArray:insertEntity(EntArray:count()+1,RepEnt)
         
-        timer("repon",10)
+        timer("repon",0.1,1,function(){
+            activaterep(1)
+            Rep:emitSound("st/shuttlecraft/computer_work.mp3")
+            
+            timer("repoff",1,1,function(){
+                activaterep(0)
+                stopAllTimers()
+            })
+        })
     }
-    
-    function void activaterep(Value){
-        if(TransporterPad:entity():type() == "transporter_pad"){
-            TransporterPad["Beam to vector",number] = Value
-        }   
-        elseif(TransporterPad:entity():type() == "asgard_transporter"){
-            TransporterPad["Send",number] = Value
-        }
-    }
 }
 
-if(clk("repon")){
-    activaterep(1)
-    Rep:emitSound("st/shuttlecraft/computer_work.mp3")
-    
-    timer("repoff",100)
-}
-
-if(clk("repoff")){
-    activaterep(0)
-    stopAllTimers()
-}
-
-event chat(SaidPly:entity, Said:string,_){
+event chat(SaidPly:entity, Said:string,_:number){
     local OLS = Said:lower():explode(" ")
     
     if(SaidPly == owner()){

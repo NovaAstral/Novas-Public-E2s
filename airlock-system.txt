@@ -1,0 +1,73 @@
+@name 
+@inputs Button InDoor:wirelink OutDoor:wirelink Lockdown
+@outputs InLight:vector OutLight:vector
+@persist 
+
+if(first()){
+    if(InDoor["Opened",number] == 1){
+        InLight = vec(0,255,0)
+    }
+    else{
+        InLight = vec(255,0,0)
+    }
+    
+    if(OutDoor["Opened",number] == 1){
+        OutLight = vec(0,255,0)
+    }
+    else{
+        OutLight = vec(255,0,0)
+    }
+}
+
+if(~Button & Button & Lockdown == 0){
+    if(InDoor["Opened",number] == 1 && OutDoor["Opened",number] == 1){
+        OutDoor["Toggle",number] = 1
+        
+        OutLight = vec(0,255,0)
+        InLight = vec(255,0,0)
+        
+        timer(0.2,function(){
+            OutDoor["Toggle",number] = 0
+        })
+    }
+    elseif(InDoor["Opened",number] == 0 && OutDoor["Opened",number] == 0){
+        InDoor["Toggle",number] = 1
+        
+        OutLight = vec(255,0,0)
+        InLight = vec(0,255,0)
+        
+        timer(0.2,function(){
+            InDoor["Toggle",number] = 0
+        })
+    }
+    elseif(InDoor["Opened",number] == 1 && OutDoor["Opened",number] == 0){
+        InDoor["Toggle",number] = 1
+        
+        InLight = vec(255,0,0)
+        
+        timer(2,function(){
+            OutDoor["Toggle",number] = 1
+            OutLight = vec(0,255,0)
+        })
+        
+        timer(0.2,function(){
+            InDoor["Toggle",number] = 0
+            OutDoor["Toggle",number] = 0
+        })
+    }
+    elseif(InDoor["Opened",number] == 0 && OutDoor["Opened",number] == 1){
+        OutDoor["Toggle",number] = 1
+        
+        OutLight = vec(255,0,0)
+        
+        timer(2,function(){
+            InDoor["Toggle",number] = 1
+            InLight = vec(0,255,0)
+        })
+        
+        timer(0.2,function(){
+            InDoor["Toggle",number] = 0
+            OutDoor["Toggle",number] = 0
+        })
+    }
+}
