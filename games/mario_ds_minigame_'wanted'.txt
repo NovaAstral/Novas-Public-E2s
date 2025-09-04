@@ -50,8 +50,8 @@ if(first()){
     OptionsMenu = 0
     GameMenu = 0
     
-    InnoAmount = 20 #Limit is around 190 before the e2 crashes
-    CharSize = 20
+    InnoAmount = 100 #Limit is around 190 before the e2 crashes
+    CharSize = 30
     MemeChance = 0 #chance to have the wanted be black lol
     
     timer("BoxSize",1)
@@ -210,7 +210,7 @@ if(clk("wantedcreate")){
         WantedCol = vec(randint(75,255),randint(75,255),randint(75,255))
     }
     else{
-        if(randint(0,MemeChance) == MemeChance){
+        if(randint(1,MemeChance) == MemeChance){
             WantedCol = vec(0)
         }
         else{

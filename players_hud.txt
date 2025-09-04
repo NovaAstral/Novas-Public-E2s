@@ -1,12 +1,14 @@
 @name Players HUD
 @inputs E:wirelink
-@persist Ents:array
+@persist Ents:array #RequireLOS
 
 if(first() | dupefinished()){
+    #RequireLOS = 1 #Require Line of Sight to see players/npc on the hud?
+    
     E:egpClear()
-    timer("find",500)
     timer("createegp",1000)
     timer("updateegp",1500)
+    timer("find",10)
     
     Ents = array()
     
@@ -17,23 +19,24 @@ if(first() | dupefinished()){
 
 if(clk("find")){
     timer("find",10000)
-    timer("createegp",10) #so that it removes hud entries if someone leaves the game
-
-    findIncludeClass("npc*")
     
+    timer("createegp",10) #so that it removes hud entries if someone leaves the game
+    
+    findIncludeClass("npc*")
+        
     findExcludeEntity(owner())
     findExcludeClass("sent_vj_ply_spawnpoint")
     findExcludeClass("prop_physics_multiplayer")
     findExcludeClass("gmod_wire_input")
     findExcludeClass("fnp90")
-    
+        
     findInSphere(owner():pos(),5000)
     findSortByDistance(owner():pos())
-    
+        
     FEnts = findToArray()
-    
+        
     Plys = players()
-    
+        
     Ents = Plys:add(FEnts)
 }
 
@@ -42,7 +45,21 @@ if(clk("createegp")){
 
     for(I=1,Ents:count()){
         Ent = Ents[I,entity]
- 
+        
+        #[
+        CEnt = Ents[I,entity]
+        
+        if(RequireLOS == 1){
+            rangerFilter(owner())
+            local Ranger = rangerOffset(owner():pos()+vec(0,0,48),CEnt:boxCenterW())
+            
+            if(Ranger:entity():isValid()){
+                Ent = Ents[I,entity]
+            }
+            #print(Ranger:entity())
+        }
+        ]#
+        
         local Name = I+Ents:count()
         local Health = I+Name*2
         local Dist = I+Health*2
@@ -87,6 +104,20 @@ if(clk("updateegp")){
     
     for(I=1,Ents:count()){
         Ent = Ents[I,entity]
+        
+        #[
+        CEnt = Ents[I,entity]
+        
+        if(RequireLOS == 1){
+            rangerFilter(owner())
+            local Ranger = rangerOffset(owner():pos()+vec(0,0,48),CEnt:boxCenterW())
+            
+            if(Ranger:entity():isValid()){
+                Ent = Ents[I,entity]
+            }
+            #print(Ranger:entity())
+        }
+        ]#
  
         local Name = I+Ents:count()
         local Health = I+Name*2

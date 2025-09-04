@@ -24,87 +24,87 @@ if(first() | duped()){
     
     #If you're using this for warp drives on TSCM, you dont need to change the angles
     
-    #Vector Bank 1
+    #Vector Bank 1  
     B1N1 = "Earth" #Name
-    B1V1 = vec(-1886,9554,8080) #Vector
-    B1A1 = ang(0,0,0) # Angles
+    B1V1 = vec(2052,6167,8064) #Vector
+    B1A1 = ang(0,145,0) # Angles
     
-    B1N2 = "Moon"
-    B1V2 = vec(-4099,13470,9957)
-    B1A2 = ang(0,0,0)
+    B1N2 = "SGC"
+    B1V2 = vec(1859,7897,6672)
+    B1A2 = ang(0,135,0)
     
-    B1N3 = "Shakuras"
-    B1V3 = vec(-6301,-3485,6880)
-    B1A3 = ang(0,0,0)
+    B1N3 = "Shakuras Spawn"
+    B1V3 = vec(-7482,-3775,6889)
+    B1A3 = ang(0,180,0)
     
-    B1N4 = "Station"
-    B1V4 = vec(8363,-6861,9392)
-    B1A4 = ang(0,0,0)
+    B1N4 = "Shakuras Gate"
+    B1V4 = vec(-8354,-11112,6841)
+    B1A4 = ang(0,90,0)
     
-    B1N5 = "Hiigara"
-    B1V5 = vec(9415,6234,-6007)
-    B1A5 = ang(0,0,0)
+    B1N5 = "Station Hangar"
+    B1V5 = vec(9282,-7154,9200)
+    B1A5 = ang(0,-90,0)
     
-    B1N6 = "Under Hiigara"
-    B1V6 = vec(9431,6800,-7359)
-    B1A6 = ang(0,0,0)
+    B1N6 = "Station Gateroom"
+    B1V6 = vec(7642,-6193,9392)
+    B1A6 = ang(0,-90,0)
     
-    B1N7 = "Desert"
-    B1V7 = vec(12900,-10661,-9183)
-    B1A7 = ang(0,0,0)
+    B1N7 = "Hiigara Gate Ramp Left"
+    B1V7 = vec(7459,11927,-5855)
+    B1A7 = ang(0,135,0)
     
-    B1N8 = "Under Desert"
-    B1V8 = vec(10748,-12979,-10223)
-    B1A8 = ang(0,0,0)
+    B1N8 = "Hiigara Gate Ramp Right"
+    B1V8 = vec(6869,11931,-5855)
+    B1A8 = ang(0,45,0)
     
-    B1N9 = "Lava"
-    B1V9 = vec(-11190,497,-4655)
-    B1A9 = ang(0,0,0)
+    B1N9 = "Hiigara Left Building"
+    B1V9 = vec(9595,7082,-6007)
+    B1A9 = ang(0,135,0)
     
-    B1N10 = "???"
-    B1V10 = vec(0)
-    B1A10 = ang(0,0,0)
+    B1N10 = "Hiigara Right Building"
+    B1V10 = vec(4743,7084,-6007)
+    B1A10 = ang(0,45,0)
     
-    B1N11 = "???"
-    B1V11 = vec(0)
-    B1A11 = ang(0,0,0)
+    B1N11 = "Desert Inside"
+    B1V11 = vec(12921,-10060,-9119)
+    B1A11 = ang(0,90,0)
     
-    B1N12 = "???"
-    B1V12 = vec(0)
-    B1A12 = ang(0,0,0)
+    B1N12 = "Desert Outside"
+    B1V12 = vec(11327,-11116,-9380)
+    B1A12 = ang(0,-180,0)
     
     #Vector Bank 2
-    B2N1 = "Build 1"
-    B2V1 = vec(10496,12288,-16156)
-    B2A1 = ang(0,0,0)
+    B2N1 = "Lava Building"
+    B2V1 = vec(-11073,353,-4655)
+    B2A1 = ang(0,135,0)
     
-    B2N2 = "Build 2"
-    B2V2 = vec(10495,4095,-16156)
+    B2N2 = "Lava Inside"
+    B2V2 = vec(-10998,553,-5375)
     B2A2 = ang(0,0,0)
     
-    B2N3 = "Build 3"
-    B2V3 = vec(10496,-4096,-16156)
-    B2A3 = ang(0,0,0)
+    B2N3 = "Moon"
+    B2V3 = vec(-3103,13977,9952)
+    B2A3 = ang(0,-170,0)
     
-    B2N4 = "Build 4"
-    B2V4 = vec(10496,-12287,-16156)
-    B2A4 = ang(0,0,0)
+    B2N4 = "Shakuras Build"
+    B2V4 = vec(-9014,-5340,5041)
+    B2A4 = ang(0,-45,0)
     
-    B2N5 = "???"
-    B2V5 = vec(0)
-    B2A5 = ang(0,0,0)
+    B2N5 = "Build 1"
+    B2V5 = vec(5564,8896,-16158)
+    B2A5 = ang(0,45,0)
     
-    B2N6 = "???"
-    B2V6 = vec(0)
-    B2A6 = ang(0,0,0)
+    B2N6 = "Build 2"
+    B2V6 = vec(5564,702,-16158)
+    B2A6 = ang(0,45,0)
     
-    B2N7 = "???"
-    B2V7 = vec(0)
-    B2A7 = ang(0,0,0)
-    
-    B2N8 = "???"
-    B2V8 = vec(0)
-    B2A8 = ang(0,0,0)
+    B2N7 = "Build 3"
+    B2V7 = vec(5564,-7486,-16158)
+    B2A7 = ang(0,45,0)
+
+    B2N8 = "Build 4"
+    B2V8 = vec(5564,-15683,-16158)
+    B2A8 = ang(0,45,0)
     
     B2N9 = "???"
     B2V9 = vec(0)

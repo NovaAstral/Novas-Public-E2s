@@ -1,5 +1,5 @@
 @name Custom TARDIS Mainframe
-@inputs IntDrive:wirelink RotorMoving Offset
+@inputs IntDrive:wirelink Dematted Offset
 @outputs DeMatPos:vector Throttle
 @persist Prefix:string
 
@@ -17,7 +17,7 @@ event chat(SaidPly:entity, Said:string,_:number){
             hideChat(1)
             
             if(OLS[2,string] == "mat"){
-                if(RotorMoving == 1){
+                if(Dematted == 1){
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Materialising the TARDIS")
                     Throttle = 1
                     timer("reset",100)
@@ -34,15 +34,8 @@ event chat(SaidPly:entity, Said:string,_:number){
                     Throttle = 1
                     timer("reset",100)
                 }
-                elseif(OLS[3,string] == "me"){
-                    DeMatPos = owner():pos()+vec(0,0,Offset)
-                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerialising to ",ColTeam,"You")
-                    
-                    Throttle = 1
-                    timer("reset",100)
-                }
                 else{
-                    if(RotorMoving == 0){
+                    if(Dematted == 0){
                         printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Dematerialising the TARDIS")
                         Throttle = 1
                         timer("reset",100)
@@ -62,7 +55,7 @@ event chat(SaidPly:entity, Said:string,_:number){
                     timer("reset",1000)
                 }
                 if(OLS[3,string] == "uni"){
-                    IntDrive["Destination",vector] = vec(14758,-14969,-10958)
+                    IntDrive["Destination",vector] = vec(10588,-10829,-12747)
                     timer("warp",100)
                     
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Universe")
@@ -70,15 +63,23 @@ event chat(SaidPly:entity, Said:string,_:number){
                     timer("reset",1000)
                 }
                 elseif(OLS[3,string] == "pegasus"){
-                    IntDrive["Destination",vector] = vec(7577,-3683,4129)
+                    IntDrive["Destination",vector] = vec(12935,-5002,5973)
                     timer("warp",100)
                     
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Pegasus")
                     
                     timer("reset",1000)
                 }
-                elseif(OLS[3,string] == "milk" | OLS[3,string] == "milky" | OLS[3,string] == "earth"){
+                elseif(OLS[3,string] == "earth"){
                     IntDrive["Destination",vector] = vec(203,8026,4747)
+                    timer("warp",100)
+                    
+                    printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Earth")
+                    
+                    timer("reset",1000)
+                }
+                elseif(OLS[3,string] == "milk"){
+                    IntDrive["Destination",vector] = vec(13023,12245,5921)
                     timer("warp",100)
                     
                     printColor(ZeiaMBlu,"[TARDIS] ",ColOng,"Transporting the Interior to Milkyway")

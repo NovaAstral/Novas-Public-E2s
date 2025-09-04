@@ -31,7 +31,7 @@ if(first() | dupefinished()){
     ForcedFastMatSnd = "https://cloud.luna-code.net/s/Dl0ZREBZOlqBT9c/download"
     VeryFastDematSnd = "https://cloud.luna-code.net/s/jeYfNafnTnMflwj/download"
     VeryFastMatSnd = "https://cloud.luna-code.net/s/VSiIeZYzath04p8/download"
-    FailSnd = "https://cloud.luna-code.net/s/7Rol1sDci7tJs4q/download"
+    FailSnd = "https://cloud.luna-code.net/s/bY25TDRC0tLWbVv/download"
     CloakSnd = "https://cloud.luna-code.net/s/51J6CQk9aQExNWR/download"
     DeCloakSnd = "https://cloud.luna-code.net/s/sflsHGsRLRt018j/download"
     

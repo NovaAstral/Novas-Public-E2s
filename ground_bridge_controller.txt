@@ -95,7 +95,7 @@ event chat(SaidPly:entity, Said:string,_:number){
                 }
             }
             elseif(OLS[2,string] == "scale" | OLS[2,string] == "size"){
-                BridgeController["Size",number] = clamp(OLS[3,string]:toNumber(),0.1,2)
+                BridgeController["Size",number] = clamp(OLS[3,string]:toNumber(),0.1,5)
                 
                 Size = clamp(OLS[3,string]:toNumber(),0.1,2)
                 
