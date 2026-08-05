@@ -1,0 +1,23 @@
+@name Warptest
+@persist EW:wirelink
+
+EW = entity():isWeldedTo():wirelink()
+event keyPressed(Ply:entity,Key:string,Down:number,Bind:string){
+    if(Key == "pad_7" & Down == 1){
+        EW["Destination",vector] = vec(-625,-38,-10953)
+    
+        EW["Warp",number] = 1
+        timer(1,1,function(){
+            EW["Warp",number] = 0
+        })
+    }
+    
+    if(Key == "pad_8" & Down == 1){
+        EW["Destination",vector] = vec(625,-38,-10953)
+    
+        EW["Warp",number] = 1
+        timer(1,1,function(){
+            EW["Warp",number] = 0
+        })
+    }
+}

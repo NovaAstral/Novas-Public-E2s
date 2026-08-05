@@ -159,14 +159,14 @@ event chat(SaidPly:entity, Said:string,_:number){
                 }
             }
             elseif(OLS[2,string] == "ply"){
-                local Ply = findPlayerByName(OLS[4,string])
+                local Ply = findPlayerByName(OLS[3,string])
                 
                 if(Ply:isPlayer()){
-                    if(OLS[3,string]:toNumber() != 1 & OLS[3,string]:toNumber() != 2){
+                    if(OLS[4,string]:toNumber() != 1 & OLS[4,string]:toNumber() != 2){
                         printColor(ColPink,"[GBC] ",ColOng,"You must select a Ground Bridge to set the position of")
                     }
                     else{
-                        local HoloNum = OLS[3,string]:toNumber()
+                        local HoloNum = OLS[4,string]:toNumber()
 
                         local HoloPos = Ply:pos() + vec(300,0,Distance)
                         

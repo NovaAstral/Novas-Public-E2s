@@ -1,12 +1,12 @@
-@name Tardis Vortex Drive v2.1
+@name Tardis Vortex Drive v2.2
 @inputs Parent:entity WebAudioSF:wirelink SoundPlayingWebSF Throttle FastReturn FastMode VeryFastMode DisableVortexMode EngineRelease Cloak DestIn:vector AngleOffset:angle AngIn:angle ToiMode
 @outputs Dematted Moving PAlpha State [Destination,PrevDestination]:vector [Angle,PrevAngle]:angle
-@persist State AnimSpeed DematWait RematWait [DematAlphaTbl,MatAlphaTbl]:table Snd1:string AudioPos:vector CloakAlpha Cloaking DupeWait [Destination,PrevDestination]:vector [Angle,PrevAngle]:angle
+@persist State AnimSpeed DematWait RematWait [DematAlphaTbl,MatAlphaTbl]:table Snd1:string AudioPos:vector CloakAlpha Cloaking DupeWait [Destination,PrevDestination]:vector [Angle,PrevAngle]:angle SetAlpha
 @persist [DematSnd,MatSnd,FastDematSnd,FastMatSnd,ForcedDematSnd,ForcedMatSnd,ForcedFastDematSnd,ForcedFastMatSnd,FailSnd,CloakSnd,DeCloakSnd,VeryFastDematSnd,VeryFastMatSnd]:string
 #veryfastmode forced demat timing is wrong
 #either change the dematwait when forced, or change the sound (change the sound probably better)
 
-function void playsound(Audio:string,Vec:vector,Vol,FadeS,FadeE,MonoEnable){
+function void playsound(Audio:string,Vec:vector,Vol:number,FadeS:number,FadeE:number,MonoEnable:number){
     WebAudioSF["URL",string] = Audio
     WebAudioSF["Pos",vector] = Vec
     WebAudioSF["Volume",number] = Vol
@@ -88,6 +88,7 @@ if(first() | dupefinished()){
     Moving = 0
     CloakAlpha = 255
     Cloaking = 0
+    SetAlpha = 255
     
     function number checkJammed(){
         if(isJammed(Destination) | isJammed(Parent:pos())){
@@ -250,7 +251,7 @@ function movethebox(){
             playsound( #cant move sound
                 FailSnd, #URL
                 Parent:pos(), #Audio Pos
-                2, #Volume
+                0.5, #Volume
                 2000, #Fade Start
                 1000000000, #Fade End
                 0 #Mono
@@ -363,7 +364,7 @@ if(~Cloak & !Moving & !Dematted & DupeWait == 0){
         playsound(
             CloakSnd, #cloak
             Parent:pos(), #Audio Pos
-            2, #Volume
+            1, #Volume
             2000, #Fade Start
             1000000000, #Fade End
             0 #Mono
@@ -375,7 +376,7 @@ if(~Cloak & !Moving & !Dematted & DupeWait == 0){
         playsound(
             DeCloakSnd, #decloak
             Parent:pos(), #Audio Pos
-            2, #Volume
+            1, #Volume
             2000, #Fade Start
             1000000000, #Fade End
             0 #Mono
@@ -461,7 +462,7 @@ if(clk("sndwait")){
     playsound(
             Snd1, #URL
             AudioPos, #Audio Pos
-            2, #Volume
+            0.75, #Volume
             2000, #Fade Start
             1000000000, #Fade End
             0 #Mono
@@ -472,14 +473,18 @@ if(clk("demat")){
     timer("demat",AnimSpeed)
     
     if(VeryFastMode == 1){
-        Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],10))
+        SetAlpha = mathApproach(SetAlpha,DematAlphaTbl[State,number],10)
+        Parent:setAlpha(SetAlpha)
     }
     else{
-        if(checkJammed() == 1 & EngineRelease == 1){
-            Parent:setAlpha(Parent:getAlpha()+randint(-6,6))
-        }
+        SetAlpha = mathApproach(SetAlpha,DematAlphaTbl[State,number],2)
         
-        Parent:setAlpha(mathApproach(Parent:getAlpha(),DematAlphaTbl[State,number],2))
+        if(checkJammed() == 1 & EngineRelease == 1){
+            Parent:setAlpha(SetAlpha+randint(-6,6))
+        }
+        else{
+            Parent:setAlpha(SetAlpha)
+        }
     }
     
     PAlpha = Parent:getAlpha()
@@ -488,7 +493,7 @@ if(clk("demat")){
         Parent:noCollideAll(1)
     }
     
-    if(Parent:getAlpha() == DematAlphaTbl[State,number]){
+    if(SetAlpha == DematAlphaTbl[State,number]){
         State = clamp(State+1,1,DematAlphaTbl:count()+1)
     }
     
@@ -497,6 +502,9 @@ if(clk("demat")){
         State = 1
         Moving = 0
         Dematted = 1
+        
+        SetAlpha = DematAlphaTbl[DematAlphaTbl:count(),number]
+        Parent:setAlpha(SetAlpha)
         
         if(DisableVortexMode == 1){
             moveParent()
@@ -511,19 +519,23 @@ if(clk("remat")){
     timer("remat",AnimSpeed)
     
     if(VeryFastMode == 1){
-        Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],10))
+        SetAlpha = mathApproach(SetAlpha,MatAlphaTbl[State,number],10)
+        Parent:setAlpha(SetAlpha)
     }
     else{
-        if(checkJammed() == 1 & EngineRelease == 1){
-            Parent:setAlpha(Parent:getAlpha()+randint(-6,6))
-        }
+        SetAlpha = mathApproach(SetAlpha,MatAlphaTbl[State,number],1.8)
         
-        Parent:setAlpha(mathApproach(Parent:getAlpha(),MatAlphaTbl[State,number],2))
+        if(checkJammed() == 1 & EngineRelease == 1){
+            Parent:setAlpha(SetAlpha+randint(-6,6))
+        }
+        else{
+            Parent:setAlpha(SetAlpha)
+        }
     }
     
     PAlpha = Parent:getAlpha()
     
-    if(Parent:getAlpha() == MatAlphaTbl[State,number]){
+    if(SetAlpha == MatAlphaTbl[State,number]){
         if(FastMode == 1 & State == 5){
             State = 7
         }
@@ -537,6 +549,9 @@ if(clk("remat")){
         State = 1
         Moving = 0
         Dematted = 0
+        
+        SetAlpha = MatAlphaTbl[MatAlphaTbl:count(),number]
+        Parent:setAlpha(SetAlpha)
         
         if(Parent:getCollisionGroup() != _COLLISION_GROUP_NONE){
             Parent:noCollideAll(0)

@@ -1,0 +1,63 @@
+@name Powder Toy
+@inputs EGP:wirelink User:entity A
+@outputs 
+@persist PTBL:table BoardSize
+
+#[
+max board size for the board to be completely full is 20x20 (19x19 if theres any extra graphics)
+but i dont think the entire board will get filled if its bigger, especially if theres a visible limit put in place
+
+eg: 10x10 board, 1-10 is the top row, 11-20 is the next row, etc
+index is numbered based on what material eg: 0 is empty, 1 is metal, 2 is stone etc
+
+objects moving down just add BoardSize to their index, check the index if its empty (>0) before moving
+objects moving to down and to the left add BoardSize-1 to their index, right adds BoardSize+1
+
+when an object moves and checks the index of the spot its moving to, could do an interaction check, 
+if sand is about to move into water, turn into mud and so on
+
+for loop on the powder table, if index is >= boardsize*boardsize-boardsize then ignore down movement
+
+make the board be in the top left corner, ignore powder placing outside the board
+ 
+start at 1 instead of 0 because then the top and left edges will be outside the egp :v
+]#
+
+if(first() | dupefinished()){
+    BoardSize = 20
+}
+
+function egpSetup(){
+    EGP:egpClear()
+    EGP:egpResolution(vec2(0),vec2(40))
+    
+    EGP:egpBoxOutline(401,vec2(BoardSize/2,BoardSize/2),vec2(BoardSize,BoardSize))
+    EGP:egpBox(402,vec2(1),vec2(1))
+}
+
+if(first() | dupefinished()){ #second time because of the stupid fucking "use of variable before initialization"
+    egpSetup()
+    
+    PTBL = table()
+}
+
+if(~EGP & EGP){
+    egpSetup()
+}
+
+if(~User & User){
+    local Cursor = EGP:egpCursor(User)
+    
+    if(Cursor:x() <= BoardSize & Cursor:y() <= BoardSize){
+        EGP:egpBox(PTBL:count()+1,round(Cursor),vec2(1))
+    }
+}
+
+event tick(){
+    if(A == 1){
+        foreach(K:number,V:number = PTBL){
+            print(K)
+            print(V)
+        }
+    }
+}
